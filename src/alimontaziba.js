@@ -1,20 +1,20 @@
 var loc = window.location.hostname;
-var domain = encodeURIComponent(loc);
-var m ='';
-$('#checked').remove();
+var domain = encodeURIComponent(loc); 
 
-var request;
 var url;
  
 if (typeof url === "undefined") {
 	var url = "http://api.ourzobia.te/";
-} 
+}  
 
 $(function() {
+	// Initialize the cookies without conflict
 	const VCookies = Cookies.noConflict(); 
 	const verified = VCookies.get('verified'); 
  	
  	// VCookies.remove('verified');
+ 	// 
+ 	// Generate and load the activation form
 	if (typeof verified === "undefined" || verified === false) {
 		var form = $("<form />", {action: "requests/activate", method: "POST", id: "product_activation_form"}).append(
 			$("<div />", {class: "form-group"}).append(
@@ -30,6 +30,7 @@ $(function() {
 
 		);
 
+		// Append the activation form to a card
 		var carder = $("<div />", {class: "card"}).append(
 			$("<div />", {class: "card-body"}).append(
 				$("<h1 />", {class: "text-danger", text: "Activate Your Product."}),
@@ -39,13 +40,16 @@ $(function() {
 			)
 		);
 
+		// Check if the installation has been activated
 		if (verify() === true) {
 			VCookies.set('verified', true, { expires: 7 });
 			window.location.reload(true);
 		} else {
+			// If installation is not active load the activation form to the body
 			var section = $("<section />", {class: "api"}).append(carder);
 			$("body").html(section);
 
+			// Process the activation
 			var activation_form = $("#product_activation_form");
 			activation_form.on("submit", function(e) {
 				e.preventDefault();
@@ -55,6 +59,11 @@ $(function() {
 	} 
 });
 
+/**
+ * Activate the installation
+ * @param  {object} 	$this 	the form initiating this method
+ * @return {null}     
+ */
 function activate($this) { 
 	$.post(url+"requests/activate", {
 		domain: domain,
@@ -67,6 +76,10 @@ function activate($this) {
 	});
 }
 
+/**
+ * Checks if the installation has been activated 
+ * @return {null}     
+ */
 function verify() { 
 	var resp = false;  
 	$.ajax({
@@ -87,6 +100,7 @@ function verify() {
 	return resp;
 } 
 
+// Generate an alert
 jQuery.fn.alert_notice = function (message = 'A network error occurred!', type = 'warning') { 
     if (type === 'error') {
         type = 'danger';
