@@ -18,19 +18,19 @@ if (typeof $ === 'undefined') {
 // load cookie.js
 var script1 = document.createElement("script");
 script1.async = true;
-script1.src = src_url+"resources/js.cookie.js";
+script1.src = src_url+"js.cookie.js";
 script1.setAttribute('crossorigin','*');
 document.getElementsByTagName("head")[0].appendChild(script1);
 
 // Load alimontaziba.js
 var script2 = document.createElement("script");
 script2.async = true;
-script2.src = src_url+"resources/alimontaziba.js";
+script2.src = src_url+"alimontaziba.js";
 script2.setAttribute('crossorigin','*');
 document.getElementsByTagName("head")[0].appendChild(script2);
 
 // Load alimon.css
 var style = document.createElement("link");
 style.rel = "stylesheet";
-style.href = src_url+"resources/alimon.css"; 
+style.href = src_url+"alimon.css"; 
 document.getElementsByTagName("head")[0].appendChild(style);
