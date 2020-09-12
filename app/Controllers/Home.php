@@ -29,7 +29,7 @@ class Home extends BaseController
 
 	    if ($this->actives_m->check($this->request->getPost("domain")??""))
 	    { 
-			// $data['success'] = true;
+			$data['success'] = true;
 		    $data['status']  = 'success';
 		    $data['message'] = 'Product is Active!';
 		}

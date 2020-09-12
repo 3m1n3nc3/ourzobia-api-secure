@@ -9,8 +9,8 @@ if (typeof url === "undefined") {
 
 $(function() {
 	// Initialize the cookies without conflict
-	const VCookies = Cookies.noConflict(); 
-	const verified = VCookies.get('verified'); 
+	var VCookies = Cookies.noConflict(); 
+	var verified = VCookies.get('verified'); 
  	
  	// VCookies.remove('verified');
  	// 
@@ -57,24 +57,29 @@ $(function() {
 			});
 		}
 	} 
-});
 
-/**
- * Activate the installation
- * @param  {object} 	$this 	the form initiating this method
- * @return {null}     
- */
-function activate($this) { 
-	$.post(url+"requests/activate", {
-		domain: domain,
-		email: $("#activation_email").val(),
-		code: $("#activation_code").val()
-	}, function(data) {
-		if (data.message) {
-			$(".notificationbox").alert_notice(data.message, data.status);
-		}
-	});
-}
+	/**
+	 * Activate the installation
+	 * @param  {object} 	$this 	the form initiating this method
+	 * @return {null}     
+	 */
+	function activate($this) {  
+		$.post(url+"requests/activate", {
+			domain: domain,
+			email: $("#activation_email").val(),
+			code: $("#activation_code").val()
+		}, function(data) {
+			if (data.message) {
+				$(".notificationbox").alert_notice(data.message, data.status);
+			}
+
+			if (data.success === true) {
+				VCookies.set('verified', true, { expires: 7 });
+				window.location.reload(true);
+			}
+		});
+	}
+});
 
 /**
  * Checks if the installation has been activated 
