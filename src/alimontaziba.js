@@ -4,7 +4,11 @@ var m ='';
 $('#checked').remove();
 
 var request;
-var url = "http://api.ourzobia.te/";
+var url;
+ 
+if (typeof url === "undefined") {
+	var url = "http://api.ourzobia.te/";
+} 
 
 $(function() {
 	const VCookies = Cookies.noConflict(); 

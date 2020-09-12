@@ -5,7 +5,8 @@ This is perfect for you if you have PHP scripts distributed via online marketpla
 your script enter an activation code, before they are able to use the product.
 
 #### Advantages of using Ourzobia PHP API
-  1. Validation is done outside the validating script, making it rather difficult to break.
+  1. Written on the latest version of Codeigniter framework.
   2. Activation code is only valid for a single domain.
   3. Uses cookies to prevent frequent calls to validation server.
-  4. Validation can be hosted on Github and served via CDN.
+  4. Can be hosted on Github and served via CDN.
+  5. Validation is done outside the validating script, making it rather difficult to break.

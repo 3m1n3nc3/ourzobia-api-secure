@@ -23,6 +23,7 @@ class Resources extends BaseController
 			if ($url) 
 			{ 
         		$resource = str_replace("var url;", "var url = \"$url/\";", $resource); 
+        		$resource = str_replace("var src_url;", "var src_url = \"$url/\";", $resource); 
         	}
 		} 
 
