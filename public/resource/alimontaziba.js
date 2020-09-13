@@ -13,7 +13,7 @@ if (typeof _script !== "undefined") {
 	var api_src = _script.getAttribute('data-api');
 
 	if (typeof api_src !== "undefined") {
-		var url = api_src.replace(/alimontaziba.js\//gi, "");
+		var url = api_src.replace(/alimontaziba\.js\//gi, "");
 	}
 }
  
