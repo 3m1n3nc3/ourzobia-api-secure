@@ -11,7 +11,7 @@ if (typeof _script !== "undefined") {
 	var current_src = _script.getAttribute('data-src');
 
 	if (typeof current_src !== "undefined") {
-		var src_url = current_src.replace(/alimon.js/gi, "");
+		var src_url = current_src.replace(/alimon.js\//gi, "");
 	}
 }
  
