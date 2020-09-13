@@ -2,6 +2,7 @@
 
 use CodeIgniter\Events\Events;
 use CodeIgniter\Exceptions\FrameworkException;
+use \App\Libraries\Account_Data;
 
 /*
  * --------------------------------------------------------------------
@@ -49,4 +50,10 @@ Events::on('pre_system', function () {
 		Events::on('DBQuery', 'CodeIgniter\Debug\Toolbar\Collectors\Database::collect');
 		Services::toolbar()->respond();
 	}
+});
+
+Events::on('logout', function() {
+	$ad = new Account_Data;
+	$ad->logout();
+	return redirect()->to(base_url('home'));
 });

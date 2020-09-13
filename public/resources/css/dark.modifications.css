@@ -1,0 +1,17 @@
+table.dataTable { 
+  color: #fff!important;
+}
+
+.table-hover tbody tr:hover {
+  color: #bdcaec;
+  background-color: rgba(255, 255, 255, 0.075);
+}
+
+div.dataTables_scrollHead table.table-bordered { 
+    background: #fff;
+    color: #161b28!important;
+}
+
+.modal-content {  
+    background-color: #0f1219; 
+}

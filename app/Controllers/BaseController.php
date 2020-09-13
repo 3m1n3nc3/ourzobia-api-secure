@@ -26,7 +26,7 @@ class BaseController extends Controller
 	 *
 	 * @var array
 	 */
-	protected $helpers = ['form','ourfile'];
+	protected $helpers = ['form','ourfile', 'theme', 'filesystem', 'text', 'url', 'cookie', 'site', 'currency'];
 
 	/**
 	 * Constructor.
@@ -40,11 +40,26 @@ class BaseController extends Controller
 		// Preload any models, libraries, etc, here.
 		//--------------------------------------------------------------------  
 
-        // Init all models globally
+        // Init all models globally 
+        $this->form_validation = \Config\Services::validation();  
+		$this->session         = \Config\Services::session();
+        $this->account_data    = new \App\Libraries\Account_Data;
+        $this->creative        = new \App\Libraries\Creative_lib;
+        $this->enc_lib         = new \App\Libraries\Enc_lib;
+        $this->util            = new \App\Libraries\Util;
+
         $this->products_m = model('App\Models\ProductsModel', false);
-        $this->actives_m = model('App\Models\ActivesModel', false);
- 
-		$this->session = \Config\Services::session();
+        $this->actives_m  = model('App\Models\ActivesModel', false);
+        $this->usersModel = model('App\Models\UsersModel', false);
+        $this->settingModel   = model('App\Models\SettingsModel', false);
+        $this->statsModel     = model('App\Models\StatsModel', false);
+        $this->analyticsModel = model('App\Models\AnalyticsModel', false);
+
+        if (!$this->session->has('visitor')) 
+        {
+        	$this->session->set('visitor', true);
+			$this->util->save_analysis('visits', 0);
+        }
 	}
 
 }

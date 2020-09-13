@@ -8,13 +8,23 @@ class Filters extends BaseConfig
 	// and simpler to change out script that's used.
 	public $aliases = [
 		'csrf'     => \CodeIgniter\Filters\CSRF::class,
-		'toolbar'  => \CodeIgniter\Filters\DebugToolbar::class,
-		'honeypot' => \CodeIgniter\Filters\Honeypot::class,
+		'toolbar'  => \CodeIgniter\Filters\DebugToolbar::class, 
+		'accesscontrol' => \App\Filters\AccessFilter::class,
+		'admincontrol'  => \App\Filters\AdminFilter::class, 
 	];
 
 	// Always applied before every request
 	public $globals = [
-		'before' => [
+		'before' => [ 
+			'admincontrol' => [
+				'except' => [
+					'login', 'signup', 'logout', 'home/*', '/', 'connect/*', 'api', 'api/*', 'ajax/*', 'user/*', 'cli/*', 'benchmark/*', 
+					'error', 'error/*', 'install/*', 'curl', 'curl/*', 'home', 'home/*', 'resources', 'resources/*']
+			], 
+			'accesscontrol' => [
+				'except' => [
+					'login', 'signup', 'logout', 'home/*', '/', 'connect/*', 'api', 'api/*', 'ajax/*', 'cli/*', 'benchmark/*', 'error', 'error/*', 'user/m', 'install/*', 'curl', 'curl/*', 'home', 'home/*', 'resources', 'resources/*']
+			],  
 			//'honeypot'
 			// 'csrf',
 		],
@@ -32,5 +42,7 @@ class Filters extends BaseConfig
 	// List filter aliases and any before/after uri patterns
 	// that they should run on, like:
 	//    'isLoggedIn' => ['before' => ['account/*', 'profiles/*']],
-	public $filters = [];
+	public $filters = [
+		// 'admincontrosl' => ['before' => ['admin', 'admin/*']],
+	];
 }

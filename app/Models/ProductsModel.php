@@ -36,19 +36,23 @@ class ProductsModel extends Model
 
     public function get_all($status = 1)
     {  
+        $this->select('all_products.*, users.uid');
         if ($status) 
         {
-            $this->where('status', $status); 
+            $this->where('all_products.status', $status); 
         }
+        $this->join('users', 'all_products.uid=users.uid', 'LEFT');  
         return $this->orderBy('id', 'ASC')->findAll();
     } 
 
     public function check(array $data = [])
     {  
-        $this->where('status', 1); 
-        $this->where('domain', $data['domain']??''); 
-        $this->where('email', $data['email']); 
-        $this->where('code', $data['code']);  
+        $this->select('all_products.*, users.uid');
+        $this->where('all_products.status', 1); 
+        $this->where('all_products.domain', $data['domain']??''); 
+        $this->where('all_products.email', $data['email']); 
+        $this->where('all_products.code', $data['code']);  
+        $this->join('users', 'all_products.uid=users.uid', 'LEFT');  
 
         return $this->find();
     } 

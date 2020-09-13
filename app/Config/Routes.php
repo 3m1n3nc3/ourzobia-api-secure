@@ -50,11 +50,26 @@ $routes->setAutoRoute(true);
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
 $routes->get('/', 'Home::index');
+
 $routes->post('requests/activate', 'Home::activate');
 $routes->post('requests/(:any)', 'Home::$1');
 $routes->get('requests/(:any)', 'Home::$1');
 $routes->get('resources/(:any)', 'Resources::index/$1');
 $routes->get('resource/(:any)', 'Resources::index/$1');
+
+$routes->get('dashboard', 'Admin::index');
+$routes->get('dashboard/(:any)', 'Admin::$1'); 
+$routes->get('admin/dashboard', 'Admin::index');
+
+$routes->get('logout', 'Admin::logout');
+$routes->match(['get', 'post'], 'login', 'Admin::login');
+$routes->match(['get', 'post'], 'signup', 'Admin::login/signup');
+  
+$routes->match( ['get', 'post'], 'admin/(:any)', 'Admin::$1');
+$routes->match( ['get', 'post'], 'user/(:any)', 'Admin::$1');
+
+$routes->match(['get', 'post'], 'ajax/datatables/(:any)', 'Ajax\Datatables::$1');  
+
 
 /**
  * --------------------------------------------------------------------

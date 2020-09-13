@@ -17,6 +17,7 @@ class Validation
 		\CodeIgniter\Validation\FormatRules::class,
 		\CodeIgniter\Validation\FileRules::class,
 		\CodeIgniter\Validation\CreditCardRules::class,
+		\App\Libraries\Custom_rules::class,
 	];
 
 	/**
@@ -26,8 +27,11 @@ class Validation
 	 * @var array
 	 */
 	public $templates = [
-		'list'   => 'CodeIgniter\Validation\Views\list',
-		'single' => 'CodeIgniter\Validation\Views\single',
+		'list'   			  => 'CodeIgniter\Validation\Views\list',
+		'single' 			  => 'CodeIgniter\Validation\Views\single',
+		'my_error_list'       => 'errors/_validation_error_list',
+		'my_error_plain_list' => 'errors/_validation_error_plain_list',
+		'my_single_error'     => 'errors/_validation_error',
 	];
 
 	//--------------------------------------------------------------------

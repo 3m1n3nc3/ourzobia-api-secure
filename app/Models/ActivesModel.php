@@ -35,17 +35,21 @@ class ActivesModel extends Model
 
     public function get_all($status = 1)
     {  
+        $this->select('active_products.*, all_products.id');
         if ($status) 
         {
             $this->where('status', $status); 
         }
+        $this->join('users', 'active_products.product_id=all_products.id', 'LEFT');  
         return $this->orderBy('id', 'ASC')->findAll();
     } 
 
     public function check(string $domain)
     {  
-        $this->where('status', 1); 
-        $this->where('domain', $domain);  
+        $this->select('active_products.*, all_products.id AS pid');
+        $this->where('active_products.status', 1); 
+        $this->where('active_products.domain', $domain);  
+        $this->join('all_products', 'active_products.product_id=all_products.id', 'LEFT');  
 
         return $this->find();
     } 
