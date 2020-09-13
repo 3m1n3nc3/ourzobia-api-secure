@@ -2,10 +2,21 @@
  * var src_url is the url to include all required resources 
  * from either public/resources or src directories
  */
+
 var src_url;
+
+var _script = document.querySelector('[data-current="true"]');
+
+if (typeof _script !== "undefined") {
+	var current_src = _script.getAttribute('data-src');
+
+	if (typeof current_src !== "undefined") {
+		var src_url = current_src.replace(/alimon.js/gi, "");
+	}
+}
  
 if (typeof src_url === "undefined") {
-	src_url = "https://cdn.jsdelivr.net/gh/3m1n3nc3/ourzobia-api@1.0.0/src/";
+	src_url = "https://cdn.jsdelivr.net/gh/3m1n3nc3/ourzobia-api@1.0.4/src/";
 } 
 
 // If jquery does not exist, load the latest version from CDN

@@ -1,7 +1,6 @@
 var loc = window.location.hostname;
 var domain = encodeURIComponent(loc); 
 
-var request;
 var url = "http://api.ourzobia.te/";
 
 $(function() {

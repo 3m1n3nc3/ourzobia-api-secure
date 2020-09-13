@@ -2,7 +2,18 @@
  * var src_url is the url to include all required resources 
  * from either public/resources or src directories
  */
+
 var src_url;
+
+var _script = document.querySelector('[data-current="true"]');
+
+if (typeof _script !== "undefined") {
+	var current_src = _script.getAttribute('data-src');
+
+	if (typeof current_src !== "undefined") {
+		var src_url = current_src.replace(/alimon.js/gi, "");
+	}
+}
  
 if (typeof src_url === "undefined") {
 	src_url = "http://api.ourzobia.te/";
