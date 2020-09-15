@@ -200,7 +200,7 @@ class Util
 
         if ($agent->isReferral() && empty($ref)) 
         {
-            $data['referrer'] = $agent->referrer(); 
+            $data['referrer'] = $agent->getReferrer(); 
         }
         else
         {
