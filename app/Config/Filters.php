@@ -18,12 +18,15 @@ class Filters extends BaseConfig
 		'before' => [ 
 			'admincontrol' => [
 				'except' => [
-					'login', 'signup', 'logout', 'home/*', '/', 'connect/*', 'api', 'api/*', 'ajax/*', 'user/*', 'cli/*', 'benchmark/*', 
-					'error', 'error/*', 'install/*', 'curl', 'curl/*', 'home', 'home/*', 'resources', 'resources/*']
+					'login', 'signup', 'logout', 'home/*', '/', 'connect/*', 'api', 'api/*', 'ajax/*', 'user/*', 'cli/*', 'benchmark/*', 'error', 
+					'error/*', 'install/*', 'curl', 'curl/*', 'home', 'home/*', 'requests', 'requests/*', 'resource', 'resource/*', 'resources', 
+					'resources/*']
 			], 
 			'accesscontrol' => [
 				'except' => [
-					'login', 'signup', 'logout', 'home/*', '/', 'connect/*', 'api', 'api/*', 'ajax/*', 'cli/*', 'benchmark/*', 'error', 'error/*', 'user/m', 'install/*', 'curl', 'curl/*', 'home', 'home/*', 'resources', 'resources/*']
+					'login', 'signup', 'logout', 'home/*', '/', 'connect/*', 'api', 'api/*', 'ajax/*', 'cli/*', 'benchmark/*', 'error', 'error/*', 
+					'user/m', 'install/*', 'curl', 'curl/*', 'home', 'home/*', 'requests', 'requests/*', 'resource', 'resource/*', 'resources', 
+					'resources/*']
 			],  
 			//'honeypot'
 			// 'csrf',
