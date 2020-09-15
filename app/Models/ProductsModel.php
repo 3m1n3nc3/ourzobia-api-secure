@@ -44,13 +44,23 @@ class ProductsModel extends Model
         return $this->orderBy('id', 'ASC')->findAll();
     } 
 
+    public function codeGet($code = null)
+    {   
+        return $this->getWhere(['code'=>$code])->getRowArray();
+    } 
+
     public function check(array $data = [])
-    {  
+    {
+        $pmdl = model('App\Models\ProductsModel', false);
+
         $this->select('all_products.*, users.uid');
-        $this->where('all_products.status', 1); 
-        $this->where('all_products.domain', $data['domain']??''); 
-        $this->where('all_products.email', $data['email']); 
-        $this->where('all_products.code', $data['code']);  
+        $this->where('all_products.status', 1);  
+        if (!empty($pmdl->codeGet($data['code']??'')['domain'])) 
+        {
+            $this->where('all_products.domain', $data['domain']??''); 
+        }
+        $this->where('all_products.email', $data['email']??''); 
+        $this->where('all_products.code', $data['code']??'');  
         $this->join('users', 'all_products.uid=users.uid', 'LEFT');  
 
         return $this->get()->getRowArray();

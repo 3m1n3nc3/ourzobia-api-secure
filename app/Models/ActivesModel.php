@@ -44,7 +44,7 @@ class ActivesModel extends Model
         return $this->orderBy('id', 'ASC')->findAll();
     } 
 
-    public function check(string $domain)
+    public function check($domain)
     {  
         $this->select('active_products.*, all_products.id AS pid');
         $this->where('active_products.status', 1); 
