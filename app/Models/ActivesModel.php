@@ -11,7 +11,7 @@ class ActivesModel extends Model
     protected $returnType = 'array';
     protected $useSoftDeletes = true;
 
-    protected $allowedFields  = ['domain', 'status'];
+    protected $allowedFields  = ['product_id', 'domain', 'status'];
 
 	protected $useTimestamps = true;
 	protected $dateFormat    = 'int'; 
@@ -51,7 +51,7 @@ class ActivesModel extends Model
         $this->where('active_products.domain', $domain);  
         $this->join('all_products', 'active_products.product_id=all_products.id', 'LEFT');  
 
-        return $this->find();
+        return $this->get()->getRowArray();
     } 
 
     public function remove(array $data = [])

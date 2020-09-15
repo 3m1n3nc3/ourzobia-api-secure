@@ -11,8 +11,7 @@ class ProductsModel extends Model
     protected $returnType = 'array';
     protected $useSoftDeletes = true;
 
-    protected $allowedFields = [
-    	'name', 'domain', 'email', 'code', 'status'];
+    protected $allowedFields = ['uid', 'name', 'domain', 'email', 'code', 'status'];
 
 	protected $useTimestamps = true;
 	protected $dateFormat    = 'int'; 
@@ -54,7 +53,7 @@ class ProductsModel extends Model
         $this->where('all_products.code', $data['code']);  
         $this->join('users', 'all_products.uid=users.uid', 'LEFT');  
 
-        return $this->find();
+        return $this->get()->getRowArray();
     } 
 
     public function remove(array $data = [])

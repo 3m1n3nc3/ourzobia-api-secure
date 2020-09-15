@@ -37,7 +37,7 @@ class Home extends BaseController
  		
  		if ($check) 
  		{
- 			$this->util->save_analysis('validations', $check[0]['pid'], $this->request->getPost("domain"));
+ 			$this->util->save_analysis('validations', $check['pid'], $this->request->getPost("domain"));
  		}
 
 		return $this->response
@@ -63,9 +63,11 @@ class Home extends BaseController
 				$data['success'] = true;
 			    $data['status']  = 'success';
 			    $data['message'] = 'Product Successfully Activated!';
+ 				
+ 				$post['product_id'] = $check['id'];
 
 	 			$this->actives_m->create($post);
-				$this->util->save_analysis('activations', $check[0]['id'], $post["domain"]);
+				$this->util->save_analysis('activations', $check['id'], $post["domain"]);
 		    }
 		    else
 		    {
