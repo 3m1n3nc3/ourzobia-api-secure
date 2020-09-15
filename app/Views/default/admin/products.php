@@ -15,12 +15,12 @@
 								<tr> 
 									<th> PID </th> 
 									<th> Name </th>  
-									<th> P.Code </th> 
+									<th style="min-width: 100px;"> P.Code </th> 
 									<th> Owner </th>  
 									<th> Domain </th>  
 									<th> Email </th> 
 									<th> Date </th> 
-									<th style="min-width: 90px;"> Actions </th> 
+									<th style="min-width: 65px;"> Actions </th> 
 								</tr> 
 							</thead> 
 							<tbody> 
