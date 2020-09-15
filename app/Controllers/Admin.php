@@ -126,7 +126,7 @@ class Admin extends BaseController
 			        	$save_user['email']    = $save['email'];
 			        	$save_user['password'] = $this->enc_lib->passHashEnc($save['email']);
 			        	$save_user['username'] = $this->account_data->email2username($save['email']);  
-			        	$save['uid']      = $this->usersModel->save_user($save_user);
+			        	$save['uid']           = $this->usersModel->save_user($save_user);
 		        	}
 
 		        	$save['name'] = url_title($save['name'], '_', true);
