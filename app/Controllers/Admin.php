@@ -97,7 +97,7 @@ class Admin extends BaseController
 	        if ($this->request->getPost()) 
 	        {
                 $save = $this->request->getPost(); 
-                
+                print_r($view_data['product']);
             	($id) ? $save['id'] = $id : null;
             	$require_domain     = (!empty($view_data['product']['domain'])) ? '|required' : null;
 
