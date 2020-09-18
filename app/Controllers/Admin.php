@@ -66,7 +66,7 @@ class Admin extends BaseController
      * @param  string 	$uid 	 	The id of the a product to manage or view
      * @return string           	Uses the themeloader() to call and return codeigniter's view() method to render the page
      */
-	public function products($action = '', $id = null)
+	public function products($action = '', $id = '')
 	{
 		// Check and redirect if this module is unavailable for the current  theme
 		if (!module_active('_products')) return redirect()->to(base_url('admin/dashboard'));
@@ -97,7 +97,7 @@ class Admin extends BaseController
 	        if ($this->request->getPost()) 
 	        {
                 $save = $this->request->getPost(); 
-                print_r($view_data['product']);
+                
             	($id) ? $save['id'] = $id : null;
             	$require_domain     = (!empty($view_data['product']['domain'])) ? '|required' : null;
 
