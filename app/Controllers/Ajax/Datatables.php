@@ -249,7 +249,7 @@ class Datatables extends BaseController
                 product_status($rows->status) . $rows->code, 
                 anchor($user['profile_link'], $user['fullname'],
                     ['id' => 'name'.$user['uid'], 'data-img' => $user['avatar_link'], 'data-uid' => $user['uid']]), 
-                anchor(prep_url($rows->domain)),
+                ($rows->domain) ? anchor(prep_url($rows->domain)) : '',
                 mailto($rows->email),  
                 date('d M Y', $rows->date) . '<br>' . date('h:i A', $rows->date),
                 (logged_user('admin')>=3 ?
