@@ -9,11 +9,17 @@
 							<h3 class="card-title">Manage Users</h3> 
 						</div> 
 					</div> 
-					<div class="card-body"> 
+					<div class="card-body">  
+						<div class="icheck-primary">
+							<input type="checkbox" id="checkall">
+							<label for="checkall" id="clabel">
+								Check All
+							</label>
+						</div> 
 						<table class="table table-bordered table-hover display" id="datatables_table" style="width: 100%"> 
 							<thead> 
 								<tr> 
-									<th> <input type="checkbox" id="checkall"></th> 
+									<th> </th> 
 									<th> UID</th> 
 									<th> Name </th>  
 									<th> Username </th>  
@@ -26,6 +32,9 @@
 							<tbody> 
 							</tbody> 
 						</table> 
+						<div class="my-1">
+							<button class="btn btn-warning shadow" id="generate_email">Generate Cpanel Webmail Accounts</button>
+						</div>
 					</div> 
 				</div> 
 			</div> 
@@ -35,8 +44,37 @@
 			window.onload = function() { 
 				const checkall = $('#checkall');
 				checkall.on('change', function(e) {
-					console.log($('datatables_table').rows())
-					console.log($(e.target).prop('checked'));
+					$('.checkboxes').each(function() {
+						$(this).prop("checked", $(e.target).prop("checked"));
+					});
+					var text = "Check All";
+					if ($(e.target).prop("checked")) {
+						text = "Uncheck All";
+					}
+					$("label#clabel").text(text);
+				});
+
+				$("#generate_email").click(function() {
+					var ids = [];
+					var $this = $(this);
+					$(".checkboxes:checkbox:checked").each(function() {
+						ids.push($(this).data('uid'))
+					});
+ 
+					if ($(".checkboxes:checkbox:checked").length>0) {
+						$.ajax({
+							url: link("connect/generate_emails"),
+							method: "post",
+							dataType: "HTML",
+							data: {uids:ids},
+							beforeSend: function() { 
+                				$this.buttonLoader('start');  
+							}, 
+							success: function() {
+                				$this.buttonLoader('stop'); 
+							}
+						});
+					}
 				});
 			}
 		</script>

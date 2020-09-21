@@ -13,7 +13,8 @@ class UsersModel extends Model
     protected $useSoftDeletes = true;
 
     protected $allowedFields = [
-    	'uip', 'username', 'email', 'phone_code', 'phone_number', 'fullname', 'avatar', 'admin', 'password', 'status', 'token'
+    	'uip', 'username', 'email', 'phone_code', 'phone_number', 'fullname', 'avatar', 'admin', 'password', 'status', 'cpanel', 
+        'token'
     ];
 
 	protected $useTimestamps = true;

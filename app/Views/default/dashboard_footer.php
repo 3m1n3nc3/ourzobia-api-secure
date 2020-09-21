@@ -102,7 +102,7 @@
 	        $(function () {
 	        	<?php if (is_array($table_method)): ?>
 		        	<?php foreach ($table_method AS $selector => $method): ?>
-	          	var DatatablesTable = $('<?=$selector?>').DataTable({  
+	          	$('<?=$selector?>').DataTable({  
 	              	"scrollX": true,    
 	            	"pageLength" : 10,
 	            	"serverSide": true,

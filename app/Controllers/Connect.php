@@ -1,7 +1,7 @@
 <?php namespace App\Controllers;
 
 use App\Libraries\Notifications;
-use App\ThirdParty\Spam_filter\SpamFilter;
+use App\ThirdParty\Spam_filter\SpamFilter; 
 
 class Connect extends BaseController 
 {
@@ -220,5 +220,25 @@ class Connect extends BaseController
         }
         //print_r($data);echo $metric;
         $this->analyzeModel->t_post()->metric($metric)->add($data);
+    } 
+
+
+    /** 
+     * @return null     Does not return anything but echoes a JSON Object with a response
+     */
+    public function generate_emails()
+    {  
+        require_once(APPPATH . 'ThirdParty/apicore-master/src/apicore/client.php');
+
+        $api = new client();
+
+        if ($uids = $this->request->getPost('uids')) 
+        { 
+            foreach ($uids as $key => $uid) 
+            {
+                $_user = $this->usersModel->get_user($uid);
+                print_r($api);
+            }
+        } 
     } 
 }

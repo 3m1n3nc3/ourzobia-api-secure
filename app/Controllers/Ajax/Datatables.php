@@ -104,7 +104,10 @@ class Datatables extends BaseController
             $user = $this->account_data->fetch($rows->uid);   
  
             $data[]= array(
-                '<input type="checkbox" id="check'.$key.' class="checkboxes">',
+                '<div class="icheck-primary">
+                    <input type="checkbox" id="check'.$key.'" class="checkboxes" data-uid="'.$rows->uid.'">
+                    <label for="check'.$key.'"></label>
+                </div>',
                 $user['uid'],
                 anchor($user['profile_link'], $user['fullname'],
                     ['id' => 'name'.$user['uid'], 'data-img' => $user['avatar_link'], 'data-uid' => $user['uid']]), 
