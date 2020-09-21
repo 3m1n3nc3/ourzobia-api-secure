@@ -6,6 +6,6 @@ $theme = array(
 	'status'      => 'Incomplete',
     'availability' => 'User, Admin and Frontend',
     'stable'      => ['user', 'admin','frontend'], //['admin', 'user','frontend']
-    'modules'     => [/*User Modules*/'error_page','account','profile','m',/*Admin Modules*/'_dashboard','_users','_products','_config'], 
+    'modules'     => [/*User Modules*/'error_page','dashboard','products','account','profile','m',/*Admin Modules*/'_dashboard','_users','_products','_config'], 
 	'modes'		  => ['light']
 );

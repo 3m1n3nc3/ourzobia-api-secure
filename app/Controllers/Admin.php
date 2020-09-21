@@ -56,6 +56,45 @@ class Admin extends BaseController
 			$this->usersModel->save_user(['uid'=>$uid, 'token'=>$token, 'last_update'=>time()]);
 			return redirect()->to(base_url('user/m/access?grant=admin&token=' . $token));
 		}
+		elseif ($action === 'create') 
+		{
+			$view_data['page_name'] = 'create_users';
+			$view_data['_page_name'] = 'users';
+
+	        if ($this->request->getPost()) 
+	        {
+		        if ($this->validate([
+				    'email' => [
+				    	'label'  => 'Email Address', 'rules' => "is_unique[users.email]",
+				    	'errors' => [
+				    		'valid_email' => 'Validation_.email.valid_email',
+				    		'is_unique' => 'Validation_.email.is_unique'
+				    	]
+				    ],
+				    'username' => [
+				    	'label' => 'Username', 'rules' => 'required|alpha_numeric_punct|is_unique[users.username]|min_length[6]',
+				    	'errors' => ['is_unique' => 'Validation_.username.is_unique']
+				    ], 
+				    'phone_number' => [
+				    	'label' => 'Phone Number', 'rules' => 'is_unique[users.phone_number]',
+				    	'errors' => ['is_unique' => 'Validation_.phone_number.is_unique']
+					], 
+				    'fullname' => ['label' => 'Fullname', 'rules' => 'alpha_space|min_length[6]'], 
+				    'password' => ['label' => 'Password', 'rules' => 'required|min_length[4]'] 
+				]))
+		        {
+	    			$post_data = $this->request->getPost();
+	    			if (!empty($uid)) $post_data['uid'] = $uid;
+		        	$this->usersModel->save_user($post_data);
+	        		$this->session->setFlashdata('notice', alert_notice('Profile Saved!', 'success', FALSE, 'FLAT'));
+		        }
+		        else
+		        {
+		        	$this->session->setFlashdata('notice', $this->form_validation->listErrors('my_error_list')); 
+		        }
+	        } 
+		}
+
 		return theme_loader($view_data); 
 	} 
 
@@ -82,7 +121,8 @@ class Admin extends BaseController
 			'table_method' => 'products',
 			'acc_data'   => $this->account_data,
 			'creative'   => $this->creative,
-			'products'  => $this->products_m->get() 
+			'products'  => $this->products_m->get(),
+			'validate'   => $this->form_validation
 		);
 
 		if ($action == 'create') 
@@ -138,14 +178,7 @@ class Admin extends BaseController
 	            }
 	        }
 		}
-
-		// Grant admin access to a user's account
-		if ($action == 'access' && $uid) 
-		{
-			$token = sha1(date('Y-m-d H:i:s', time()).rand());
-			$this->usersModel->save_user(['uid'=>$uid, 'token'=>$token, 'last_update'=>time()]);
-			return redirect()->to(base_url('user/m/access?grant=admin&token=' . $token));
-		}
+ 
 		return theme_loader($view_data); 
 	} 
 

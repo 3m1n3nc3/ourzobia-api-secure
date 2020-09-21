@@ -38,13 +38,15 @@ if (! function_usable('theme_loader'))
             if (empty($creative)) 
                 $_data['util']         = new Util; 
             if (empty($notif)) 
-                $_data['notif']        = new Notifications;
+                $_data['ntfn']         = new Notifications;
             if (empty($analytics_m)) 
                 $_data['analytics_m']  = model('App\Models\AnalyticsModel', false);
+            if (empty($data['profile'])) 
+                $_data['profile']      = fetch_user('', $data['uid']??null);
             
             $data  = array_merge($_data, $data);
             $theme = set_theme();
-
+ 
             if ($view) 
             {
                 if (!file_exists(APPPATH.'Views/' . $theme . $view . '.php')) $theme = 'default/';

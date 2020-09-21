@@ -308,7 +308,7 @@ class Ajax extends BaseController
 			$post_data['banks'] = $this->paystack->bankOption();
 		}
 		
-		$data['content'] = view('default/frontend/upload_resize_image', $post_data); 
+		$data['content'] = theme_loader($post_data, 'frontend/upload_resize_image'); 
 
 		return $this->response->setJSON($data);  
 	}  

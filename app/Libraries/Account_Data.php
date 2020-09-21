@@ -129,7 +129,7 @@ class Account_Data {
  
             $data['admin_avatar_link']  = $this->creative->fetch_image('','boy');
 
-            $data['profile_link'] = site_url('profile/view/'.$data['uid']);
+            $data['profile_link'] = site_url('user/account/profile/' . $data['uid']);
             $data['avatar_link']  = $this->creative->fetch_image($data['avatar'],'boy'); 
             $data['avatar']       = 
                 '<img class="img-size-50 thumbnail img-circle" src="' . $this->creative->fetch_image($data['avatar'],'boy') . '"/>';

@@ -28,7 +28,7 @@ class Datatables extends BaseController
      */
     public function users($id = null)
     {
-        $users_t = $this->db->table('users');
+        $set_table = $this->db->table('users');
 
         $draw   = intval($this->request->getPost("draw"));
         $start  = intval($this->request->getPost("start"));
@@ -53,12 +53,12 @@ class Datatables extends BaseController
         }
 
         $valid_columns = array(
-            0=>'uid',
-            1=>'fullname', 
-            2=>'username', 
-            3=>'email',
-            4=>'status',
-            5=>'reg_time'
+            1=>'uid',
+            2=>'fullname', 
+            3=>'username', 
+            4=>'email',
+            5=>'status',
+            6=>'reg_time'
         );
 
         if(!isset($valid_columns[$col]))
@@ -72,7 +72,7 @@ class Datatables extends BaseController
 
         if($order !=null)
         {
-            $users_t->orderBy($order, $dir);
+            $set_table->orderBy($order, $dir);
         }
         
         if(!empty($search))
@@ -82,28 +82,29 @@ class Datatables extends BaseController
             {
                 if($x==0)
                 {
-                    $users_t->like($sterm,$search);
+                    $set_table->like($sterm,$search);
                 }
                 else
                 {
-                    $users_t->orLike($sterm,$search);
+                    $set_table->orLike($sterm,$search);
                 }
 
                 $x++;
             }                 
         }
 
-        $users_t->limit($length,$start);   
-        $content = $users_t->select('*')->get();
+        $set_table->limit($length,$start);   
+        $content = $set_table->select('*')->get();
         $data = array();
         $i = 0;
-        foreach($content->getResult() as $rows)
+        foreach($content->getResult() as $key => $rows)
         { 
             $i++;
 
             $user = $this->account_data->fetch($rows->uid);   
  
             $data[]= array(
+                '<input type="checkbox" id="check'.$key.' class="checkboxes">',
                 $user['uid'],
                 anchor($user['profile_link'], $user['fullname'],
                     ['id' => 'name'.$user['uid'], 'data-img' => $user['avatar_link'], 'data-uid' => $user['uid']]), 
@@ -112,10 +113,9 @@ class Datatables extends BaseController
                 anchor_popup(site_url('admin/users/access/'.$user['uid']), '<i class="fa '.($user['status']>=2 ? 'fa-unlock text-success' : 'fa-lock text-danger') . ' mr-1"></i>') . 
                 user_status(['status'=>$user['status'], 'admin'=>$user['admin']]),
                 date('d M Y', $user['reg_time']) . '<br>' . date('h:i A', $user['reg_time']),
-                (logged_user('admin')>=3 ?
-                '<a href="'.site_url('user/account/admin/manage/'.$user['uid']).'" class="btn btn-success btn-sm btn-spinner font-weight-bold px-1 m-1" title="Manage User">
-                    Manage
-                </a>' : ''). 
+                (logged_user('admin')>=3 ? 
+                    anchor('user/account/settings/' . $user['uid'], 'Manage', ['class'=>'btn btn-success btn-sm btn-spinner font-weight-bold px-1 m-1', 'title'=>'Manage User']) : ''
+                ) .  
                 '<button 
                     type="button" 
                     class="btn btn-danger btn-sm btn-spinner font-weight-bold px-1 m-1 cancel"  
@@ -152,8 +152,8 @@ class Datatables extends BaseController
      */
     public function total_users($id = null)
     {      
-        $users_t = $this->db->table('users');
-        $query  = $users_t->select("COUNT(uid) as num")->get();
+        $set_table = $this->db->table('users');
+        $query  = $set_table->select("COUNT(uid) as num")->get();
         $result = $query->getRow(); 
         if(isset($result)) return $result->num;
         return 0;
@@ -164,10 +164,10 @@ class Datatables extends BaseController
      * @param  string   $id 
      * @return null     Does not return anything but echoes a JSON Object with the response
      */
-    public function products($id = null)
+    public function products($uid = null)
     {
-        $users_t = $this->db->table('all_products alp');
-        $users_t->join('active_products acp', 'alp.id=acp.product_id', 'LEFT');
+        $set_table = $this->db->table('all_products alp');
+        $set_table->join('active_products acp', 'alp.id=acp.product_id', 'LEFT');
 
         $draw   = intval($this->request->getPost("draw"));
         $start  = intval($this->request->getPost("start"));
@@ -212,7 +212,7 @@ class Datatables extends BaseController
 
         if($order !=null)
         {
-            $users_t->orderBy($order, $dir);
+            $set_table->orderBy($order, $dir);
         }
         
         if(!empty($search))
@@ -222,54 +222,67 @@ class Datatables extends BaseController
             {
                 if($x==0)
                 {
-                    $users_t->like($sterm,$search);
+                    $set_table->like($sterm,$search);
                 }
                 else
                 {
-                    $users_t->orLike($sterm,$search);
+                    $set_table->orLike($sterm,$search);
                 }
 
                 $x++;
             }                 
         }
 
-        $users_t->limit($length,$start);   
-        $content = $users_t->select('alp.*, acp.status status')->get();
+        if ($uid) 
+        {
+            $set_table->where('alp.uid',$uid);   
+        }
+
+        $set_table->limit($length,$start);   
+        $content = $set_table->select('alp.*, acp.status status')->get();
         $data = array();
         $i = 0;
-        foreach($content->getResult() as $rows)
+ 
+        foreach($content->getResult() as $keys => $rows)
         { 
             $i++;
 
             $user = $this->account_data->fetch($rows->uid);   
  
-            $data[]= array(
-                $rows->id,
-                $rows->name,
-                product_status($rows->status) . $rows->code, 
-                anchor($user['profile_link'], $user['fullname'],
-                    ['id' => 'name'.$user['uid'], 'data-img' => $user['avatar_link'], 'data-uid' => $user['uid']]), 
-                ($rows->domain) ? anchor(prep_url($rows->domain)) : '',
-                mailto($rows->email),  
-                date('d M Y', $rows->date) . '<br>' . date('h:i A', $rows->date),
-                (logged_user('admin')>=3 ?
-                '<a href="'.site_url('admin/products/create/'.$rows->id).'" class="btn btn-success btn-sm btn-spinner font-weight-bold px-1 m-1" title="Edit Product">
-                    Edit
-                </a>' : ''). 
-                '<button 
-                    type="button" 
-                    class="btn btn-danger btn-sm btn-spinner font-weight-bold px-1 m-1 cancel"  
-                    data-type="products"
-                    data-id="'.$rows->id.'"
-                    data-toggle="tooltip" 
-                    title="Delete Product"
-                    onclick="cancel_(this, \'#tr_'.$rows->id.'\')">
-                    <i class="fa fa-trash"></i>
-                </button>',
-                20 => 'tr_'.$rows->id
-            );   
+            $data[$keys][] = $rows->id;
+            
+            $data[$keys][] = $rows->name;
+            $data[$keys][] = product_status($rows->status) . $rows->code;
+            if (!$uid) 
+            { 
+                $data[$keys][] = anchor($user['profile_link'], $user['fullname'],
+                    ['id' => 'name'.$user['uid'], 'data-img' => $user['avatar_link'], 'data-uid' => $user['uid']]);
+            }
+            $data[$keys][] = ($rows->domain) ? anchor(prep_url($rows->domain)) : '';
+            $data[$keys][] = mailto($rows->email);
+            $data[$keys][] = date('d M Y', $rows->date) . '<br>' . date('h:i A', $rows->date);
+
+            if (!$uid) 
+            { 
+                $data[$keys][] = '
+                    <a href="'.site_url('admin/products/create/'.$rows->id).'" class="btn btn-success btn-sm btn-spinner font-weight-bold px-1 m-1" title="Edit Product">
+                        Edit
+                    </a>
+                    <button 
+                        type="button" 
+                        class="btn btn-danger btn-sm btn-spinner font-weight-bold px-1 m-1 cancel"  
+                        data-type="products"
+                        data-id="'.$rows->id.'"
+                        data-toggle="tooltip" 
+                        title="Delete Product"
+                        onclick="cancel_(this, \'#tr_'.$rows->id.'\')">
+                        <i class="fa fa-trash"></i>
+                    </button>';
+                $data[$keys][20] = 'tr_'.$rows->id;
+            }   
         }   
-        $total_prepaid = $this->total_users($id);
+
+        $total_prepaid = $this->total_products($uid);
         $output = array(
             "draw" => $draw,
             "recordsTotal" => $total_prepaid,
@@ -287,13 +300,17 @@ class Datatables extends BaseController
 
     /**
      * Get count of the inventory
-     * @param  string   $id 
+     * @param  string   $uid 
      * @return Object 
      */
-    public function total_products($id = null)
+    public function total_products($uid = null)
     {      
-        $users_t = $this->db->table('users');
-        $query  = $users_t->select("COUNT(uid) as num")->get();
+        $set_table = $this->db->table('all_products');
+        $query  = $set_table->select("COUNT(uid) as num")->get();
+        if ($uid) 
+        {
+            $set_table->where('uid', $uid);   
+        }
         $result = $query->getRow(); 
         if(isset($result)) return $result->num;
         return 0;

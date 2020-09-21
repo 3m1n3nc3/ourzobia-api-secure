@@ -62,7 +62,7 @@ class Creative_lib {
 	}
 
 	public function delete_file($path = '')
-	{
+	{ 
 		if (file_exists($path) && is_file($path)) 
         {
 			if (!is_writable($path)) chmod($path, 0777);

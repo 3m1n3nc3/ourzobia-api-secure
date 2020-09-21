@@ -9,17 +9,21 @@ class StatsModel extends Model
 
     public function get(array $data = [])
     {     
-        $active_products = $this->db->table('active_products')->select('COALESCE(COUNT(id), 0)')
-            ->where(['active_products.status' => '\'1\''], FALSE, FALSE)->getCompiledSelect();  
+        $ap = $this->db->table('active_products');
+        if (isset($data['uid'])) $ap->where('all_products.uid', $data['uid'])->join('all_products','all_products.id=active_products.product_id','LEFT');
+        $active_products = $ap->select('COALESCE(COUNT(active_products.id), 0)')->where(['active_products.status' => '\'1\''], FALSE, FALSE)->getCompiledSelect();  
             
-        $all_products = $this->db->table('all_products')->select('COALESCE(COUNT(id), 0)')
-            ->where(['all_products.status' => '\'1\''], FALSE, FALSE)->getCompiledSelect();   
+        $alp = $this->db->table('all_products');
+        if (isset($data['uid'])) $alp->where('all_products.uid', $data['uid']);
+        $all_products = $alp->select('COALESCE(COUNT(id), 0)')->where(['all_products.status' => '\'1\''], FALSE, FALSE)->getCompiledSelect();   
             
-        $all_users  = $this->db->table('users')->select('COALESCE(COUNT(uid), 0)')->getCompiledSelect();  
+        $au  = $this->db->table('users');
+        if (isset($data['uid'])) $au->where('users.uid', $data['uid']);
+        $all_users  = $au->select('COALESCE(COUNT(uid), 0)')->getCompiledSelect();  
 
-        $stats = $this->db->table('all_products') 
-            ->select("($active_products) active_products, ($all_products) all_products, ($all_users) all_users")   
-            ->get()->getRowArray(); 
+        $st = $this->db->table('all_products');
+        if (isset($data['uid'])) $st->where('all_products.uid', $data['uid']);
+        $stats = $st->select("($active_products) active_products, ($all_products) all_products, ($all_users) all_users")->get()->getRowArray(); 
         // echo $this->getLastQuery(); 
         return $stats;
     } 

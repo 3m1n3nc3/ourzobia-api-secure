@@ -1,3 +1,4 @@
+<?php if ($errors): ?>
 <div class="text-danger"> 
     <ul>
     <?php foreach ($errors as $error) : ?>
@@ -5,3 +6,4 @@
     <?php endforeach ?>
     </ul>
 </div>
+<?php endif ?>

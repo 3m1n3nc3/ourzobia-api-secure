@@ -529,6 +529,10 @@ if ( ! function_usable('fetch_user'))
         $user = $account_data->fetch(user_id($uid));
         if ($user) 
         {   
+            if ($row && empty($user[$row])) 
+            {
+                $user[$row] = '';
+            }
             return ($row) ? $user[$row] : $user;
         }
 

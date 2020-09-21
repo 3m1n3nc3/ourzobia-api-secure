@@ -59,14 +59,15 @@ $routes->get('resource/(:any)', 'Resources::index/$1');
 
 $routes->get('dashboard', 'Admin::index');
 $routes->get('dashboard/(:any)', 'Admin::$1'); 
-$routes->get('admin/dashboard', 'Admin::index');
+$routes->get('admin/dashboard', 'Admin::index'); 
 
 $routes->get('logout', 'Admin::logout');
 $routes->match(['get', 'post'], 'login', 'Admin::login');
 $routes->match(['get', 'post'], 'signup', 'Admin::login/signup');
-  
-$routes->match( ['get', 'post'], 'admin/(:any)', 'Admin::$1');
-$routes->match( ['get', 'post'], 'user/(:any)', 'Admin::$1');
+$routes->match( ['get', 'post'], 'admin/(:any)', 'Admin::$1'); 
+
+$routes->get('user/dashboard', 'User::index');
+$routes->match(['get', 'post'], 'user/(:any)', 'User::$1');
 
 $routes->match(['get', 'post'], 'ajax/datatables/(:any)', 'Ajax\Datatables::$1');  
 
