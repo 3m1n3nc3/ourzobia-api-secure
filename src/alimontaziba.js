@@ -40,7 +40,7 @@ $(function() {
 				$("<label />", {for: "activation_code", text: "Purchase Code"}),
 				$("<input />", {type: "text", class: "form-control", name: "code", id: "activation_code", "aria-describedby": "emailHelp", placeholder: "Purchase Code"})
 			),
-			$("<button />", {type: "submit", class: "btn btn-primary btn-block btn-lg", text: "Submit"})
+			$("<button />", {type: "submit", class: "btn btn-primary btn-block btn-lg", text: "Activate Product"})
 
 		);
 
@@ -67,6 +67,7 @@ $(function() {
 			var activation_form = $("#product_activation_form");
 			activation_form.on("submit", function(e) {
 				e.preventDefault();
+				$("button[type=submit]").attr("disabled").html("Please Wait...");
 				activate(e);
 			});
 		}
@@ -88,7 +89,8 @@ $(function() {
 			}
 
 			if (data.success === true) {
-				VCookies.set('verified', true, { expires: 7 });
+				VCookies.set('verified', true, { expires: 45 });
+				$("button[type=submit]").remove();
 				window.location.reload(true);
 			}
 		});
