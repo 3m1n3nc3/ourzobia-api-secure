@@ -92,38 +92,72 @@ class Ajax extends BaseController
 				        		$link    = 'user/m/password?token=' . $token;
 				        		$link_t  = 'Change Password';
 				        		$subject = 'Password reset request for ' . $email_user['username'] . ' on ' . my_config('site_name'); 
-				        		$message = _lang('new_password_email_message',[my_config('site_name'), anchor($link)]);
+				        		$message = my_config('email_recovery');
 				        	}
 							elseif ($this->request->getPost('type') == 'access_token') 
 				        	{
 				        		$link    = 'user/m/access?token=' . $token;
 				        		$link_t  = 'Token Access';
 				        		$subject = 'You requested access to ' . $email_user['username'] . ' on ' . my_config('site_name'); 
-				        		$message = _lang('token_access_email_message',[my_config('site_name'), anchor($link)]);
+				        		$message = my_config('email_token');
 				        	}
 							elseif ($this->request->getPost('type') == 'incognito_token') 
 				        	{
 				        		$link    = 'user/m/incognito?token=' . $token;
 				        		$link_t  = 'Go Incognito';
 				        		$subject = 'You requested incognito access to ' . my_config('site_name'); 
-				        		$message = _lang('incognito_email_message',[my_config('site_name'), anchor($link)]);
+				        		$message = my_config('email_incognito');
+				        	}
+							elseif ($this->request->getPost('type') == 'account_activation' && my_config('send_activation')) 
+				        	{
+				        		$link    = 'user/m/activation?token=' . $token;
+				        		$link_t  = 'Activate your account';
+				        		$subject = 'Welcome to ' . my_config('site_name') . ', please activate you account!'; 
+				        		$message = my_config('email_activation');
 				        	}
 
-							$message = $this->process::parse_content(my_config('email_template'), ['message'=>$message, 'title'=>$subject, 'user'=>$email_user['fullname'], 'link'=>site_url($link), 'link_title'=> $link_t]);
+				        	$data['message'] = 'Thank You!';
 
-							$email->setSubject($subject);
-							$email->setMessage($message);
+				        	if ($message) 
+				        	{ 
+					        	$anchor_link = anchor($link);
+								$message = $this->process::parse_content(my_config('email_template'), [
+									'message' => $this->process::parse_content($message, [ 
+										'title'   => $subject, 
+										'user'    => $email_user['fullname'],  
+										'anchor_link' => $anchor_link, 
+										'link'        => site_url($link), 
+										'link_title'  => $link_t
+									]), 
+									'title'   => $subject,
+									'user'    => $email_user['fullname'],
+									'anchor_link' => $anchor_link,
+									'link'        => site_url($link),
+									'link_title'  => $link_t
+								]);
 
-							try {
-								$email->send(false); 
-								$email->printDebugger(['headers', 'subject', 'body']);
+								$email->setSubject($subject);
+								$email->setMessage($message);
 
-		        				$data['message'] = _lang('activation_token_sent');
-							    $data['success'] = true;
-							    $data['status']  = 'success';
-							} 
-							catch (ErrorException $e) {
-		        				$data['message'] = $e;
+								try 
+								{
+									$email->send(my_config('mail_debug') ? false : true); 
+									$email->printDebugger(['headers', 'subject', 'body']); 
+
+					                if (my_config('mail_debug')) 
+					                {
+					                    $data['message'] = $email->printDebugger(['headers', 'subject']);
+					                }
+					                else
+					                {
+					                    $data['message'] = _lang('activation_token_sent');
+					                    $data['success'] = true;
+					                    $data['status']  = 'success';    
+					                }
+								} 
+								catch (ErrorException $e) {
+			        				$data['message'] = $e;
+								}
 							}
 		        		}
 		        		else
