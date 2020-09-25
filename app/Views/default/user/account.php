@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row"> 
     <div class="col-md-3">
         <!-- Profile Image -->
         <div class="card card-primary card-outline">
@@ -7,6 +7,9 @@
                     <img class="profile-user-img img-fluid img-circle" src="<?=fetch_user('avatar_link', $uid)?>" alt="<?=fetch_user('fullname', $uid)?> profile picture">
                 </div>
                 <h3 class="profile-username text-center"><?=fetch_user('fullname', $uid)?></h3>
+                <?php if (fetch_user('cpanel', $uid)): ?>
+                <h7 class="text-muted text-center"><?=fetch_user('username', $uid) . '@' . my_config('cpanel_domain')?></h7> 
+                <?php endif?>
                 <!-- <p class="text-muted text-center"></p> -->
                 <ul class="list-group list-group-unbordered mb-3">
                     <li class="list-group-item">
@@ -16,6 +19,20 @@
                         <b>Active Products</b> <a class="float-right"><?=$statistics['active_products']??0?></a>
                     </li> 
                 </ul> 
+                <?php if (user_id() === user_id($uid) && fetch_user('cpanel')): ?>
+                <button class="btn btn-sm btn-success btn-block" id="webmail-login-btn">
+                    <span class='fa-stack fa-lg'>
+                        <i class='fas fa-circle fa-stack-2x'></i>
+                        <i class='fab fa-cpanel fa-stack-1x fa-inverse text-danger'></i>
+                    </span>
+                    Webmail Login
+                </button> 
+                    <?php if (my_config('afterlogic_domain')): ?>
+                <button class="btn font-weight-bold btn-lg btn-info btn-block" id="al-login-btn" onclick="window.location.href = '<?=my_config('afterlogic_protocol') . '://' . my_config('afterlogic_domain')?>'"> 
+                    AfterLogic Webmail
+                </button> 
+                    <?php endif; ?>
+                <?php endif; ?>
             </div>
             <!-- /.card-body -->
         </div>
@@ -23,7 +40,7 @@
     </div>
     <!-- /.col -->
 
-    <div class="col-md-9">
+    <div class="col-md-9"> 
         <div class="card">
             <div class="card-header p-2">
                 <ul class="nav nav-pills"> 
@@ -49,7 +66,7 @@
 
                         <?=load_widget('avatar_upload', ['uid'=>$uid])?>
 
-                        <?=form_open('user/account/settings', 'class="form-horizontal"')?>
+                        <?=form_open('user/account/settings/' . $uid, 'class="form-horizontal"')?>
                             <div class="form-group row">
                                 <label for="inputName" class="col-sm-2 col-form-label">Username</label>
                                 <div class="col-sm-10">
@@ -78,9 +95,13 @@
                             <div class="form-group row">
                                 <label for="password" class="col-sm-2 col-form-label">Password</label>
                                 <div class="col-sm-10">
-                                    <?php $password = $enc_lib->get_random_password(8,8,TRUE,TRUE,TRUE,TRUE)?>
+                                    <?php $password = $enc_lib->get_random_password(10,12,TRUE,TRUE,TRUE,TRUE)?>
                                     <input type="password" class="form-control" name="password" id="password" placeholder="Password" value="<?=set_value('password') ?>" onkeyup="this.type==='text'?this.type='password':''"> 
-                                    <small class="text-muted"><span class="text-info">Default:</span> <a href="javascript:void(0)" onclick="const pp = document.getElementById('password'); pp.type='text'; pp.value=this.innerHTML"><?=$password?></a></small>
+                                    <small class="text-muted">
+                                        <div class="d-none get_random_password" style="display: none;"><?=$password?></div>
+                                        <span class="text-info">Default:</span> <a href="javascript:void(0)" class="text-danger dps" onclick="const pp = document.getElementById('password'); pp.type='text'; pp.value=this.innerHTML"><?=my_config('default_password')?></a> |-----|
+                                        <span class="text-info">Random:</span> <a href="javascript:void(0)" class="text-danger xps" onclick="const pp = document.getElementById('password'); pp.type='text'; pp.value=this.innerHTML"></a>
+                                    </small>
                                 </div>
                             </div>  
                             <?php endif ?>
@@ -114,6 +135,14 @@
                                     <label id="emailLabel" class="text-muted"><?=fetch_user('email', $uid)?></label>
                                 </div>
                             </div>  
+                            <?php if (fetch_user('cpanel', $uid)): ?>
+                            <div class="form-group row">
+                                <label for="emailLabel" class="col-sm-2 col-form-label">Webmail Address</label>
+                                <div class="col-sm-10">
+                                    <label id="emailLabel" class="text-muted"><?=fetch_user('username', $uid) . '@' . my_config('cpanel_domain')?></label>
+                                </div>
+                            </div>  
+                            <?php endif ?>
                             <div class="form-group row">
                                 <label for="phoneLabel" class="col-sm-2 col-form-label">Phone Number</label>
                                 <div class="col-sm-10">
@@ -138,3 +167,36 @@
     <!-- /.col -->
 </div>
 <!-- /.row -->
+
+<script type="text/javascript"> 
+    window.onload = function() { 
+        document.querySelector('.xps').innerHTML = document.querySelector('.get_random_password').innerHTML;
+        
+        <?php if (!fetch_user('password', $uid)): ?>
+            document.getElementById('password').value = document.querySelector('.dps').innerHTML;
+        <?php endif; ?>
+
+        if (is_logged()) {
+            $('#webmail-login-btn').click(function() {
+                
+                var $this = $(this);
+                
+                $this.buttonLoader('start');
+
+                $.post(link('connect/access_webmail/'+<?=logged_user('uid')?>), function(data) {
+                    
+                    $this.buttonLoader('stop'); 
+                    show_toastr(data.message, data.status);  
+                    
+                    if (data.success === true) {
+                        $form = $("<form></form>");
+                        $form.attr({action: data.host, target: '_blank', id: 'webmail-login', method: 'post'})
+                            .append('<input type="hidden" name="session" value="'+data.session+'">');
+                        $('body').append($form);
+                        $('form#webmail-login').submit();
+                    }
+                });
+            });
+        }
+    }
+</script>

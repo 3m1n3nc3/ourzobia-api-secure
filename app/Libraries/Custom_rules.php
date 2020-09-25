@@ -43,4 +43,24 @@ class Custom_rules
 
 	    return true;
 	}
+
+	public function strong_password(string $password, string &$error = null): bool
+	{
+ 		$pass_regex = "/^(?=.*\d)(?=.*[A-Za-z])(?=.*[A-Z])(?=.*[a-z])(?=.*[ !#$%@&\"%'\(\) * +,-.\/[\\] ^ _`{|}~\"])[0-9A-Za-z !#$%&@\"%'\(\) * +,-.\/[\\] ^ _`{|}~\"]{8,}$/"; 
+
+ 		if (strlen($password) < 8) 
+ 		{
+ 			$error = lang('Validation_.min_length'); 
+		    $error = str_ireplace('{field}', 'Password', $error);
+		    $error = str_ireplace('{param}', '8', $error);
+	        return false;
+ 		}
+ 		elseif (!preg_match($pass_regex, $password)) 
+ 		{
+	        $error = lang('Validation_.strong_password'); 
+	        return false;
+ 		}
+
+	    return true;
+	}
 }

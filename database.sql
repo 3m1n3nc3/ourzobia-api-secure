@@ -103,4 +103,5 @@ INSERT INTO `users` (`uid`, `username`, `email`, `phone_code`, `phone_number`, `
 (1, 'mygames.ng', 'mygames.ng@gmail.com', NULL, NULL, 'Obi Iruruantaziba J', NULL, 3, '$2y$10$DUMpOfHVuTLPCah.IZW5u.qQ2cyd7vLIXnaQoL0..b32okT1cvyCm', 2, '3611456c5101cd95098e184afad6b3fdc2c6b689', 1592235851, 1592235851, NULL);
 
 ALTER TABLE `users` 
-  ADD `cpanel` ENUM('0','1') NOT NULL DEFAULT '0' AFTER `status`;
+  ADD `cpanel` ENUM('0','1') NOT NULL DEFAULT '0' AFTER `status`,
+  ADD `alwm_id` int(11) DEFAULT NULL AFTER `cpanel`;

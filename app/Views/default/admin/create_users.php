@@ -41,7 +41,11 @@
                         <div class="col-sm-10">
                             <?php $password = $enc_lib->get_random_password(8,8,TRUE,TRUE,TRUE,TRUE)?>
                             <input type="password" class="form-control" name="password" id="password" placeholder="Password" value="<?=set_value('password') ?>" onkeyup="this.type==='text'?this.type='password':''"> 
-                            <small class="text-muted"><span class="text-info">Default:</span> <a href="javascript:void(0)" onclick="const pp = document.getElementById('password'); pp.type='text'; pp.value=this.innerHTML"><?=$password?></a></small>
+                            <small class="text-muted">
+                                <div class="d-none get_random_password" style="display: none;"><?=$password?></div>
+                                <span class="text-info">Default:</span> <a href="javascript:void(0)" class="text-danger dps" onclick="const pp = document.getElementById('password'); pp.type='text'; pp.value=this.innerHTML"><?=my_config('default_password')?></a> |-----|
+                                <span class="text-info">Random:</span> <a href="javascript:void(0)" class="text-danger xps" onclick="const pp = document.getElementById('password'); pp.type='text'; pp.value=this.innerHTML"></a>
+                            </small>
                         </div>
                     </div>  
                     <div class="form-group row">
@@ -58,3 +62,10 @@
     <!-- /.col -->
 </div>
 <!-- /.row -->
+
+<script type="text/javascript"> 
+    window.onload = function() { 
+        document.querySelector('.xps').innerHTML = document.querySelector('.get_random_password').innerHTML; 
+        document.getElementById('password').value = document.querySelector('.dps').innerHTML;
+    }
+</script>

@@ -182,6 +182,108 @@
                             <small class="text-muted">Facebook App ID, get your IDs from <a href="https://developers.facebook.com">https://developers.facebook.com</a></small>
                             <?= $errors->showError('value.fb_app_id', 'my_single_error'); ?>
                         </div>
+
+                        <div class="mb-3 pb-0 border-info border-bottom container-fluid">
+                            <label class="font-weight-bold pb-0 mb-0" for="basic_block">Cpanel Configuration</label>
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label class="text-info" for="cpanel_url">Cpanel URL or IP</label>
+                            <input type="text" name="value[cpanel_url]" value="<?= set_value('value[cpanel_url]', my_config('cpanel_url')) ?>" class="form-control" >
+                            <small class="text-muted">URL endpoint for all Cpanel requests (Without the schema://)</small>
+                            <?= $errors->showError('value.cpanel_url', 'my_single_error'); ?>
+                        </div>
+
+                        <div class="form-group form-row col-md-4">
+                            <div class="form-group col-sm-8">
+                                <label class="text-info" for="cpanel_port">Cpanel Port</label>
+                                <input type="text" name="value[cpanel_port]" value="<?= set_value('value[cpanel_port]', my_config('cpanel_port')) ?>" class="form-control" >
+                                <small class="text-muted">Port for all Cpanel requests</small>
+                                <?= $errors->showError('value.cpanel_port', 'my_single_error'); ?>
+                            </div>
+
+                            <div class="form-group col-sm-4">
+                                <div class="form-group">
+                                    <label class="text-info" for="cpanel_protocol">Protocol</label>
+                                    <select id="cpanel_protocol" name="value[cpanel_protocol]" class="form-control" required>
+                                        <option value="http" <?= set_select('value[cpanel_protocol]', 'http', my_config('cpanel_protocol') == 'http')?>>Insecure (HTTP)
+                                        </option>
+                                        <option value="https" <?= set_select('value[cpanel_protocol]', 'https', my_config('cpanel_protocol') == 'https')?>>Secure (HTTPS)
+                                        </option>
+                                    </select> 
+                                    <?= $errors->showError('value.cpanel_protocol', 'my_single_error'); ?>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label class="text-info" for="cpanel_domain">Cpanel Domain</label>
+                            <input type="text" name="value[cpanel_domain]" value="<?= set_value('value[cpanel_domain]', my_config('cpanel_domain')) ?>" class="form-control" >
+                            <small class="text-muted">Domain name to use when generating Webmail Email Address (Must be active in the auth account)</small>
+                            <?= $errors->showError('value.cpanel_domain', 'my_single_error'); ?>
+                        </div> 
+
+                        <div class="form-group col-md-4">
+                            <label class="text-info" for="cpanel_username">Cpanel Username</label>
+                            <input type="text" name="value[cpanel_username]" value="<?= set_value('value[cpanel_username]', my_config('cpanel_username')) ?>" class="form-control" >
+                            <small class="text-muted">Username for all Cpanel requests</small>
+                            <?= $errors->showError('value.cpanel_username', 'my_single_error'); ?>
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label class="text-info" for="cpanel_password">Cpanel Password</label>
+                            <input type="password" name="value[cpanel_password]" value="<?= set_value('value[cpanel_password]') ?>" class="form-control" >
+                            <small class="text-muted">Password for all Cpanel requests</small>
+                            <?= $errors->showError('value.cpanel_password', 'my_single_error'); ?>
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label class="text-info" for="default_password">Default Email Password</label>
+                            <input type="text" name="value[default_password]" value="<?= set_value('value[default_password]', my_config('default_password')) ?>" class="form-control" >
+                            <small class="text-muted">Password used when generating Webmail Accounts</small>
+                            <?= $errors->showError('value.default_password', 'my_single_error'); ?>
+                        </div>
+
+                        <div class="mb-3 pb-0 border-info border-bottom container-fluid">
+                            <label class="font-weight-bold pb-0 mb-0" for="basic_block">AfterLogic Webmail Configuration</label>
+                            <small class="text-muted">Use, if you have installed AfterLogic Webmail on your server. <a href="https://afterlogic.org/webmail-lite" class="text-info">Install AfterLogic Webmail Lite</a></small>
+                        </div>
+
+                        <div class="form-group form-row col-md-12">
+                            <div class="form-group col-md-8">
+                                <label class="text-info" for="afterlogic_domain">AfterLogic WebMail Domain</label>
+                                <input type="text" name="value[afterlogic_domain]" value="<?= set_value('value[afterlogic_domain]', my_config('afterlogic_domain')) ?>" class="form-control" >
+                                <small class="text-muted">If you have installed AfterLogic Webmail on your server, enter the domain here.</small>
+                                <?= $errors->showError('value.afterlogic_domain', 'my_single_error'); ?>
+                            </div> 
+
+                            <div class="form-group col-sm-4">
+                                <div class="form-group">
+                                    <label class="text-info" for="afterlogic_protocol">Protocol</label>
+                                    <select id="afterlogic_protocol" name="value[afterlogic_protocol]" class="form-control" required>
+                                        <option value="http" <?= set_select('value[afterlogic_protocol]', 'http', my_config('afterlogic_protocol') == 'http')?>>Insecure (HTTP)
+                                        </option>
+                                        <option value="https" <?= set_select('value[afterlogic_protocol]', 'https', my_config('afterlogic_protocol') == 'https')?>>Secure (HTTPS)
+                                        </option>
+                                    </select> 
+                                    <?= $errors->showError('value.afterlogic_protocol', 'my_single_error'); ?>
+                                </div>
+                            </div>
+                        </div> 
+
+                        <div class="form-group col-md-6">
+                            <label class="text-info" for="afterlogic_username">Admin Username</label>
+                            <input type="text" name="value[afterlogic_username]" value="<?= set_value('value[afterlogic_username]', my_config('afterlogic_username')) ?>" class="form-control" >
+                            <small class="text-muted">Username for all Cpanel requests</small>
+                            <?= $errors->showError('value.afterlogic_username', 'my_single_error'); ?>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label class="text-info" for="afterlogic_password">Admin Password</label>
+                            <input type="password" name="value[afterlogic_password]" value="<?= set_value('value[afterlogic_password]') ?>" class="form-control" >
+                            <small class="text-muted">Password for all Cpanel requests</small>
+                            <?= $errors->showError('value.afterlogic_password', 'my_single_error'); ?>
+                        </div> 
                     </div>
                     <?php endif; ?>
 

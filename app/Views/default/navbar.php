@@ -41,7 +41,9 @@
 								<img src="<?=$user['avatar_link']?>" class="img-circle elevation-2" alt="User Image">
 								<p>
 									<?=ucwords($user['fullname'])?>
-									<small><?//=ucwords($user['user_level'])?></small>
+				                	<?php if (fetch_user('cpanel')): ?>
+									<small><?=fetch_user('username') . '@' . my_config('cpanel_domain')?></small>
+									<?php endif;?>
 								</p>
 							</li>
 							<!-- Menu Footer-->

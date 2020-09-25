@@ -51,7 +51,7 @@ class User extends BaseController
 			'util'       => $this->util,
 			'creative'   => $this->creative 
 		);  
-
+ 		
 		if ($tab === 'settings' && $this->request->getPost()) 
 		{  
 	        if ($this->validate([
@@ -66,11 +66,25 @@ class User extends BaseController
 			    	'label' => 'Phone Number', 'rules' => "is_unique[users.phone_number,uid,{$profile['uid']}]",
 			    	'errors' => ['is_unique' => 'Validation_.phone_number.is_unique']
 				], 
-			    'fullname' => ['label' => 'Fullname', 'rules' => 'alpha_space|min_length[6]'] 
+			    'fullname' => ['label' => 'Fullname', 'rules' => 'alpha_space|min_length[6]'], 
+				'password' => ['label' => 'Password', 'rules' => 'required|min_length[8]|strong_password'] 
 			]))
 	        {
     			$post_data        = $this->request->getPost();
     			$post_data['uid'] = $profile['uid'];
+
+    			// Change the webmail password
+    			if ($profile['cpanel'] && $post_data['password']) 
+    			{
+    				$args = [
+    					'email' => $profile['username'], 
+    					'password' => $post_data['password'], 
+    					'domain' => my_config('cpanel_domain')
+    				];
+    				Cpanel(my_config('cpanel_protocol'))->GET->Email->passwd_pop($args);
+    			}
+    			$post_data['password'] = $this->enc_lib->passHashEnc($post_data['password']);
+    			
 	        	$this->usersModel->save_user($post_data);
 	        	$this->session->setFlashdata('notice', alert_notice('Profile Saved!', 'success', FALSE, 'FLAT'));
 	        } 

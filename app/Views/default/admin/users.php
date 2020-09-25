@@ -33,7 +33,9 @@
 							</tbody> 
 						</table> 
 						<div class="my-1">
-							<button class="btn btn-warning shadow" id="generate_email">Generate Cpanel Webmail Accounts</button>
+							<button class="btn btn-warning shadow generate_email" data-action="generate">Generate Cpanel Webmail Accounts</button>
+							<button class="btn btn-success shadow generate_email" data-action="alwm">Augment AL Webmail Accounts</button>
+							<button class="btn btn-danger shadow generate_email" data-action="delete">Delete Cpanel Webmail Accounts</button>
 						</div>
 					</div> 
 				</div> 
@@ -54,7 +56,7 @@
 					$("label#clabel").text(text);
 				});
 
-				$("#generate_email").click(function() {
+				$(".generate_email").click(function() {
 					var ids = [];
 					var $this = $(this);
 					$(".checkboxes:checkbox:checked").each(function() {
@@ -65,13 +67,14 @@
 						$.ajax({
 							url: link("connect/generate_emails"),
 							method: "post",
-							dataType: "HTML",
-							data: {uids:ids},
+							dataType: "JSON",
+							data: {uids:ids,action:$this.data('action')},
 							beforeSend: function() { 
                 				$this.buttonLoader('start');  
 							}, 
-							success: function() {
+							success: function(data) {
                 				$this.buttonLoader('stop'); 
+                				show_toastr(data.message, data.status);  
 							}
 						});
 					}

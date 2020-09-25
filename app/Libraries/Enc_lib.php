@@ -36,18 +36,17 @@ class Enc_lib {
     public function get_random_password($chars_min = 6, $chars_max = 8, $use_upper_case = false, $use_lower_case = false, $include_numbers = false, $include_special_chars = false) 
     {
         $length = rand($chars_min, $chars_max);
-        $selection   = 'aeuoyibcdfghjklmnpqrstvwxz';
+        $lowercase = 'aeuoyibcdfghjklmnpqrstvwxz';
+        $selection = $lowercase;
 
         if ($use_upper_case) 
         {
+            $selection = 'AEUOYIBCDFGHJKLMNPQRSTVZXZ';
+
             if ($use_lower_case) 
             {
-                $selection = $selection;
-            } 
-            else 
-            {
-                $selection = 'AEUOYIBCDFGHJKLMNPQRSTVZXZ';
-            }
+                $selection .= $lowercase;
+            }  
         }
 
         if ($include_numbers) {

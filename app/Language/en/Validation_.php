@@ -56,6 +56,7 @@ return [
    'required_with'         => 'The {field} field is required when {param} is present.',
    'required_without'      => 'The {field} field is required when {param} is not present.',
    'string'                => 'The {field} field must be a valid string.',
+   'strong_password'       => 'Password must contain an Uppercase and a Lowercase character, a number and a Special character.',
    'timezone'              => 'The {field} field must be a valid timezone.',
    'valid_base64'          => 'The {field} field must be a valid base64 string.',
    'valid_email'           => 'Invalid {field}.',

@@ -24,6 +24,14 @@ interface coreInterface {
      */
     function setServer($address, $port);
 
+
+    /**
+     * Function to set the api server address without a port.
+     * @param $address 
+     * @return mixed
+     */
+    function justServer($address);
+
     /**
      * Function to set the version and if it should be used as part of the api request path
      * @param string $version

@@ -2,6 +2,8 @@
 
 use Config\Services;
 use \App\Libraries\Util; 
+use \n1ghteyes\apicore\client;
+use \CodeIgniter\HTTP\Response;
 
  
 if (! function_usable('_lang'))
@@ -817,5 +819,122 @@ if ( ! function_usable('deleteAll') )
             // Remove the directory itself 
             return @rmdir($file); 
         } 
+    } 
+} 
+
+if ( ! function_usable('Alogic') ) 
+{
+    function Alogic($schema = 'https', $param = []) 
+    {
+        $session = \Config\Services::session();    
+        $client  = \Config\Services::curlrequest();
+
+        if (my_config('afterlogic_domain')) 
+        { 
+            try 
+            { 
+                if (!empty($param['auth'])) 
+                {
+                    $auth = $param['auth']; 
+                }
+                elseif ($session->has('afterlogic_auth'))
+                {
+                    $auth = $session->get('afterlogic_auth'); 
+                }
+
+                $params = [
+                    'Module' => $param['Module'] ?? 'Core',
+                    'Method' => $param['Method'] ?? 'Ping'
+                ];
+
+                if (!empty($param['Parameters'])) 
+                {
+                    $params['Parameters'] = json_encode($param['Parameters']);
+                }
+
+                if (empty($param['admin']) || $session->has('afterlogic_auth')) 
+                {
+                    $form_data['form_params'] = $params;
+                    if (!empty($auth)) 
+                    {
+                        $form_data['headers'] = ['Authorization' => "Bearer $auth"];
+                    }
+     
+                    $logic = json_decode($client->request('POST', $schema . '://'. my_config('afterlogic_domain') . '/?/Api', $form_data)
+                        ->getBody()); 
+                }
+                else
+                {    
+                    $login = $client->request('POST', $schema . '://'. my_config('afterlogic_domain') . '/?/Api', [
+                        'form_params' => [
+                            'Module' => 'Core',
+                            'Method' => 'Login',
+                            'Parameters' => json_encode([
+                                'Login'    => my_config('afterlogic_username'),
+                                'Password' => my_config('afterlogic_password'),
+                                'SignMe'   => true
+                            ], JSON_FORCE_OBJECT)
+                        ]
+                    ]);
+
+                    $logged_in = json_decode($login->getBody());
+
+                    if (!empty($logged_in->Result->AuthToken)) 
+                    {
+                        $auth = $logged_in->Result->AuthToken;
+                        $session->set('afterlogic_auth', $auth); 
+
+                        $logic = json_decode($client->request('POST', $schema . '://'. my_config('afterlogic_domain') . '/?/Api', [
+                            'headers' => ['Authorization' => "Bearer $auth"],
+                            'form_params' => $params
+                        ])->getBody()); 
+                    }
+                }
+            }
+            catch(\Exception $e)
+            {
+                return json_decode(json_encode(['Result' => false, 'Errors' => $e->getMessage()]));
+            }
+
+            return $logic;
+        }
+        
+        return;
+    } 
+} 
+
+if ( ! function_usable('Cpanel') ) 
+{
+    function Cpanel($schema = 'https') 
+    {
+        $cpanel_api = new client();
+
+        $cpanel_api->setServer(my_config('cpanel_url'), my_config('cpanel_port'))->setBasePath('execute')->setSchema($schema . '://');
+        $cpanel_api->auth(my_config('cpanel_username'), my_config('cpanel_password'));
+
+        return $cpanel_api;
+    } 
+} 
+
+if ( ! function_usable('CpanelErrors') ) 
+{
+    function CpanelErrors($errors = [], $field = NULL) 
+    {
+        if ($errors) 
+        {
+            $error_list = [];
+            foreach ($errors as $key => $error) 
+            {
+                if ($field) 
+                {
+                    $error = "[$field error]: $error";
+                }
+
+                $error_list[] = $error; 
+            }
+            return implode("<br>\n", $error_list);
+        }
+
+        return false;
     } 
 } 

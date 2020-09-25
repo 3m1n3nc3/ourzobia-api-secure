@@ -68,23 +68,26 @@ class Admin extends BaseController
 				    	'label'  => 'Email Address', 'rules' => "is_unique[users.email]",
 				    	'errors' => [
 				    		'valid_email' => 'Validation_.email.valid_email',
-				    		'is_unique' => 'Validation_.email.is_unique'
+				    		'is_unique'   => 'Validation_.email.is_unique'
 				    	]
 				    ],
 				    'username' => [
-				    	'label' => 'Username', 'rules' => 'required|alpha_numeric_punct|is_unique[users.username]|min_length[6]',
+				    	'label'  => 'Username', 'rules' => "required|alpha_numeric_punct|is_unique[users.username]|min_length[6]",
 				    	'errors' => ['is_unique' => 'Validation_.username.is_unique']
 				    ], 
 				    'phone_number' => [
-				    	'label' => 'Phone Number', 'rules' => 'is_unique[users.phone_number]',
+				    	'label'  => 'Phone Number', 'rules' => 'is_unique[users.phone_number]',
 				    	'errors' => ['is_unique' => 'Validation_.phone_number.is_unique']
-					], 
+					],
 				    'fullname' => ['label' => 'Fullname', 'rules' => 'alpha_space|min_length[6]'], 
-				    'password' => ['label' => 'Password', 'rules' => 'required|min_length[4]'] 
+				    'password' => ['label' => 'Password', 'rules' => 'required|min_length[4]|strong_password'] 
 				]))
 		        {
 	    			$post_data = $this->request->getPost();
-	    			if (!empty($uid)) $post_data['uid'] = $uid;
+	    			if (!empty($uid)) 
+	    				$post_data['uid']  = $uid;
+	    			$post_data['password'] = $this->enc_lib->passHashEnc($post_data['password']);
+
 		        	$this->usersModel->save_user($post_data);
 	        		$this->session->setFlashdata('notice', alert_notice('Profile Saved!', 'success', FALSE, 'FLAT'));
 		        }
@@ -224,9 +227,10 @@ class Admin extends BaseController
         {
         	// Validation for main configuration
 	        if (!$data['enable_steps'] || $data['step'] == 'main') 
-	        {  
+	        {
 		        $this->validate([
-				    'value.site_name' => ['label' => 'Site Name', 'rules' => 'trim|required|alpha_numeric_punct'] 
+				    'value.site_name' => ['label' => 'Site Name', 'rules' => 'trim|required|alpha_numeric_punct'],
+				    'value.default_password' => ['label' => 'Default Email Password', 'rules' => 'trim|strong_password'] 
 				]);
 	        }
 
@@ -291,8 +295,16 @@ class Admin extends BaseController
 	            // Check for image upload errors
 	            if ($this->creative->upload_errors() === FALSE)
 	            {
-	            	// Merge image and post data
 	                $save = $this->request->getPost('value');
+	                
+	            	// Don't overwrite passwords
+	                if (empty($save['cpanel_password']))
+		                unset($save['cpanel_password']);
+
+	                if (empty($save['afterlogic_password']))
+		                unset($save['afterlogic_password']);
+
+	            	// Merge image and post data
 	                if (isset($_POST['creative_lib'])) {
 	                	$save = array_merge($save, $_POST['creative_lib']['value']);
 	                }

@@ -41,6 +41,16 @@ class request {
     }
 
     /**
+     * Function to set the api server address without a port.
+     * @param $address 
+     * @return mixed
+     */
+    public function justServer($address){
+        $this->server = $address;
+        return $this;
+    }
+
+    /**
      * Function to set the base path of an API. for example, an api that always lives under '/api'
      * @param $path
      * @return $this

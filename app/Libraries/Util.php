@@ -81,7 +81,7 @@ class Util
         return $true_progress;
     }  
 
-    public static function loggedInIsAJAX()
+    public static function loggedInIsAJAX($admin = false)
     {   
         $request  = \Config\Services::request();
         $response = \Config\Services::response();
@@ -95,6 +95,18 @@ class Util
             {
                 $code = 401; 
                 $msg  = 'You are currently not logged in, please login to continue!'; 
+            }
+
+            if (is_array($admin) && !empty($data['uid']) && $data['uid'] !== user_id()) 
+            {
+                $code = 401; 
+                $msg  = 'You do not have permission to access this resource!';
+            }
+
+            if ($admin === true && !logged_user('admin')) 
+            {
+                $code = 401; 
+                $msg  = 'You do not have permission to access this resource!'; 
             }
 
             if (!$request->isAJAX())

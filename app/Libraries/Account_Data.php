@@ -101,7 +101,7 @@ class Account_Data {
         $paystack = new Paystack_validate;
         $data = $this->usersModel->get_user($id);  
 
-        if ($data) 
+        if (!empty($data['uid'])) 
         {   
             $data['lastname'] = $data['middlename'] = ''; 
 
@@ -133,9 +133,9 @@ class Account_Data {
             $data['avatar_link']  = $this->creative->fetch_image($data['avatar'],'boy'); 
             $data['avatar']       = 
                 '<img class="img-size-50 thumbnail img-circle" src="' . $this->creative->fetch_image($data['avatar'],'boy') . '"/>';
-        } 
 
-        return $data;
+            return $data;
+        } 
     }
 
     public static function logout()

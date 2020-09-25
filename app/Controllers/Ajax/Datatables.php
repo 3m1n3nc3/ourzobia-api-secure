@@ -112,7 +112,9 @@ class Datatables extends BaseController
                 anchor($user['profile_link'], $user['fullname'],
                     ['id' => 'name'.$user['uid'], 'data-img' => $user['avatar_link'], 'data-uid' => $user['uid']]), 
                 $user['username'],  
-                $user['email'],  
+                mailto($user['email']) . ($user['cpanel'] ? 
+                    '<br><i class="fab fa-cpanel fa-lg text-danger" title="'.$user['username'] . '@' . my_config('cpanel_domain').'"></i>' : ''
+                ),  
                 anchor_popup(site_url('admin/users/access/'.$user['uid']), '<i class="fa '.($user['status']>=2 ? 'fa-unlock text-success' : 'fa-lock text-danger') . ' mr-1"></i>') . 
                 user_status(['status'=>$user['status'], 'admin'=>$user['admin']]),
                 date('d M Y', $user['reg_time']) . '<br>' . date('h:i A', $user['reg_time']),

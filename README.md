@@ -12,3 +12,7 @@ your script enter an activation code, before they are able to use the product.
   3. Uses cookies to prevent frequent calls to validation server.
   4. Can be hosted on Github and served via CDN.
   5. Validation is done outside the validating script, making it rather difficult to break.
+
+
+######Password Validate
+``^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!"#\$%&'\(\)\*\+,-\.\/:;<=>\?@[\]\^_`\{\|}~])[a-zA-Z0-9!"#\$%&'\(\)\*\+,-\.\/:;<=>\?@[\]\^_`\{\|}~]{10,}$``

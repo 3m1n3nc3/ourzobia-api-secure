@@ -39,5 +39,5 @@
              
 <?php if(module_active('account')): ?>
     <div class="dropdown-divider"></div>  
-    <a href="<?=site_url('user/notifications')?>" class="dropdown-item dropdown-footer">All Notifications</a>
+    <a href="<?=site_url('user/account/notifications')?>" class="dropdown-item dropdown-footer">All Notifications</a>
 <?php endif ?>

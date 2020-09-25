@@ -13,8 +13,8 @@ class UsersModel extends Model
     protected $useSoftDeletes = true;
 
     protected $allowedFields = [
-    	'uip', 'username', 'email', 'phone_code', 'phone_number', 'fullname', 'avatar', 'admin', 'password', 'status', 'cpanel', 
-        'token'
+    	'uip', 'username', 'email', 'phone_code', 'phone_number', 'fullname', 'avatar', 'admin', 'password', 'status', 'cpanel'
+        , 'alwm_id', 'token'
     ];
 
 	protected $useTimestamps = true;
@@ -39,14 +39,7 @@ class UsersModel extends Model
 	        $this->insert($data);
 	        return $this->insertID();
 	    }
-    }  
-
-    public function get_last_pledge($uid)
-    {   
-        return $this->select('pledges.id,pledges.uid,pledges.amount,pledges.status,pledges.recommit_id,pledges.updated')
-            ->join('pledges', 'pledges.id = users.last_pledge', 'LEFT')
-            ->find($uid);
-    }
+    }   
 
     public function get_user($uid = null)
     {  

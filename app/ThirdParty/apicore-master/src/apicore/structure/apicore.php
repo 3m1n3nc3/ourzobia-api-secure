@@ -69,6 +69,17 @@ abstract class apiCore implements coreInterface{
     }
 
     /**
+     * Function to set the server address for the api call without a port.
+     * @param $address 
+     * @return self
+     */
+    public function justServer($address)
+    {
+        $this->request->justServer($address);
+        return $this;
+    }
+
+    /**
      * Set the base request path
      * @param $path
      * @return $this

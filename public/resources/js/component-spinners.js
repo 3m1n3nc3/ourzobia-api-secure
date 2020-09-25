@@ -6,7 +6,7 @@
       if ($(self).attr('disabled') == 'disabled') {
         return false;
       }
-      $(self).attr('data-btn-text', $(self).text());
+      $(self).attr('data-btn-text', $(self).html());
       if($(self).attr('data-spinner-type')) {
         var type_spinner = $(self).attr('data-spinner-type');
       } else {
