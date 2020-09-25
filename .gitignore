@@ -62,6 +62,10 @@ writable/uploads/*
 
 writable/debugbar/*
 
+public/uploads/*
+!pubic/uploads/content/favicon.png
+!pubic/uploads/content/site_logo.png
+
 php_errors.log
 
 #-------------------------
