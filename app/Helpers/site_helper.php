@@ -319,7 +319,7 @@ if (! function_usable('product_status'))
 
 if ( ! function_usable('alert_notice'))
 {
-    function alert_notice($msg = '', $type = 'info', $echo = FALSE, $dismissible = TRUE, $header = NUll, $_title = NULL)
+    function alert_notice($msg = '', $type = 'info', $echo = FALSE, $dismissible = TRUE, $header = NUll, $_title = NULL, $_tclass = NULL)
     {   
         $icon = $dismissible_alert = $dismiss_btn = '';
         if ($type == 'danger' || $type == 'error') 
@@ -344,7 +344,8 @@ if ( ! function_usable('alert_notice'))
             $icon = 'check';
         }
 
-        $title = ($_title) ? $_title : $title;
+        $title   = ($_title) ? $_title : $title;
+        $_tclass = ($_tclass) ? ' class="'.$_tclass.'"' : '';
 
         if ($dismissible === TRUE || $dismissible === 'TRUE') 
         {
@@ -361,7 +362,7 @@ if ( ! function_usable('alert_notice'))
                 $alert .= 
                 '<div class="alert alert-'.$type.$dismissible_alert.'">
                     '.$dismiss_btn.'
-                    <h6><i class="icon fa fa-'.$icon.'"></i> '.$title.'</h6>
+                    <h6'.$_tclass.'><i class="icon fa fa-'.$icon.'"></i> '.$title.'</h6>
                     '.str_ireplace(['.', '!'], ['.', '!'], $msg).'
                 </div>';
             } else {

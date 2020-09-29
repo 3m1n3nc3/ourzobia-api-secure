@@ -1,45 +1,45 @@
 section.api {
-	margin: 0 auto;
-	max-width: 1100px;
-	padding: 2.5rem 1.75rem 3.5rem 1.75rem;
+    margin: 0 auto;
+    max-width: 1100px;
+    padding: 2.5rem 1.75rem 3.5rem 1.75rem;
 }
 section.api h1 {
-	margin-bottom: 2.5rem;
+    margin-bottom: 2.5rem;
 }
 section.api h2 {
-	font-size: 120%;
-	line-height: 2.5rem;
-	padding-top: 1.5rem;
+    font-size: 120%;
+    line-height: 2.5rem;
+    padding-top: 1.5rem;
 }
 section.api pre {
-	background-color: rgba(247, 248, 249, 1);
-	border: 1px solid rgba(242, 242, 242, 1);
-	display: block;
-	font-size: .9rem;
-	margin: 2rem 0;
-	padding: 1rem 1.5rem;
-	white-space: pre-wrap;
-	word-break: break-all;
+    background-color: rgba(247, 248, 249, 1);
+    border: 1px solid rgba(242, 242, 242, 1);
+    display: block;
+    font-size: .9rem;
+    margin: 2rem 0;
+    padding: 1rem 1.5rem;
+    white-space: pre-wrap;
+    word-break: break-all;
 }
 section.api code {
-	display: block;
+    display: block;
 }
 section.api a {
-	color: rgba(221, 72, 20, 1);
+    color: rgba(221, 72, 20, 1);
 }
 section.api svg {
-	margin-bottom: -5px;
-	margin-right: 5px;
-	width: 25px;
+    margin-bottom: -5px;
+    margin-right: 5px;
+    width: 25px;
 }
-.form-group {
+.api .form-group {
     margin-bottom: 1rem;
 }
-label {
+.api label {
     display: inline-block;
     margin-bottom: .5rem;
 }
-.form-control {
+.api .form-control {
     display: block;
     width: 100%;
     padding: .375rem .75rem;
@@ -52,38 +52,33 @@ label {
     border-radius: .25rem;
     transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
 }
-button, input {
+.api button, .api input {
     overflow: visible;
 }
-button, input, optgroup, select, textarea {
-    margin: 0;
-    font-family: inherit;
-    font-size: inherit;
-    line-height: inherit;
-}
-*, ::after, ::before {
+
+.api *, .api ::after, .api ::before {
     box-sizing: border-box;
 }
-.text-muted {
+.api .text-muted {
     color: #6c757d!important;
 }
-.form-text {
+.api .form-text {
     display: block;
     margin-top: .25rem;
 }
-.small, small {
+.api .small, small {
     font-size: 80%;
-    font-weight: 400;
+    font-weight: 400; 
 }
-.btn:not(:disabled):not(.disabled) {
+.api .btn:not(:disabled):not(.disabled) {
     cursor: pointer;
 }
-.btn-primary {
+.api .btn-primary {
     color: #fff;
     background-color: #007bff;
     border-color: #007bff;
 }
-input[type="text"], input[type="password"], input[type="email"] {
+.api input[type="text"], .api input[type="password"], .api input[type="email"] {
     height: 54px;
     padding: 0 18px;
     width: 100%;
@@ -95,7 +90,7 @@ input[type="text"], input[type="password"], input[type="email"] {
     color: #3e3f5e;
     transition: border-color .2s ease-in-out;
 }
-.btn {
+.api .btn {
     display: inline-block;
     font-weight: 400;
     text-align: center;
@@ -112,25 +107,25 @@ input[type="text"], input[type="password"], input[type="email"] {
     border-radius: .25rem;
     transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
 }
-[type=reset], [type=submit], button, html [type=button] {
+.api [type=reset], .api [type=submit], .api button, html .api [type=button] {
     -webkit-appearance: button;
 }
-button, select {
+.api button, .api select {
     text-transform: none;
 }
-button, input {
+.api button, .api input {
     overflow: visible;
 }
-button, input, optgroup, select, textarea {
+.api button, .api input, .api optgroup, .api select, .api textarea {
     margin: 0;
     font-family: inherit;
     font-size: inherit;
     line-height: inherit;
-}
-button {
+} 
+.api button {
     border-radius: 0;
-}	
-.card {
+}   
+.api .card {
     position: relative;
     display: -webkit-box;
     display: -ms-flexbox;
@@ -146,15 +141,15 @@ button {
     border: 1px solid rgba(0,0,0,.125);
     border-radius: .25rem;
 }
-.card-body {
+.api .card-body {
     -webkit-box-flex: 1;
     -ms-flex: 1 1 auto;
     flex: 1 1 auto;
     padding: 1.25rem;
 }
-.text-info {
+.api .text-info {
     color: #17a2b8!important;
 }
-.mb-5, .my-5 {
+.api .mb-5, .api .my-5 {
     margin-bottom: 3rem!important;
 }

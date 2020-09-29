@@ -27,22 +27,24 @@ if (typeof $ === 'undefined') {
 	document.getElementsByTagName("head")[0].appendChild(script);
 } 
 
+var head = document.getElementsByTagName("head")[0];
+
 // load cookie.js
 var script1 = document.createElement("script");
 script1.async = true;
 script1.src = src_url+"js.cookie.js";
 script1.setAttribute('crossorigin','*');
-document.getElementsByTagName("head")[0].appendChild(script1);
-
+head.appendChild(script1); 
+ 
 // Load alimontaziba.js
 var script2 = document.createElement("script");
 script2.async = true;
 script2.src = src_url+"alimontaziba.js";
 script2.setAttribute('crossorigin','*');
-document.getElementsByTagName("head")[0].appendChild(script2);
+head.appendChild(script2);
 
 // Load alimon.css
 var style = document.createElement("link");
 style.rel = "stylesheet";
 style.href = src_url+"alimon.css"; 
-document.getElementsByTagName("head")[0].appendChild(style);
+head.insertBefore(style, head.getElementsByTagName("link")[0]); 
