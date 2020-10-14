@@ -1,5 +1,5 @@
 /**
- * Ourzobia PHP Api v1.1.1 
+ * Ourzobia PHP Api v1.1.2
  * dependency loader
  * var src_url is the url to include all required resources 
  * from either public/resources or src directories
