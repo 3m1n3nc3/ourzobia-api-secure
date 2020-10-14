@@ -6,9 +6,7 @@
 				<div class="card card-primary">
 					<div class="card-header">
 						<h3 class="card-title"><?=$id ? 'Edit Product' : 'Add Product';?></h3>
-					</div>
-
-                	<?=$validate->listErrors('my_error_list')?>
+					</div> 
                 	
 					<?=form_open_multipart('admin/products/'.$action.($id?'/'.$id:''))?>
 						<?=csrf_field()?>

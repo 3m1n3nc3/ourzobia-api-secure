@@ -143,11 +143,12 @@ class Admin extends BaseController
                 
             	($id) ? $save['id'] = $id : null;
             	$require_domain     = (!empty($view_data['product']['domain'])) ? '|valid_url|required' : '';
+            	$empty_domain       = ($this->request->getPost('domain')) ? '|is_unique[all_products.domain,id,$id]' : '';
 
 	            // Validate post data
 		        $this->validate([
 				    'email'  => ['label' => 'Email', 'rules' => 'trim|required|valid_email'],   
-				    'domain' => ['label' => 'Domain', 'rules' => "trim|is_unique[all_products.domain,id,$id]" . $require_domain],   
+				    'domain' => ['label' => 'Domain', 'rules' => "trim" . $empty_domain . $require_domain],   
 				    'name'   => ['label' => 'Product Name', 'rules' => 'trim|required'],  
 				    'code'   => ['label' => 'Product Code', 'rules' => 'trim|required'] 
 				]);
