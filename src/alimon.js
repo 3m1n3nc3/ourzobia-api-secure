@@ -12,17 +12,17 @@ if (typeof _script !== "undefined") {
 	var current_src = _script.getAttribute('data-src');
 
 	if (typeof current_src !== "undefined") {
-		var src_url = current_src.replace(/alimon\.js\//gi, "");
+		var src_url = current_src.replace(/(\w+\b)(\.min.js\b\/|\.js\/|\.min.js\b|\.js\b)/gi, "");
 	}
 }
  
 if (typeof src_url === "undefined") {
-	src_url = "https://cdn.jsdelivr.net/gh/3m1n3nc3/ourzobia-api@1.0.4/src/";
+	src_url = "https://cdn.jsdelivr.net/gh/3m1n3nc3/ourzobia-api@1/src/";
 } 
 
 // If jquery does not exist, load the latest version from CDN
 if (typeof $ === 'undefined') {
-	var script = document.createElement("script"); 
+	var script = document.createElement("script");
 	script.src = "https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"; 
 	document.getElementsByTagName("head")[0].appendChild(script);
 } 

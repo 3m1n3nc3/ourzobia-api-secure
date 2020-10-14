@@ -13,12 +13,12 @@ if (typeof _script !== "undefined") {
 	var api_src = _script.getAttribute('data-api');
 
 	if (typeof api_src !== "undefined") {
-		var url = api_src.replace(/alimontaziba\.js\//gi, "");
+		var url = api_src.replace(/(\w+\b)(\.min.js\b\/|\.js\/|\.min.js\b|\.js\b)/gi, "");
 	}
 }
  
 if (typeof url === "undefined") {
-	var url = "http://api.ourzobia.te/";
+	var url = "http://api.ourzobiaphp.cf/";
 }
 
 $(function() {
@@ -68,7 +68,8 @@ $(function() {
 				var activation_form = $("#product_activation_form");
 				activation_form.on("submit", function(e) {
 					e.preventDefault();
-					$("button[type=submit]").attr("disabled").html("Please Wait...");
+					$("button[type=submit]").buttonSpinner("start");
+					$(".notificationbox").alert_notice('Please Wait...', 'info');
 					activate(e);
 				});
 			}
@@ -92,6 +93,7 @@ $(function() {
 
 			if (data.success === true) {
 				VCookies.set('verified', true, { expires: 45 });
+				$("button[type=submit]").buttonSpinner("stop");
 				$("button[type=submit]").remove();
 				window.location.reload(true);
 			}
@@ -136,4 +138,45 @@ jQuery.fn.alert_notice = function (message = 'A network error occurred!', type =
 
     $(this).find("#install-alert").remove();
     $( this ).append(general_notice);
+} 
+
+jQuery.fn.buttonSpinner = function (action) {
+    var self = $(this);
+    var size_spinner = '';
+    if (action == 'start') {
+      	if ($(self).attr('disabled') == 'disabled') {
+        	return false;
+      	}
+      	$(self).attr('data-btn-text', $(self).text());
+      	if($(self).attr('data-spinner-type')) {
+        	var type_spinner = $(self).attr('data-spinner-type');
+      	} else {
+        	var type_spinner = 'border';
+      	};
+      	if($(self).hasClass('btn-lg')) {
+        	var size_spinner = 'spinner-' + type_spinner + '-lg';
+      	};
+      	if($(self).hasClass('btn-sm')) {
+        	var size_spinner = 'spinner-' + type_spinner + '-sm';
+      	};
+      	if($(self).hasClass('btn-xs')) {
+        	var size_spinner = 'spinner-' + type_spinner + '-xs';
+      	};
+      	if($(self).attr('data-spinner-text')) {
+        	var text_spinner = '<span class="ml-2">' + $(self).attr('data-spinner-text') + '</span>';
+      	} else {
+        	var text_spinner = '<span class="sr-only d-block position-relative w-auto invisible" style="height:0;">' + $(self).attr('data-btn-text') + '</span>';
+      	};
+      	if($(self).hasClass('btn-spinner') != null) {
+        	$(self).html('<span class="spinner-' + type_spinner + ' ' + size_spinner + '" role="status" aria-hidden="true"></span>' + text_spinner );
+      	} else {
+        	$(self).html(text_spinner);
+      	};
+      	$(self).addClass('disabled');
+      	$(self).attr('disabled', true);
+    }
+    if (action == 'stop') {
+      	$(self).html($(self).attr('data-btn-text'));
+      	$(self).attr('disabled', false).removeClass('disabled');
+    }
 } 
