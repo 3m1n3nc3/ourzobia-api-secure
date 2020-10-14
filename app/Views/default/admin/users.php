@@ -33,9 +33,9 @@
 							</tbody> 
 						</table> 
 						<div class="my-1">
-							<button class="btn btn-warning shadow generate_email" data-action="generate">Generate Cpanel Webmail Accounts</button>
-							<button class="btn btn-success shadow generate_email" data-action="alwm">Augment AL Webmail Accounts</button>
-							<button class="btn btn-danger shadow generate_email" data-action="delete">Delete Cpanel Webmail Accounts</button>
+							<button class="btn btn-warning shadow generate_email disabled" disabled data-action="generate">Generate Cpanel Webmail Accounts</button>
+							<button class="btn btn-success shadow generate_email disabled" disabled data-action="alwm">Augment AL Webmail Accounts</button>
+							<button class="btn btn-danger shadow generate_email disabled" disabled data-action="delete">Delete Cpanel Webmail Accounts</button>
 						</div>
 					</div> 
 				</div> 
@@ -49,10 +49,19 @@
 					$('.checkboxes').each(function() {
 						$(this).prop("checked", $(e.target).prop("checked"));
 					});
+
 					var text = "Check All";
 					if ($(e.target).prop("checked")) {
 						text = "Uncheck All";
 					}
+
+					if ($(".checkboxes:checkbox:checked").length>0) { 
+						$(".generate_email").removeAttr('disabled').removeClass('disabled'); 
+					} else {
+						$(".generate_email").attr('disabled');
+						$(".generate_email").addClass('disabled');
+					}
+
 					$("label#clabel").text(text);
 				});
 
@@ -63,7 +72,7 @@
 						ids.push($(this).data('uid'))
 					});
  
-					if ($(".checkboxes:checkbox:checked").length>0) {
+					if ($(".checkboxes:checkbox:checked").length>0) { 
 						$.ajax({
 							url: link("connect/generate_emails"),
 							method: "post",

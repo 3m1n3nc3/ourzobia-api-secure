@@ -450,16 +450,16 @@ if ( ! function_usable('my_config'))
      * @param  string $index  
      * @return string         
      */
-    function my_config($item, $index = '')
+    function my_config($item, $index = '', $default = null)
     {   
         $setting_model = model('App\Models\SettingsModel', false);
         $config = $setting_model->get_settings($item);
         if ($index == '')
         {
-            return isset($config) ? $config : '';
+            return isset($config) ? $config : (isset($default) ? $default : '');
         }
 
-        return isset($config[$index], $config[$index][$item]) ? $config[$index][$item] : '';
+        return isset($config[$index], $config[$index][$item]) ? $config[$index][$item] : (isset($default) ? $default : '');
     }
 }
 

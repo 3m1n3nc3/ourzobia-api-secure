@@ -274,6 +274,14 @@ class Admin extends BaseController
 				    'value.contact_address'   => ['label' => 'Contact Address', 'rules' => 'trim'] 
 				]);
 	        }    
+	 		
+	 		// Validation for design configuration
+	        if (!$data['enable_steps'] || $data['step'] == 'design') 
+	        {  
+		        $this->validate([
+				    'value.des_fixed_layout' => ['label' => 'Layout', 'rules' => 'trim'] 
+				]);
+	        } 
 
 	        // Validate configuration input data
 	        if ($this->form_validation->run($this->request->getPost()) === FALSE) 

@@ -4,10 +4,18 @@ class Home extends BaseController
 {
 	public function index()
 	{
-		$this->response->setHeader('Access-Control-Allow-Origin', '*');
-		$this->response->setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
-
-		return view('welcome');
+		$userdata  = $this->account_data->fetch(user_id());
+		$view_data = array(
+			'session' 	 => $this->session,
+			'user' 	     => $userdata,
+			'page_title' => 'Welcome',
+			'page_name'  => 'homepage',  
+			'set_folder' => 'frontend/', 
+			'acc_data'   => $this->account_data,
+			'util'       => $this->util,
+			'creative'   => $this->creative
+		);  
+		return theme_loader($view_data, 'frontend/index'); 
 	} 
 
 	public function form()

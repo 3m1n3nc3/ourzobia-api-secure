@@ -16,16 +16,24 @@ class Resources extends BaseController
 		$file = trim(str_ireplace('+', '/', urlencode($file)), '/ ');
 		$url  = $this->request->getGet("url_var");
 		$url  = trim(($url === "true") ? base_url() : ($url && $url !== "false" ? prep_url($url) : null), '/ ');
+		$file_exists = false;
 
 		if (file_exists(PUBLICPATH . "resource/" . $file)) 
 		{
+			$file_exists = true;
 			$resource = trim(file_get_contents(PUBLICPATH . "resource/" . $file));
-			if ($url) 
-			{ 
-        		$resource = str_replace("var url;", "var url = \"$url/\";", $resource); 
-        		$resource = str_replace("var src_url;", "var src_url = \"$url/\";", $resource); 
-        	}
 		} 
+		elseif (file_exists(PUBLICPATH . "resources/" . $file)) 
+		{
+			$file_exists = true;
+			$resource = trim(file_get_contents(PUBLICPATH . "resources/" . $file));
+		}
+
+		if ($url && $file_exists) 
+		{ 
+    		$resource = str_replace("var url;", "var url = \"$url/\";", $resource); 
+    		$resource = str_replace("var src_url;", "var src_url = \"$url/\";", $resource); 
+    	}
 
 		return $this->response
 			->setBody($resource)
