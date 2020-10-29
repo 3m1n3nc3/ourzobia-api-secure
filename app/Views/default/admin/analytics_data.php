@@ -22,14 +22,16 @@ if ($analytics['referrer'])
 				<div class="card"> 
 					<div class="card-body">
 						<div class="bg-light border-dark p-3"> 
-					<?php if ($analytics['ip_info']): ?>
 							<div class="form-horizontal">
 								<div class="form-group row text-center h4 border-bottom pb-2">
 									<div class="col-sm-12 font-weight-bold">IP Location</div>
+								<?php if ($analytics['ip_info']): ?>
 									<div class="col-sm-12">
 										<?=$location?> (<?=$analytics['ip_info']["country_code"]??'Unknown'?>)
 									</div>
+								<?php endif ?>
 								</div>
+							<?php if ($analytics['ip_info']): ?>
 								<div class="form-group row">
 									<div class="col-sm-3 font-weight-bold">IP Address</div>
 									<div class="col-sm-9">
@@ -62,8 +64,8 @@ if ($analytics['referrer'])
 										+<?=$analytics['ip_info']["location"]["calling_code"]??''?> 
 									</div>
 								</div>  
+							<?php endif ?>
 							</div>
-					<?php endif ?>
 						</div>
 					</div>
 				</div>
