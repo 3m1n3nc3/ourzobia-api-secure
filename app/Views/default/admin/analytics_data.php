@@ -5,18 +5,18 @@ if (!empty($analytics['referrer']))
     $referrer = parse_url($analytics['referrer'], PHP_URL_HOST);
     $analytics['referrer'] = $analytics['referrer'] ? anchor(prep_url($analytics['referrer']), prep_url($referrer) . "...", ['data-toggle'=>'tooltip', 'title'=>prep_url($analytics['referrer'])]) : null;
     $a_user = $account_data->fetch($analytics['uid']);
+}
 
-    if (in_array($analytics['metric'], ['activations', 'validations']) && $analytics['item_id']) 
-    {
-        $item = $products_m->getWhere(['id' => $analytics['item_id']], 1)->getRowArray();
-        $analytics['item_id'] = anchor("admin/products/create/{$item['id']}", nl2br("{$item['name']} \n {$item['domain']}"));
-    }
+if (in_array($analytics['metric'], ['activations', 'validations']) && $analytics['item_id']) 
+{
+    $item = $products_m->getWhere(['id' => $analytics['item_id']], 1)->getRowArray();
+    $analytics['item_id'] = anchor("admin/products/create/{$item['id']}", nl2br("{$item['name']} \n {$item['domain']}"));
+}
 
-    if ($analytics['ip_info']) 
-    { 
-        $location = "\n" . img($analytics['ip_info']["location"]["country_flag"]??"", false, ['alt'=>($analytics['ip_info']["country_name"]??''), 'class'=>'mr-2', 'height'=>'17px']) . ($analytics['ip_info']["country_name"]??''); 
-    } 
-} ?>
+if ($analytics['ip_info']) 
+{ 
+    $location = "\n" . img($analytics['ip_info']["location"]["country_flag"]??"", false, ['alt'=>($analytics['ip_info']["country_name"]??''), 'class'=>'mr-2', 'height'=>'17px']) . ($analytics['ip_info']["country_name"]??''); 
+}  ?>
 		<div class="row"> 
 			<div class="col-md-6">  
 				<div class="card"> 
