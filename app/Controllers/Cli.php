@@ -25,7 +25,7 @@ class Cli extends Controller
 	{  	   
 		$i = 0;
 
-		if (my_config('cron_jobs', NULL, 1)) 
+		if (my_config('cron_jobs', NULL, 0)) 
 		{
 			CLINT::write("CLI Interface reached...", 'red'); 
  
@@ -35,7 +35,7 @@ class Cli extends Controller
 				->orLike(['ip_info'=>'"country_code":null,"country_name":null'], '', 'both', true, true)
 				->chunk(100, function ($analytics)
 			{ 
-				if (in_array($analytics['uip'], ['127.0.0.1', '127.0.0.0', '0.0.0.0'])) 
+				if (!in_array($analytics['uip'], ['127.0.0.1', '127.0.0.0', '0.0.0.0'])) 
 				{	
 					$ip_user = $this->users_m->get_user(['uip'=>$analytics['uip']]);
 					$user_id = (!empty($ip_user['uid'])) ? $ip_user['uid'] : null;

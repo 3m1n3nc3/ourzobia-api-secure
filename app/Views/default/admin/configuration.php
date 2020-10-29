@@ -687,11 +687,20 @@
                             <small class="text-muted">System Timezone for your location</small>
                             <?= $errors->showError('timezone', 'my_single_error'); ?>
                         </div>
-                        <div class="form-group col-md-6">
-                            <label class="text-info" for="env[CI_ENVIRONMENT]">Developer Mode</label>
-                            <div class="form-group">
-                                <input type="hidden" name="env[CI_ENVIRONMENT]" value="production">
-                                <input type="checkbox" name="env[CI_ENVIRONMENT]" value="development" id="env[CI_ENVIRONMENT]" data-bootstrap-switch data-off-color="danger" data-on-color="success"<?=set_checkbox('env[CI_ENVIRONMENT]', '1',(env('CI_ENVIRONMENT') == 'development'))?>>
+                        <div class="col-md-6 row">
+                            <div class="form-group col">
+                                <label class="text-info" for="env[CI_ENVIRONMENT]">Developer Mode</label>
+                                <div class="form-group">
+                                    <input type="hidden" name="env[CI_ENVIRONMENT]" value="production">
+                                    <input type="checkbox" name="env[CI_ENVIRONMENT]" value="development" id="env[CI_ENVIRONMENT]" data-bootstrap-switch data-off-color="danger" data-on-color="success"<?=set_checkbox('env[CI_ENVIRONMENT]', '1',(env('CI_ENVIRONMENT') == 'development'))?>>
+                                </div>
+                            </div>
+                            <div class="form-group col">
+                                <label class="text-info" for="env[CI_ENVIRONMENT]">Crone Jobs</label>
+                                <div class="form-group">
+                                    <input type="hidden" name="value[cron_jobs]" value="0">
+                                    <input type="checkbox" name="value[cron_jobs]" value="1" id="value[cron_jobs]" data-bootstrap-switch data-off-color="danger" data-on-color="success"<?=set_checkbox('value[cron_jobs]', '1',(my_config('cron_jobs') == '1'))?>>
+                                </div>
                             </div>
                         </div>
                     </div>

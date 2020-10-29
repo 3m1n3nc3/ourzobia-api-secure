@@ -65,7 +65,7 @@ class SettingsModel extends Model
                     $return  = $this->builder->insert($setting); 
                 }
             }  
-            return $return;
+            return $return ? true : false;
         }
         else
         {
