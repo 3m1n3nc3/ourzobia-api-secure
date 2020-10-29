@@ -307,7 +307,7 @@ class Main extends BaseController
 
 		$post_data = $this->request->getPost(); 
 
-		$model = (stripos($post_data['type'], "_model") !== false) ? $post_data['type'] . "_m" : $post_data['type'] . "Model";  
+		$model = (stripos($post_data['type'], "_model") !== false) ? str_replace("model", "m", $post_data['type']) : $post_data['type'] . "Model";  
 		if ($delete = $this->$model->cancel(array_merge($post_data, ['check' => true]))) 
 		{
 			$message = 'Request Canceled.';
