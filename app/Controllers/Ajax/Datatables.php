@@ -586,7 +586,7 @@ class Datatables extends BaseController
             $data[$keys][] = nl2br($rows->ip_info??$rows->uip);      
             $data[$keys][] = $rows->type??"N/A";   
             $data[$keys][] = $rows->metric??"N/A";   
-            $data[$keys][] = $rows->referrer ? anchor(parse_url($rows->referrer, PHP_URL_HOST)) : "N/A";    
+            $data[$keys][] = $rows->referrer ? anchor(prep_url(parse_url($rows->referrer, PHP_URL_HOST))) : "N/A";    
             $data[$keys][] = $user ? anchor($user['profile_link'], $user['fullname'],
                     ['id' => 'name'.$user['uid'], 'data-img' => $user['avatar_link'], 'data-uid' => $user['uid']]) : "N/A";
             $data[$keys][] = (!is_numeric($rows->item_id)) ? $rows->item_id : "N/A";    
