@@ -55,7 +55,12 @@ class UsersModel extends Model
 
         if (!empty($uid['admin'])) 
         {
-            return $this->where('admin>=', $uid['admin'])->get()->getResultArray(); 
+            return $this->where('admin>=', $uid['admin'])->first(); 
+        }
+
+        if (!empty($uid['uip'])) 
+        {
+            return $this->where('uip', $uid['uip'])->first(); 
         }
 
         return $this->find($uid);

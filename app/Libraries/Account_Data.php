@@ -171,11 +171,8 @@ class Account_Data {
             'fullname'      => $data['fullname'] 
         ); 
 
-        // Save the user's IP address
-        if (empty($data['uip'])) 
-        {
-            $this->usersModel->save_user(['uid'=>$data['uid'],'uip'=>$request->getIPAddress()]); 
-        }
+        // Save the user's IP address every time they log in
+        $this->usersModel->save_user(['uid'=>$data['uid'],'uip'=>$request->getIPAddress()]); 
 
         $this->session->set($_data);
 

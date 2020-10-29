@@ -79,7 +79,16 @@ class AnalyticsModel extends Model
 
         if (isset($data['uip']))
         {
-            $data['ip_info'] = (localhosted(my_config('offline_access'))) ? IpApi($data['uip'])->rawBodyData : null;
+            $get_info            = $this->data(['id'=>$data['uip']], true);
+
+            if (!empty($get_info['ip_info'])) 
+            {
+                $data['ip_info'] = $get_info['ip_info'];
+            }
+            else
+            {
+                $data['ip_info'] = (localhosted(my_config('offline_access'))) ? IpApi($data['uip'])->rawBodyData : null;
+            }
         }
 
         if (isset($data['id'])) {
@@ -99,13 +108,25 @@ class AnalyticsModel extends Model
         $this->select('*');
 
         $id   = isset($data['id']) ? $data['id'] : null;
-        $data = $this->find($id);
+        $analyze = $this->find($id);
  
         if (!empty($data['col']))
         {
-            return $data[$data['col']];
+            return $analyze[$data['col']];
         }
 
+        return $analyze;
+    }
+
+    public function data($data = [], $raw_info = false)
+    {   
+        $this->select('*');
+        $id   = isset($data['id']) ? $data['id'] : '';
+        $data = $this->where(['id'=>$id])->orWhere(['uip'=>$id])->first();  
+        if (!empty($data['ip_info']) && $raw_info === false) 
+        {
+            $data['ip_info'] = json_decode($data['ip_info'], JSON_FORCE_OBJECT);
+        }
         return $data;
     }
 

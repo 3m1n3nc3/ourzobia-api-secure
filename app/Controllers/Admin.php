@@ -789,6 +789,7 @@ class Admin extends BaseController
      */
 	public function analytics($action = "list", $id = '')
 	{
+		helper("html");
 		// Check and redirect if this module is unavailable for the current  theme
 		if (!module_active('_analytics')) return redirect()->to(base_url('admin/dashboard'));
 
@@ -803,6 +804,14 @@ class Admin extends BaseController
 			'table_method' => 'analytics',
 			'acc_data'     => $this->account_data 
 		);   
+		
+		if ($action === 'data') 
+		{ 
+			$view_data['analytics']  = $this->analyticsModel->data(['id'=>$id, 'uip'=>$id]);
+			$view_data['_page_name'] = 'analytics'; 
+			$view_data['page_name']  = 'analytics_data'; 
+			$view_data['page_title'] = $view_data['analytics']['uip'] . ' Analytics Data';  
+		}
 
 		return theme_loader($view_data); 
 	} 

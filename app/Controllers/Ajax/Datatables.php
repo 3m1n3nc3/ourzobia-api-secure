@@ -577,7 +577,7 @@ class Datatables extends BaseController
 
             if ($rows->ip_info) 
             {
-                $ip_info = toArray(json_decode($rows->ip_info, JSON_FORCE_OBJECT)); 
+                $ip_info = toArray(json_decode($rows->ip_info, JSON_FORCE_OBJECT));
                 $rows->ip_info = $rows->uip??"N/A";
                 $rows->ip_info .= "\n" . img($ip_info["location"]["country_flag"]??"", false, ['alt'=>($ip_info["country_name"]??''), 'height'=>'11px']) . " " . ($ip_info["city"]??'') . ", " . ($ip_info["country_name"]??''); 
             }
@@ -587,9 +587,11 @@ class Datatables extends BaseController
             	$referrer = parse_url($rows->referrer, PHP_URL_HOST);
                 $rows->referrer = $referrer ? anchor(prep_url($referrer)) : null;
             }
+            
+            $link = anchor("admin/analytics/data/{$rows->id}", "<i class=\"fa fa-globe mr-1\"></i>");
 
             $data[$keys][] = $i;    
-            $data[$keys][] = nl2br($rows->ip_info??$rows->uip);      
+            $data[$keys][] = $link . nl2br($rows->ip_info??$rows->uip);      
             $data[$keys][] = $rows->type??"N/A";   
             $data[$keys][] = $rows->metric??"N/A";   
             $data[$keys][] = $rows->referrer??"N/A";    
