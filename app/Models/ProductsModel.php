@@ -70,4 +70,9 @@ class ProductsModel extends Model
     { 
         return $this->delete($data['id'], true);
     }
+
+    public function cancel(array $data = [])
+    { 
+        return $this->remove($data['id']);
+    }
 }
