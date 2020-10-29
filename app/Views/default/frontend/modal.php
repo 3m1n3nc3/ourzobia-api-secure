@@ -1,4 +1,4 @@
-		<?php if (empty($popup_box)): ?> 
+		    <?php if (empty($custom)): ?> 
 		    <!-- Load the <?=$modal_target ?? 'primary-modal'?> modal here -->
 		    <div class="modal fade" id="<?=$modal_target ?? 'primary-modal'?>" style="z-index: 999999;"> 
 				<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered <?=$modal_size ?? 'modal-xl'?>"> 
@@ -32,26 +32,13 @@
 					<!-- /.modal-content --> 
 				</div> 
 				<!-- /.modal-dialog --> 
-			</div>
-		<?php else: ?>
-			<div class="popup-box mid popup-manage-container">
-			    <a class="popup-close-button popup-manage-container-trigger" href="javascript:ourModal()">
-			        <svg class="popup-close-button-icon icon-cross">
-			            <use xlink:href="#svg-cross"></use>
-			        </svg>
-			    </a>
-			    <div class="popup-box-body"> 
-			      	<div class="popup-box-content" style="width: 100%;" data-simplebar>
-			      		<?php if ($widget_box === true): ?>
-			        	<div class="widget-box"> 
-			          		<p class="widget-box-title"><?=$modal_title?></p> 
-			          		<div class="widget-box-content"><?=$modal_content?></div>
-			      		</div>
-			      		<?php else: ?>
-			      			<?=$modal_content?>
-			      		<?php endif ?>
-			      	</div>
-			    </div>
 			</div> 
+		<?php else: ?>
+		    <div class="modal fade custom" id="<?=$modal_target ?? 'primary-modal'?>" tabindex="-1" role="dialog" aria-hidden="true" style="z-index: 999999;">  
+				<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered <?=$modal_size ?? 'modal-xl'?>">
+					<div class="modal-content">
+ 						<?=$modal_content ?? ''?> 
+					</div>
+				</div>
+			</div>
 		<?php endif ?>
- 

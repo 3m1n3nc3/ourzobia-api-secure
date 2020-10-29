@@ -12,7 +12,7 @@ class AnalyticsModel extends Model
     protected $useSoftDeletes = false;
 
     protected $allowedFields = [
-    	'item_id', 'uid', 'uip', 'type', 'metric', 'referrer', 'date'];
+    	'item_id', 'uid', 'uip', 'ip_info', 'type', 'metric', 'referrer', 'date'];
 
 	protected $useTimestamps = false;  
 
@@ -67,7 +67,7 @@ class AnalyticsModel extends Model
 
     public function add($data = array())
     {
-        if (isset($this->type)) 
+        if (isset($this->type))
         {
             $data['type'] = $this->type;
         }
@@ -75,6 +75,11 @@ class AnalyticsModel extends Model
         if (isset($this->metric)) 
         {
             $data['metric'] = $this->metric;
+        }
+
+        if (isset($data['uip']))
+        {
+            $data['ip_info'] = (localhosted(my_config('offline_access'))) ? IpApi($data['uip'])->rawBodyData : null;
         }
 
         if (isset($data['id'])) {
@@ -122,7 +127,7 @@ class AnalyticsModel extends Model
         {
             $this->where("MONTH(DATE(FROM_UNIXTIME(date))) = MONTH(CURDATE()) AND YEAR(DATE(FROM_UNIXTIME(date))) = YEAR(CURDATE())");
         }
-
+ 
         $stats = $this->groupBy('dated')->orderBy('MONTH(dated)', 'ASC')->orderBy('DAY(dated)', 'ASC')->get()->getResultArray(); 
         // echo $this->getLastQuery();
 

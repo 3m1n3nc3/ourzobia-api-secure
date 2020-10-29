@@ -30,6 +30,7 @@
 		<link rel="stylesheet" href="<?=base_url('resources/plugins/overlayScrollbars/css/OverlayScrollbars.min.css')?>">
         <!-- Jodit text editor -->
         <link rel="stylesheet" href="<?= base_url('resources/plugins/jodit/jodit.css'); ?>">
+        <link rel="stylesheet" href="<?=base_url('resources/plugins/dropzone/dropzone.min.css')?>">  
     <!-- Datatables -->
     <?php if (isset($has_table) && $has_table): ?>
         <link rel="stylesheet" href="<?php echo base_url('resources/plugins/datatables-bs4/css/dataTables.bootstrap4.css'); ?>">
@@ -52,5 +53,5 @@
             preloader = '<div class="d-flex justify-content-center" id="preloader"><div class="spinner-grow text-warning"></div></div>';
             segment   = 'user';
 		</script>
-        <?= $util->statsJsVars(true); ?>
+        <?=$util->statsJsVars(true, (bool)($show_stats??false)); ?>
 	</head>

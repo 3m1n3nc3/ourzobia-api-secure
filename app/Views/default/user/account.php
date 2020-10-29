@@ -21,14 +21,14 @@
                 </ul> 
                 <?php if (user_id() === user_id($uid) && fetch_user('cpanel')): ?>
                 <button class="btn btn-sm btn-success btn-block" id="webmail-login-btn">
-                    <span class='fa-stack fa-lg'>
+                    <span class='fa-stack'>
                         <i class='fas fa-circle fa-stack-2x'></i>
                         <i class='fab fa-cpanel fa-stack-1x fa-inverse text-danger'></i>
                     </span>
                     Webmail Login
                 </button> 
                     <?php if (my_config('afterlogic_domain')): ?>
-                <button class="btn font-weight-bold btn-lg btn-info btn-block" id="al-login-btn" onclick="window.location.href = '<?=my_config('afterlogic_protocol') . '://' . my_config('afterlogic_domain')?>'"> 
+                <button class="btn btn-info btn-block text-sm" id="al-login-btn" onclick="window.location.href = '<?=my_config('afterlogic_protocol') . '://' . my_config('afterlogic_domain')?>'"> 
                     AfterLogic Webmail
                 </button> 
                     <?php endif; ?>
@@ -64,9 +64,9 @@
                     <!-- /.tab-pane -->
                     <div class="tab-pane<?=active_page('settings', $_page_name??$page_name)?>" id="settings">
 
-                        <?=load_widget('avatar_upload', ['uid'=>$uid])?>
+                        <?=load_widget('avatar_upload', ['uid'=>$uid])?> 
 
-                        <?=form_open('user/account/settings/' . $uid, 'class="form-horizontal"')?>
+                        <?=form_open('user/account/settings' . ($uid?'/'.$uid:''), 'class="form-horizontal"')?>
                             <div class="form-group row">
                                 <label for="inputName" class="col-sm-2 col-form-label">Username</label>
                                 <div class="col-sm-10">
@@ -94,13 +94,18 @@
                             <?php if (logged_user('admin')): ?>  
                             <div class="form-group row">
                                 <label for="password" class="col-sm-2 col-form-label">Password</label>
-                                <div class="col-sm-10">
-                                    <?php $password = $enc_lib->get_random_password(10,12,TRUE,TRUE,TRUE,TRUE)?>
+                                <div class="col-sm-10"> 
                                     <input type="password" class="form-control" name="password" id="password" placeholder="Password" value="<?=set_value('password') ?>" onkeyup="this.type==='text'?this.type='password':''"> 
                                     <small class="text-muted">
-                                        <div class="d-none get_random_password" style="display: none;"><?=$password?></div>
-                                        <span class="text-info">Default:</span> <a href="javascript:void(0)" class="text-danger dps" onclick="const pp = document.getElementById('password'); pp.type='text'; pp.value=this.innerHTML"><?=my_config('default_password')?></a> |-----|
-                                        <span class="text-info">Random:</span> <a href="javascript:void(0)" class="text-danger xps" onclick="const pp = document.getElementById('password'); pp.type='text'; pp.value=this.innerHTML"></a>
+                                        <div class="d-none get_random_password" style="display: none;"><?=$enc_lib->get_random_password(10,12,TRUE,TRUE,TRUE,TRUE)?></div>
+                                        <span class="text-info">Default:</span> 
+                                        <a href="javascript:void(0)" class="text-danger dps" onclick="const pp = document.getElementById('password'); pp.type='text'; pp.value=this.innerHTML">
+                                            <?=my_config('default_password')?> 
+                                        </a> 
+                                        |-----|
+                                        <span class="text-info">Random:</span> 
+                                        <a href="javascript:void(0)" class="text-danger xps" onclick="const pp = document.getElementById('password'); pp.type='text'; pp.value=this.innerHTML"> 
+                                        </a>
                                     </small>
                                 </div>
                             </div>  

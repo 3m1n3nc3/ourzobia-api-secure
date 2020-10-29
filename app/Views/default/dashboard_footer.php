@@ -4,7 +4,7 @@
 		<script src="<?=base_url('resources/plugins/jquery/jquery.min.js')?>"></script>
 		<script src="<?=base_url('resources/js/jquery-ui.min.js')?>"></script>
 		<script src="<?=base_url('resources/js/jquery.form.js')?>"></script>
-		<script src="<?=base_url('resources/js/components.wazo.js')?>"></script> 
+		<script src="<?=base_url('resources/js/custom.components.js')?>"></script> 
 		<script src="<?=base_url('resources/plugins/timeago/Livestamp.js')?>"></script> 
 		<script src="<?=base_url('resources/plugins/toastr/toastr.min.js')?>"></script>
 		<script src="<?=base_url('resources/plugins/plyr/plyr.js')?>"></script>
@@ -12,27 +12,29 @@
 
 		<!-- Date / Time Functions -->
 		<script src="<?=base_url('resources/plugins/moment/moment.min.js')?>"></script>
-		<script src="<?=base_url('resources/plugins/daterangepicker/daterangepicker.js')?>"></script>
-
-		<!-- app -->
-		<script src="<?=base_url('resources/js/app.js')?>"></script>
+		<script src="<?=base_url('resources/plugins/daterangepicker/daterangepicker.js')?>"></script> 
+		
 		<!-- Bootstrap 4 -->
 		<script src="<?=base_url('resources/plugins/bootstrap/js/bootstrap.bundle.min.js')?>"></script>
 		<!-- AdminLTE App -->
 		<script src="<?=base_url('resources/distr/js/adminlte.min.js')?>"></script>
 		<script src="<?=base_url('resources/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js')?>"></script>
-		<!-- component-spinners -->
-		<script src="<?=base_url('resources/js/component-spinners.js')?>"></script>
+		<!-- button.loader -->
+		<script src="<?=base_url('resources/js/button.loader.js')?>"></script>
 		<!-- Ponzi -->
 		<script src="<?=base_url('resources/plugins/image-uploader/croppie.js')?>"></script>
-		<script src="<?=base_url('resources/js/ponzi.js')?>"></script>
-		<script src="<?=base_url('resources/js/ourzobia.scripts.js')?>"></script> 
-		<script src="<?=base_url('resources/js/ourzobia.forms.js')?>"></script> 
+		<script src="<?=base_url('resources/js/custom.functions.js')?>"></script>
+		<script src="<?=base_url('resources/js/custom.scripts.js')?>"></script> 
+		<script src="<?=base_url('resources/js/custom.forms.js')?>"></script> 
 		<script src="<?=base_url('resources/js/jQuery.dragmove.js')?>"></script> 
-		<!-- AdminLTE Settings -->
+		<!-- Plugins -->
 		<script src="<?=base_url('resources/distr/js/adminlte.settings.js')?>"></script>
     	<script src="<?=base_url('resources/plugins/jodit/jodit.js'); ?>"></script> 
+	    <script src="<?=base_url('resources/plugins/dropzone/dropzone.min.js')?>"></script>
+
+    	<?php if (!empty($show_stats)): ?>
 		<script src="<?=base_url('resources/js/dashboard.js')?>"></script>
+    	<?php endif ?>
 
 		<!-- Tooltips and toggle Initialization -->
 		<script>
@@ -70,6 +72,13 @@
 					  	beforeDestroy() {},
 					  	finished() {},
 					});
+				});
+
+				$('.countdown_timer_alt').each(function() {
+					var date = $(this).data('time');
+					$('#' + $(this).attr('id')).countdownTimer(date, function() {
+					    // End of timer
+					}); 
 				});
 
 			    // Update and show notifications, requests and message status

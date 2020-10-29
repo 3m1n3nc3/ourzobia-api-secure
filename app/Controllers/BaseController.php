@@ -26,7 +26,7 @@ class BaseController extends Controller
 	 *
 	 * @var array
 	 */
-	protected $helpers = ['form','ourfile', 'theme', 'filesystem', 'text', 'inflector', 'url', 'array', 'cookie', 'site', 'currency'];
+	protected $helpers = ['form','ourfile', 'theme', 'filesystem', 'text', 'inflector', 'url', 'array', 'cookie', 'site', 'currency', 'icon','tp_plugins', 'locale'];
 
 	/**
 	 * Constructor.
@@ -48,14 +48,17 @@ class BaseController extends Controller
         $this->enc_lib         = new \App\Libraries\Enc_lib;
         $this->util            = new \App\Libraries\Util;
 
-        $this->products_m = model('App\Models\ProductsModel', false);
         $this->actives_m  = model('App\Models\ActivesModel', false);
-        $this->usersModel = model('App\Models\UsersModel', false);
+        $this->hubs_m     = model('App\Models\HubsModel', false);
+        $this->bookings_m = model('App\Models\BookingsModel', false);
+        $this->products_m = model('App\Models\ProductsModel', false);
+        $this->contentModel = model('App\Models\ContentModel', false);
+        $this->usersModel   = model('App\Models\UsersModel', false);
         $this->settingModel   = model('App\Models\SettingsModel', false);
         $this->statsModel     = model('App\Models\StatsModel', false);
         $this->analyticsModel = model('App\Models\AnalyticsModel', false);
 
-        if (!$this->session->has('visitor') && !$this->request->isAJAX()) 
+        if (!$this->session->has('visitor') && !$this->request->isAJAX() && !$this->request->getPost('domain')) 
         {
         	$this->session->set('visitor', true);
 			$this->util->save_analysis('visits', 0);

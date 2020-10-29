@@ -1,0 +1,259 @@
+section.light_section {
+  position: relative!important;
+  background: #f2f2f2!important;
+}  
+
+section.white_section {
+  position: relative!important;
+  background: #fff!important;
+}  
+
+/**Styling contact us**/
+.toggle-map {
+    height: 5px;
+    width: 100%;
+    background-color: #9b1c65;
+    bottom: 0;
+    text-align: center;
+    position: absolute;
+    z-index: 1001;
+}
+
+#google-map {
+    text-align: center;
+    background-color: #fff;
+    height: 465px;
+    position: absolute;
+    bottom: -460px;
+    -webkit-transition: all .3s;
+    -moz-transition: all .3s;
+    transition: all .3s;
+    z-index: 101;
+    width: 100%;
+    border-top: #9b1c65 3px solid;
+    z-index: 1000;
+}
+
+.contactSec {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #fff;
+    z-index: 999;
+}
+.contactSec .container {
+    position: relative;
+    min-width: 1100px;
+    min-height: 550px;
+    display: flex;
+    z-index: 1000;
+}
+.contactSec .container .contactinfo {
+    position: absolute;
+    top: 40px;
+    width: 350px;
+    height: calc(100% - 80px);
+    background: #9d1c6c;
+    z-index: 1;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 20px 20px rgba(0, 0, 0, 0.2);
+}
+.contactSec .container .contactinfo h2 {
+    color: #ffff;
+    font-size: 24px;
+    font-weight: 500;
+}
+.contactSec .container .contactinfo .info {
+    position: relative;
+    margin: 20px 0;
+}
+.contactSec .container .contactinfo .info li {
+    position: relative;
+    list-style: none;
+    display: flex;
+    margin: 20px 0;
+    cursor: pointer;
+    align-items: flex-start;
+}
+.contactSec .container .contactinfo .info li span:nth-child(1) {
+    width: 30px;
+    min-width: 30px;
+}
+.contactSec .container .contactinfo .info li span:nth-child(1) img {
+    max-width: 100%;
+    filter: invert();
+}
+.contactSec .container .contactinfo .info li span:nth-child(2) {
+    color: #ffff;
+    margin-left: 10px;
+    font-weight: 300;
+    opacity: ;
+}
+.contactSec .container .contactinfo .info li:hover span:nth-child(1) img,
+.contactSec .container .contactinfo .info li:hover span:nth-child(2) {
+    opacity: 1;
+}
+.contactSec .container .contactinfo .sci {
+    position: relative;
+    display: flex;
+}
+.contactSec .container .contactinfo .sci li {
+    list-style: none;
+    margin-right: 15px;
+    
+}
+.contactSec .container .contactinfo .sci li a {
+    text-decoration: none;
+    display: inline-block;
+    margin-left: 20px;
+}
+.contactSec .container .contactinfo .sci li a img {
+    width: 20px;
+    filter: invert();
+}
+.contactSec .container .contactinfo .sci li:hover a img {
+    opacity: 1;
+}
+.contactSec .container .contactForm {
+    position: absolute;
+    padding: 70px 50px;
+    background: #fff;
+    margin-left: 150px;
+    padding-left: 250px;
+    width: calc(100% - 150px);
+    height: 100%;
+    box-shadow: 0 50px 50px rgba(33, 150, 243, 0.1);
+}
+.contactSec .container .contactForm h2 {
+    color: #fff;
+    font-size: 24px;
+    font-weight: 500;
+}
+.contactSec .container .contactForm .formBox {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: space-around;
+    padding-top: 0px;
+}
+.contactSec .container .contactForm .formBox .inputBox {
+    position: relative;
+    margin: 0 0 25px 0;
+}
+.contactSec .container .contactForm .formBox .inputBox.w50 {
+    width: 47%;
+}
+.contactSec .container .contactForm .formBox .inputBox.w100 {
+    width: 100%;
+}
+.contactSec .container .contactForm .formBox .inputBox input,
+.contactSec .container .contactForm .formBox .inputBox textarea {
+    width: 100%;
+    padding: 5px 0px;
+    resize: none;
+    font-size: 18px;
+    font-weight: 300;
+    color: #333;
+    border: none;
+    border-bottom: 1px solid #777;
+    outline: none;
+}
+.contactSec .container .contactForm .formBox .inputBox textarea {
+    min-height: 120px;
+}
+.contactSec .container .contactForm .formBox .inputBox span {
+    position: absolute;
+    left: 0;
+    padding: 5px 0;
+    font-size: 16px;
+    font-weight: 300;
+    color: #000;
+    transition: 0.3s;
+    pointer-events: none;
+}
+.contactSec .container .contactForm .formBox .inputBox input:focus ~ span,
+.contactSec .container .contactForm .formBox .inputBox textarea:focus ~ span,
+.contactSec .container .contactForm .formBox .inputBox input:valid ~ span,
+.contactSec .container .contactForm .formBox .inputBox textarea:valid ~ span {
+    transform: translateY(-20px);
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 1px;
+    color: #9d1c6c;
+}
+.contactSec .container .contactForm .formBox .inputBox input[type="submit"] {
+    position: relative;
+    cursor: pointer;
+    background: #9d1c6c;
+    color: #fff;
+    border: none;
+    max-width: 150px;
+    padding: 12px 20px;
+
+}
+
+/*media query for all device*/
+@media (max-width : 991px) { 
+    .center-txt {
+        margin-left: 0;
+        top: 20%
+    }
+    .center-txt h1 {
+        display: block;
+        font-weight: 400;
+        letter-spacing: 5px;
+    }
+    .center-txt p {
+        display: block;
+        font-weight: 400;
+        letter-spacing: 2.5px;
+        text-align: center;
+    }
+    .center-btn:link,
+    .center-btn:visited {
+        display: none;
+    }
+    .contactSec .container .contactForm .formBox {
+        position: relative !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        padding-top: 0px;
+        flex-direction: column !important;
+    }
+    .contactSec .container .contactForm .formBox .inputBox input,
+    .contactSec .container .contactForm .formBox .inputBox textarea {
+        max-width: 100% !important;
+    }
+    .contactSec {
+        position: relative;
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: column;
+        background: #fff;
+        z-index: 999;
+    }
+    .contactSec .container {
+        position: relative;
+        min-width: 0px;
+        min-height: 0px;
+        display: flex;
+        z-index: 1000;
+        
+    }
+    .contactSec .container .contactinfo {
+        display: none !important;
+    }
+    .contactSec .container .contactForm {
+        position: relative;
+        background: #fff;
+        margin-left: 0px;
+        padding-left: 30px;
+        width: 100%;
+        padding: 70px 50px;
+    }
+}

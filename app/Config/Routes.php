@@ -9,10 +9,10 @@ if (file_exists(SYSTEMPATH . 'Config/Routes.php'))
 {
 	require SYSTEMPATH . 'Config/Routes.php';
 }
-
-$response = new \CodeIgniter\HTTP\Message;
  
-
+$response = service('response');
+$requests = service('request');
+ 
 /**
  * --------------------------------------------------------------------
  * Router Setup
@@ -22,54 +22,63 @@ $routes->setDefaultNamespace('App\Controllers');
 $routes->setDefaultController('Home');
 $routes->setDefaultMethod('index');
 $routes->setTranslateURIDashes(false);
-$routes->set404Override( 
-	function() {
-		$data['success'] = false;
-	    $data['status']  = 'error'; 
-	    $data['response'] = [];   
-	    $data['message'] = 'Error 404.';   
 
-		$json = json_encode($data);
-		return $this->response->setBody($json)
-			->setHeader('Access-Control-Allow-Origin', '*')
+// Set required headers for incoming AJAX requests
+if ($requests->isAJAX()) 
+{
+    $site_domain = parse_url(config('App')->baseURL, PHP_URL_HOST);
+
+    // Set headers to allow CORS
+    if ($requests->getHeaderLine('Host') !== parse_url(config('App')->baseURL, PHP_URL_HOST)) 
+    {
+		$response->setHeader('Access-Control-Allow-Origin', '*')
 			->setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE')
-            ->setHeader('Access-Control-Allow-Headers', 'Content-Type')
-			->setHeader('Content-Type', 'application/json')
-			->setHeader('Content-Length', (string) strlen($json))
-			->getBody();
-	}
-);
+		    ->setHeader('Access-Control-Allow-Headers', 'Content-Type'); 
+    }
+
+	$routes->set404Override( 
+		function() {
+			$data['success'] = false;
+		    $data['status']  = 'error'; 
+		    $data['response'] = [];   
+		    $data['message'] = 'Error 404.';   
+
+			$json = json_encode($data);
+			return $this->response->setBody($json)
+				->setStatusCode('404')
+				->setHeader('Content-Type', 'application/json')
+				->setHeader('Content-Length', (string) strlen($json))
+				->getBody();
+		}
+	); 
+}
 $routes->setAutoRoute(true);
 
 /**
  * --------------------------------------------------------------------
  * Route Definitions
  * --------------------------------------------------------------------
- */
+ */ 
 
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
 $routes->get('/', 'Home::index');
+$routes->get('page/(:any)', 'Home::index/$1'); 
 
-$routes->post('requests/activate', 'Home::activate');
-$routes->post('requests/(:any)', 'Home::$1');
-$routes->get('requests/(:any)', 'Home::$1');
-$routes->get('resources/(:any)', 'Resources::index/$1');
-$routes->get('resource/(:any)', 'Resources::index/$1');
+$routes->post('requests/activate', 'Home::activate'); 
+$routes->match(['get', 'post'], 'requests/(:any)', 'Home::$1'); 
+ 
+$routes->get('src/(:any)', 'Src::index/$1');
 
 $routes->get('dashboard', 'Admin::index');
 $routes->get('dashboard/(:any)', 'Admin::$1'); 
 $routes->get('admin/dashboard', 'Admin::index'); 
 
-$routes->get('logout', 'Admin::logout');
-$routes->match(['get', 'post'], 'login', 'Admin::login');
-$routes->match(['get', 'post'], 'signup', 'Admin::login/signup');
-$routes->match( ['get', 'post'], 'admin/(:any)', 'Admin::$1'); 
+$routes->get('user/dashboard', 'User::index');  
 
-$routes->get('user/dashboard', 'User::index');
-$routes->match(['get', 'post'], 'user/(:any)', 'User::$1');
-
-$routes->match(['get', 'post'], 'ajax/datatables/(:any)', 'Ajax\Datatables::$1');  
+$routes->get('logout/(:any)', 'Home::logout/$1');  
+$routes->match(['get', 'post'], 'login', 'Home::login');
+$routes->match(['get', 'post'], 'signup', 'Home::login/signup'); 
 
 
 /**

@@ -1,0 +1,1 @@
+        <?=load_widget('pricing_tables', ['hubs' => $hubs])?> 

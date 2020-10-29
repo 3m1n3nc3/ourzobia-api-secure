@@ -10,10 +10,9 @@ class AccessFilter implements FilterInterface
     {
     	helper('cookie_helper');
 
-        $account_data  = new \App\Libraries\Account_Data;
-        $session       = \Config\Services::session();  
-        // $request       = \Config\Services::request();
-        $usersModel    = model('App\Models\UsersModel', false); 
+        $account_data = new \App\Libraries\Account_Data;
+        $session      = \Config\Services::session();   
+        $usersModel   = model('App\Models\UsersModel', false); 
 
         if ($request->uri->getSegment(1) == 'user') 
         {
@@ -23,14 +22,9 @@ class AccessFilter implements FilterInterface
         if ($session->has('username') && ! $session->has('access_folder') ) 
         {
             $userdata      = $usersModel->user_by_username($session->get('username'));  
-            $access_folder = ($userdata['admin'] > 0) ? 'admin' : 'user';
+            $access_folder = logged_user('admin') ? 'admin' : 'user';
             $session->set('access_folder', $access_folder);
-        }
-
-        if (in_array($request->uri->getSegment(1), ['playground']) || in_array($request->uri->getSegment(2), ['post'])) 
-        {
-            return true;
-        }
+        } 
 
         if ($request->uri->getSegment(1) !== 'm' && $request->uri->getSegment(2) !== 'm' && !$request->getGet('token')) 
         {

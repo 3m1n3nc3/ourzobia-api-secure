@@ -27,6 +27,21 @@
 		        echo view('default/frontend/modal', $param);
 		    ?> 
 
+            <?php
+                $param2 = array(
+                    'custom'        => true,
+                    'modal_target'  => 'CustomModal', 
+                    'modal_size'    => 'modal-md',
+                    'modal_content' => '
+                        <div class="m-0 p-0 text-center" id="upload_loader2">
+                            <div class="loader">
+                                <div class="spinner-grow text-warning"></div>
+                            </div> 
+                        </div>'
+                );
+                echo view('default/frontend/modal', $param2);
+            ?> 
+
 			<div class="m-2 card card-info shadow text-sm floating-card-box dragmove" style="position:fixed; top: 30px; right:0px; z-index: 5000; max-width:350px; display: none;">
 				<div class="card-header dragmove-header">
 					<h3 class="card-title">Box</h3>
@@ -68,7 +83,7 @@
 			<footer class="main-footer <?=my_config('des_footer_small_text')?>">
 				<!-- To the right -->
 				<div class="float-right d-none d-sm-inline">
-					Developed by <?=my_config('site_name')?> Invest LTD
+					Developed by <?=my_config('site_name')?>
 				</div>
 				<!-- Default to the left -->
 				<strong>Copyright &copy; 2019-<?=date('Y')?> <a href="<?=base_url()?>"><?=my_config('site_name')?></a>.</strong> All rights reserved.

@@ -44,6 +44,7 @@ return [
    'is_natural_no_zero'    => 'The {field} field must only contain digits and must be greater than zero.',
    'is_not_unique'         => 'The {field} field must contain a previously existing value in the database.',
    'is_unique'             => '{field} ({value}) is not available.',
+   'is_unique_list'        => 'Your selected Range is not available.',
    'less_than'             => 'The {field} field must contain a number less than {param}.',
    'less_than_equal_to'    => 'The {field} field must contain a number less than or equal to {param}.',
    'matches'               => 'The {field} field does not match the {param} field.',
@@ -71,7 +72,7 @@ return [
    'valid_cc_num'          => '{field} does not appear to be a valid credit card number.',
 
 	// Files
-   'uploaded'              => '{field} is not a valid uploaded file.',
+   'uploaded'              => 'Please upload a valid {field} file.',
    'max_size'              => '{field} is too large of a file.',
    'is_image'              => '{field} is not a valid, uploaded image file.',
    'mime_in'               => '{field} does not have a valid mime type.',

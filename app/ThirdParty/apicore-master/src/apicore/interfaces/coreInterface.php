@@ -61,6 +61,12 @@ interface coreInterface {
     function auth($user, $pass, $type = 'basic');
 
     /**
+     * Function to add query string parameters to the request
+     * @param $args
+     */
+    function addQueryString($args);
+
+    /**
      * PHP Magic function. Should be used to set the HTTP method of a request
      * @param string $name
      * @return mixed

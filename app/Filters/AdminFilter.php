@@ -8,9 +8,8 @@ class AdminFilter implements FilterInterface
 {
     public function before(RequestInterface $request, $arguments = null)
     {
-        $account_data  = new \App\Libraries\Account_Data;
-        $session       = \Config\Services::session();  
-        $usersModel    = model('App\Models\UsersModel', false);
+        $account_data = new \App\Libraries\Account_Data;
+        $session      = \Config\Services::session();   
 
         helper(['cookie', 'site']);
 
@@ -26,10 +25,7 @@ class AdminFilter implements FilterInterface
         }
 
         if (! $session->has('access_folder') ) 
-        {
-            $userdata      = $usersModel->user_by_username($session->get('username'));  
-            // $access_folder = ($userdata['admin'] > 0) ? 'admin' : 'user';
-            // $session->set('access_folder', $access_folder);
+        { 
             $session->set('access_folder', 'admin');
         }
         return $account_data->is_logged_in();

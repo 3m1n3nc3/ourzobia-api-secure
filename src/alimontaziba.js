@@ -9,7 +9,7 @@
  */
 
 var loc = window.location.hostname;
-var domain = encodeURIComponent(loc); 
+var domain = encodeURIComponent(loc);
 var url;
 
 var _script = document.querySelector('[data-current="true"]');
@@ -137,14 +137,14 @@ jQuery.fn.alert_notice = function (message = 'A network error occurred!', type =
         type = 'danger';
     }
 
-    var general_notice = $("<div></div>")
-        .html('<button type="button" class="close float-right" data-dismiss="alert" aria-hidden="true">&times;</button>' + message)
-        .addClass("alert alert-dismissible alert-"+type)
-        .attr("id", "install-alert");
-
-    $(this).find("#install-alert").remove();
+    let general_notice = $("<div></div>")
+        .html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + message)
+        .addClass("my-1 alert alert-dismissible alert-"+type)
+        .attr("id", "create-alert-notice"); 
+ 
+    $(this).children("#create-alert-notice").remove();
     $( this ).append(general_notice);
-} 
+}
 
 jQuery.fn.buttonSpinner = function (action) {
     var self = $(this);

@@ -220,7 +220,7 @@ class Connect extends BaseController
         }
         //print_r($data);echo $metric;
         $this->analyzeModel->t_post()->metric($metric)->add($data);
-    } 
+    }
 
     /**
      * Logs the user into webmail
@@ -399,5 +399,151 @@ class Connect extends BaseController
         }
 
         return $this->response->setJSON($set_response);
+    } 
+
+    /**
+     * Allows for the upload of gallery media
+     * @return null     Does not return anything but echoes a JSON Object with a response
+     */
+    public function upload_media()
+    {   
+        $ntfn = new Notifications;
+
+        // Check if user is logged in and the method is accessed via ajax
+        if ($this->util::loggedInIsAJAX() !== true)
+            return $this->util::loggedInIsAJAX();
+
+        $item       = $this->request->getPost();
+        $item_type  = isset($item['type']) ? explode('/', $item['type'])[0] : null;
+
+        $data       = [];
+        $item_file  = $thumbnail_file = $description = NULL;
+
+        // Check if this upload has a thumbnail
+        $thumbnail = $this->request->getPost('thumbnail');
+
+        $data['success'] = false;
+        $data['status']  = 'error'; 
+
+        // Get the item thumbnail if available
+        if ($thumbnail && empty($error)) 
+        {
+            $thumb      = explode(';', $thumbnail);
+            $thumbnail_ = isset($thumb[1]) ? $thumb[1] : null; 
+            $file_ext   = isset($thumb[0]) ? str_ireplace('data:image/', '', $thumb[0]) : 'png'; 
+
+            if (isset($thumbnail_))
+            { 
+                list($type, $thumbnail) = explode(';', $thumbnail);
+                list(, $thumbnail) = explode(',', $thumbnail);
+                $t_image = base64_decode($thumbnail);
+                $thumbnail_image = 'thumb_'.mt_rand().'_'.mt_rand().'_p.' . $file_ext;
+                $upload_path = PUBLICPATH . 'uploads/thumbs/'; 
+
+                // Save the new image to the upload directory              
+                if ($t_image)
+                {
+                    if ( ! $this->creative->create_dir($upload_path))
+                    {
+                        $error = 'The thumbnail destination folder does not appear to be writable.'; 
+                    }
+                    else
+                    {
+                        // $this->creative->delete_file('./' . $data[$table_index]);
+
+                        if ( ! file_put_contents($upload_path . $thumbnail_image, $t_image) )
+                        {
+                            $error = 'The file could not be written to disk.'; 
+                        }
+                        else {
+                            $thumbnail_file = 'uploads/thumbs/' . $thumbnail_image;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Get the item image or video file
+        if (empty($error) && $this->request->getFile('file')) 
+        {
+            $new_name = 'item_'.rand().'_'.rand();
+
+            $item_files = $this->creative->upload('file', NULL, $new_name,  NULL, [1000,1000]); 
+            if ($this->creative->upload_errors('file') !== FALSE)
+            {
+                $error = $this->creative->upload_errors('file', '','');
+            }
+            else
+            {
+                $item_file = $item_files['new_path'];
+            }
+        }
+
+        // Get the item description
+        if (!empty($item['description']) || !empty($item['title'])) 
+        {
+            $description = $item['description']; 
+            $title       = $item['title']; 
+            $featured    = $item['featured']; 
+        }
+        elseif (empty($item_file) && empty($post['feature'])) 
+        {
+            $error = 'Unable to save empty item.';
+        }
+
+        // Prepare and save the data to the database
+        if (empty($error)) 
+        {
+            $uid = (isset($item['uid'])) ? $item['uid'] : user_id(); 
+
+            if (!empty($item['item_id'])) 
+            {
+                $save_item = [  
+                    'item_id'   => $item['item_id'], 
+                    'title'     => $title,
+                    'details'   => $description, 
+                    'featured'  => $featured
+                ]; 
+                $data['message'] = 'Your item has been updated!'; 
+            }
+            else
+            {
+                $save_item = [
+                    'getId'     => true,  
+                    'title'     => $title,
+                    'details'   => $description,
+                    'file'      => $item_file,  
+                    'thumbnail' => $thumbnail_file, 
+                    'type'      => $item_type, 
+                    'featured'  => $featured
+                ]; 
+                $data['message'] = 'Your item has been published!'; 
+            } 
+            
+            $save_item['uid']   = $uid; 
+
+            $saved_id = $this->contentModel->save_gallery($save_item);
+
+            $data['success'] = true;
+            $data['status']  = 'success';
+
+            $item_id  = (!empty($item['item_id'])) ? $item['item_id'] : $saved_id;
+
+            if ($saved_id && $item_id !== true)
+            {  
+                $get_item = $this->contentModel->get_features(['id' => $item_id], 'gallery');
+                // $data['html'] = load_widget('posts/item', ['post'=>$get_item]);
+            }
+
+            $this->response->setStatusCode(200);
+        }
+
+        if (!empty($error)) 
+        {
+            $data['message'] = $error;
+            $this->response->setStatusCode(500);
+        }
+
+        return $this->response->setJSON($data);    
     } 
 }

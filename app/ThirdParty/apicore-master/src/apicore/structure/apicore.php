@@ -158,6 +158,15 @@ abstract class apiCore implements coreInterface{
     }
 
     /**
+     * Function to add query string parameters to the request
+     * @param $args
+     */
+    public function addQueryString($args){
+        $this->request->addQueryString($args);
+        return $this;
+    }
+
+    /**
      * Magic __get function for setting the HTTP method and API path
      * @param string $name
      * @return $this|mixed

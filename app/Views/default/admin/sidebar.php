@@ -27,7 +27,7 @@
 								<a href="<?=site_url('admin/dashboard')?>" class="nav-link<?=active_page('dashboard', $_page_name??$page_name)?>">
 									<i class="nav-icon fas fa-tachometer-alt"></i>
 									<p>
-										Dashboard 
+										<?=_lang('admin_dashboard')?> 
 									</p>
 								</a>
 							</li>
@@ -37,7 +37,7 @@
 								<a href="<?=site_url('admin/users')?>" class="nav-link<?=active_page('users', $_page_name??$page_name)?>">
 									<i class="nav-icon fas fa-users"></i>
 									<p>
-										Users 
+										<?=_lang('users')?>  
 									</p>
 								</a>
 							</li>
@@ -47,17 +47,77 @@
 								<a href="<?=site_url('admin/products')?>" class="nav-link<?=active_page('products', $_page_name??$page_name)?>">
 									<i class="nav-icon fas fa-box"></i>
 									<p>
-										Products 
+										<?=_lang('products')?> 
 									</p>
 								</a>
 							</li>
 							<?php endif ?>   
-							<?php if (logged_user('admin')>=3):?>
-							<li class="nav-item has-treeview<?=active_page(['configuration','features','content', 'banks'], $_page_name??$page_name, false, 'menu-open')?>">
-								<a href="#" class="nav-link<?=active_page(['configuration','features','content', 'banks'], $_page_name??$page_name)?>">
+							<?php if (module_active('_payments')): ?>
+							<li class="nav-item">
+								<a href="<?=site_url('admin/payments')?>" class="nav-link<?=active_page('payments', $page_name)?>">
+									<i class="nav-icon fas fa-credit-card"></i>
+									<p>
+                    					<?=_lang('payments')?> 
+									</p>
+								</a>
+							</li>
+							<?php endif ?>  
+							<?php if (logged_user('admin')>=3 && (
+								module_active('_hub_type') ||
+								module_active('_hubs') 
+							)):?>
+							<li class="nav-item has-treeview<?=active_page(['hub_type','hub_create','hub_list', 'hub_booked'], $_page_name??$page_name, false, 'menu-open')?>">
+								<a href="#" class="nav-link<?=active_page(['hub_type','hub_create','hub_list', 'hub_booked'], $_page_name??$page_name)?>">
+									<i class="nav-icon fas fa-building"></i>
+									<p>
+										<?=_lang('manage_hubs')?>
+									</p>
+								</a>
+            					<ul class="nav nav-treeview"> 
+									<?php if (module_active('_hub_type')): ?>
+									<li class="nav-item">
+										<a href="<?=site_url('admin/hubs')?>" class="nav-link<?=active_page('hub_type', $page_name_??$_page_name??$page_name)?>">
+											<i class="nav-icon fas fa-object-group"></i>
+											<p>
+												<?=_lang('hub_category')?>
+											</p>
+										</a>
+									</li>
+									<?php endif ?> 
+									<?php if (module_active('_hubs')): ?>
+									<li class="nav-item">
+										<a href="<?=site_url('admin/hubs/hub_list')?>" class="nav-link<?=active_page(['hub_list','hub_create'], $page_name_??$_page_name??$page_name)?>">
+											<i class="nav-icon fas fa-columns"></i>
+											<p>
+												<?=_lang('hub_list')?>
+											</p>
+										</a>
+									</li>
+									<?php endif ?> 
+									<?php if (module_active('_hubs')): ?>
+									<li class="nav-item">
+										<a href="<?=site_url('admin/hubs/hub_booked')?>" class="nav-link<?=active_page('hub_booked', $page_name_??$_page_name??$page_name)?>">
+											<i class="nav-icon fas fa-book-open"></i>
+											<p>
+												<?=_lang('booked_hubs')?>
+											</p>
+										</a>
+									</li>
+									<?php endif ?> 
+								</ul>
+							</li>
+							<?php endif?>
+							<?php if (logged_user('admin')>=3 && (
+								module_active('_config') ||
+								module_active('_features') ||
+								module_active('_content') ||
+								module_active('_gallery')
+							)):?>
+							<li class="nav-item has-treeview<?=active_page(['configuration','features','content','gallery'], $_page_name??$page_name, false, 'menu-open')?>">
+								<a href="#" class="nav-link<?=active_page(['configuration','features','content','gallery'], $_page_name??$page_name)?>">
 									<i class="nav-icon fas fa-cog"></i>
 									<p>
-										Config
+										<?=_lang('config')?>
 									</p>
 								</a>
             					<ul class="nav nav-treeview"> 
@@ -66,7 +126,7 @@
 										<a href="<?=site_url('admin/configuration')?>" class="nav-link<?=active_page('configuration', $_page_name??$page_name)?>">
 											<i class="nav-icon fas fa-cog"></i>
 											<p>
-												Configuration
+												<?=_lang('configuration')?>
 											</p>
 										</a>
 									</li>
@@ -76,7 +136,7 @@
 										<a href="<?=site_url('admin/features')?>" class="nav-link<?=active_page('features', $_page_name??$page_name)?>">
 											<i class="nav-icon fas fa-image"></i>
 											<p>
-												Features
+												<?=_lang('features')?>
 											</p>
 										</a>
 									</li>
@@ -86,20 +146,40 @@
 										<a href="<?=site_url('admin/content')?>" class="nav-link<?=active_page('content', $_page_name??$page_name)?>">
 											<i class="nav-icon fas fa-file-alt"></i>
 											<p>
-												Content
+												<?=_lang('content')?>
+											</p>
+										</a>
+									</li>
+									<?php endif ?> 
+									<?php if (module_active('_gallery')): ?>
+									<li class="nav-item">
+										<a href="<?=site_url('admin/gallery')?>" class="nav-link<?=active_page('gallery', $_page_name??$page_name)?>">
+											<i class="nav-icon fas fa-play-circle"></i>
+											<p>
+												<?=_lang('gallery')?>
 											</p>
 										</a>
 									</li>
 									<?php endif ?> 
 								</ul>
 							</li>
-							<?php endif?>
+							<?php endif?>  
 							<?php if (module_active('dashboard')):?> 
 							<li class="nav-item">
 								<a href="<?=site_url('user')?>" class="nav-link<?=active_page('admin', $_page_name??$page_name)?>">
 									<i class="nav-icon fas fa-user"></i>
 									<p>
-										User Dashboard 
+										<?=_lang('dashboard')?>  
+									</p>
+								</a>
+							</li> 
+							<?php endif ?> 
+							<?php if (module_active('_analytics')):?> 
+							<li class="nav-item">
+								<a href="<?=site_url('admin/analytics')?>" class="nav-link<?=active_page('analytics', $_page_name??$page_name)?>">
+									<i class="nav-icon fa fa-chart-line"></i>
+									<p>
+										<?=_lang('analytics')?>  
 									</p>
 								</a>
 							</li> 
@@ -109,7 +189,7 @@
 								<a href="<?=site_url('admin/updates')?>" class="nav-link<?=active_page('updates', $_page_name??$page_name)?>">
 									<i class="nav-icon fas fa-box-open"></i>
 									<p>
-										Updates 
+										<?=_lang('updates')?>  
 									</p>
 								</a>
 							</li> 

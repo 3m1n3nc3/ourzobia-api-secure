@@ -3,31 +3,8 @@
 use Config\Services;
 use \App\Libraries\Util; 
 use \n1ghteyes\apicore\client;
-use \CodeIgniter\HTTP\Response;
+use \CodeIgniter\HTTP\Response; 
 
- 
-if (! function_usable('_lang'))
-{
- 
-    /**
-     * A convenience method to translate a string or array of them and format
-     * the result with the intl extension's MessageFormatter.
-     * This is an alias of the built in Codeigniter lang() method
-     *
-     * @param string|[] $line
-     * @param array     $args
-     * @param string    $locale
-     *
-     * @return string
-     */
-    function _lang(string $line, array $args = [], string $locale = null)
-    {
-        $lang_file = "Default";
-
-        return lang("$lang_file.$line", $args, '$locale');
-    }
-}
- 
 /**
  * CodeIgniter Security Helpers
  *
@@ -42,22 +19,32 @@ if (! function_usable('active_page'))
 	 * @param  string $str
 	 * @return string
 	 */
-	function active_page($page = array(), $current_page = '', $add_class = false, $custom = false): string
-	{
+    function active_page($page = array(), $current_page = '', $add_class = false, $custom = false, $reverse = false): string
+    {
         $active_class = ($custom) ? $custom : 'active';
 
-		if (is_array($page)) {
-			if (in_array($current_page, $page)) 
+        if (!is_bool($reverse)) 
+        { 
+            if ($page === $current_page) 
             {
+                return " $active_class";
+            }
+            return " $reverse";
+        }
+
+        if (is_array($page)) {
+            if (($reverse === false && in_array($current_page, $page)) || ($reverse === true && !in_array($current_page, $page))) 
+            { 
                 if ($add_class === true) 
                 {
                     return " class=\"$active_class\"";
                 }
-				return " $active_class";
-			}
-		}
+                return " $active_class";
+            }
+            return '';
+        }
 
-        if ($page === $current_page) 
+        if (($reverse === false && $page === $current_page) || ($reverse === true && $page !== $current_page)) 
         {
             if ($add_class === true) 
             {
@@ -66,8 +53,8 @@ if (! function_usable('active_page'))
             return " $active_class";
         }
         return '';
-	}
-}
+    }
+} 
 
 
 //--------------------------------------------------------------------
@@ -547,6 +534,131 @@ if ( ! function_usable('fetch_user'))
 //--------------------------------------------------------------------
 
 
+if ( ! function_usable('show_countdown'))
+{ 
+    /**
+     * Displays a countdown
+     * @param  string            $time     unix timestamp or string to time operative (E.g. NOW+2 Days)
+     * @param  boolean|string    $validate 
+     *                           >true|false   either show a timer or a boolean indicating timer is still active
+     *                           >WAIT         remove the duration if $past is in the future
+     *                           >LEFT         show a timer or a string indicating left over time
+     *                           >BLOCK        return a boolean if $past is in the past and timer has left over time
+     * @param  string            $duration the duration for this timer
+     * @param  string            $units    set the units for the timer (E.g. Hours)
+     * @param  string            $class    set the class to display the timer in
+     * @return string
+     */
+    function show_countdown(string $pre_date, $validate = FALSE, $duration = '24', $units = 'Hours', $class = 'text-danger')
+    {   
+        if (!is_numeric($pre_date)) 
+            $pre_date = strtotime("$pre_date");  
+
+        if ($validate === "WAIT" && !show_countdown($pre_date, 'BLOCK', $duration, $units)) 
+        {
+            $duration = '0';
+            $class    = $class . ' deleted-line';
+        }
+
+        $future      = date('d-m-Y H:i:s', $pre_date); 
+        $future_time = strtotime("$future + $duration $units"); 
+
+        $time_left   = max($future_time-time(),0);
+
+        if ($validate === true) 
+        {   
+            return ($time_left>0);
+        } 
+        elseif ($validate === "LEFT") 
+        {   
+            return $time_left;
+        } 
+        elseif ($validate === "BLOCK") 
+        {
+            return ($pre_date<=time() && $time_left>0);
+        }
+
+        $down_time = date('Y/m/d H:i:s', $future_time);
+
+        $time_id   = $pre_date.rand();
+        $time_pane = ($time_left>0) ? "
+        <div 
+            class=\"countdown_timer_alt $class\" 
+            data-time=\"$down_time\" 
+            id=\"timer$time_id\">
+            {day:0} <small>Days</small> {hour:00} <small>Hrs</small> {min:00} <small>Min</small> {sec:00} <small>Sec</small>
+        </div>\n" : "\n";
+        return $time_pane;
+    }
+}
+
+
+if ( ! function_usable('time_differentiator') ) 
+{ 
+    /**
+     * Generates a time left string
+     * 
+     * @param string     $close     unix_timestamp
+     * @param string     $far       unix_timestamp
+     *
+     * @return string
+     */
+    function time_differentiator(string $close = null, string $far = null, $tag = null, $class = "") 
+    { 
+        $close_time = new DateTime(date('Y-m-d H:i:s', $close));
+        $far_time   = new DateTime(date('Y-m-d H:i:s', $far));
+        $time_diff  = $close_time->diff($far_time);
+
+        $tx = explode('.', $tag);
+        $pre = !empty($tx[1]) ? $tx[1] : "";
+        $tag = !empty($tx[0]) ? $tx[0] : "";
+
+        if ($tag)
+        {
+            $stamp = "\n";
+            $stamp .= $tag ? "<$tag" . ($class?" class=\"$class\"":'') .">$pre" : "";
+            $stamp .= $time_diff->y ? "{$time_diff->y} Years " : '';
+            $stamp .= $time_diff->m ? "{$time_diff->m} Months " : '';
+            $stamp .= $time_diff->d ? "{$time_diff->d} Days " : '';
+            $stamp .= $time_diff->h ? "{$time_diff->h} Hours " : ''; 
+            $stamp .= $time_diff->i ? "{$time_diff->i} Minutes " : ''; 
+            $stamp .= $tag ? "</$tag>\n" : "\n";
+        }
+
+        return $stamp;
+    } 
+}
+
+
+//--------------------------------------------------------------------
+
+
+if ( ! function_usable('diff2hours') ) 
+{ 
+    /**
+     * Coverts the difference between two dates or timestamps to hours
+     * 
+     * @param string     $future     unix_timestamp/Date-time
+     * @param string     $past       unix_timestamp/Date-time
+     *
+     * @return string
+     */
+    function diff2hours(string $future = "NOW", string $past = "NOW") 
+    {  
+        if (!is_numeric($future)) 
+            $future = strtotime("$future"); 
+
+        if (!is_numeric($past)) 
+            $past = strtotime("$past");
+
+        return ($future-$past)/3600;
+    } 
+}
+
+
+//--------------------------------------------------------------------
+
+
 if ( ! function_usable('toArray'))
 { 
     /**
@@ -567,6 +679,65 @@ if ( ! function_usable('toArray'))
             $new = $obj;
         }
         return $new;
+    }
+}
+
+
+// --------------------------------------------------------------------
+
+
+if ( ! function_usable('array_find'))
+{
+    /** 
+     *
+     * Searches an array for a similar string and returns the matches
+     *
+     * @param   string needle 
+     * @param   array haystack 
+     * @return  array
+     */
+    function array_find($needle, array $haystack, $key_value = true, $column = null): array
+    {
+        $keyArray = array();
+
+        if(!empty($haystack[0]) && is_array($haystack[0]) === true) 
+        { 
+            // for multidimentional array
+            foreach (array_column($haystack, $column) as $key => $value) 
+            {
+                if (strpos(strtolower($value), strtolower($needle)) !== false || strpos(strtolower($key), strtolower($needle)) !== false) 
+                {
+                    if ($key_value === true) 
+                    {
+                        $keyArray[$key] = $value;
+                    }
+                    else
+                    {
+                        $keyArray[] = $key;
+                    }
+
+                }
+            }
+
+        } else {
+            foreach ($haystack as $key => $value) 
+            { 
+                // for normal array
+                if (strpos(strtolower($value), strtolower($needle)) !== false || strpos(strtolower($key), strtolower($needle)) !== false) 
+                {
+                    if ($key_value === true) 
+                    {
+                        $keyArray[$key] = $value;
+                    }
+                    else
+                    {
+                        $keyArray[] = $key;
+                    }
+                }
+            }
+        } 
+
+        return $keyArray;
     }
 }
 
@@ -823,6 +994,72 @@ if ( ! function_usable('deleteAll') )
     } 
 } 
 
+if ( ! function_usable('update_env') ) 
+{
+    /**
+     * A convenience method to update the values of the .env file
+     *
+     * @param string        $fields
+     * @param string|int    $value 
+     *
+     * @return bool
+     */
+    function update_env($fields = null, $value = null) : bool
+    {    
+        if (!empty($fields) && (is_array($fields) OR $value)) 
+        {
+            $dot_env_path = ROOTPATH . '.env'; 
+
+            @chmod($dot_env_path, 0666);
+            $dot_env_file = file_get_contents($dot_env_path);
+            $dot_env_file = trim($dot_env_file);
+
+            if (is_array($fields)) 
+            {
+                foreach ($fields as $field => $value) 
+                {
+                    $curr_val     = env($field);
+
+                    if (stripos($dot_env_file, $field) !== FALSE) 
+                    {
+                        $dot_env_file = str_replace("$field = $curr_val", "$field = $value", $dot_env_file);  
+                    }
+                    elseif (stripos($dot_env_file, "#---#") !== FALSE) 
+                    {
+                        $dot_env_file = str_replace("#---#", "#---#\n$field = $value", $dot_env_file);  
+                    }
+                } 
+            }
+            else
+            {
+                $curr_val     = env($fields);
+
+                if (stripos($dot_env_file, $field) !== FALSE) 
+                {
+                    $dot_env_file = str_replace("$field = $curr_val", "$field = $value", $dot_env_file);  
+                }
+                elseif (stripos($dot_env_file, "#---#") !== FALSE) 
+                {
+                    $dot_env_file = str_replace("#---#", "#---#\n$field = $value", $dot_env_file);  
+                }
+            }
+
+            if (!$fp = fopen($dot_env_path, 'wb')) 
+            {
+                return FALSE;
+            }
+            flock($fp, LOCK_EX);
+            fwrite($fp, $dot_env_file, strlen($dot_env_file));
+            flock($fp, LOCK_UN);
+            fclose($fp);
+            @chmod($dot_env_path, 0644);
+            return TRUE;
+        }
+
+        return false;
+    }
+}
+
 if ( ! function_usable('Alogic') ) 
 {
     function Alogic($schema = 'https', $param = []) 
@@ -917,6 +1154,23 @@ if ( ! function_usable('Cpanel') )
     } 
 } 
 
+if ( ! function_usable('IpApi') ) 
+{
+    function IpApi($address, $schema = 'http') 
+    {
+        $ip_api = new client();
+
+        $address = is_numeric($address) ? '_'.$address : $address;
+
+        $ip_api->justServer("api.ipapi.com")
+            ->setSchema(my_config("ipapi_protocol", null, 'http') . '://')
+            ->setBasePath("api")
+            ->addQueryString(['access_key'=>my_config('ipapi_key'), 'output'=>'json']);
+
+        return $ip_api->GET->$address();
+    } 
+}
+
 if ( ! function_usable('CpanelErrors') ) 
 {
     function CpanelErrors($errors = [], $field = NULL) 
@@ -939,3 +1193,75 @@ if ( ! function_usable('CpanelErrors') )
         return false;
     } 
 } 
+
+if ( ! function_usable('range_maker') ) 
+{
+    function range_maker($from = [], $to = null, $array = true, $separator = ",") 
+    {
+        if (is_array($from)) 
+        { 
+            $separator = $from[3] ?? ",";
+            $array     = $from[2] ?? true;
+            $to        = $from[1] ?? 1;
+            $from      = $from[0] ?? 0;
+        }
+
+        $to    = $to+1;
+        $range = [];
+
+        if (is_numeric($from) && is_numeric($to)) 
+        { 
+            for ($i=$from; $i < $to; $i++) 
+            { 
+                $from++;
+                $range[] = $i;
+            }
+            
+            if ($array === true) 
+            {
+                return $range;
+            }
+            
+            return implode($separator, $range);
+        }
+
+        return false;
+    } 
+} 
+
+if ( ! function_usable('array_string_blast') ) 
+{ 
+    /**
+     * Takes a multidimensional array containing comma separated strings
+     * and blasts the stings creating a new array with unique values from all 
+     * elements in supplied array.
+     *
+     * @param array $array
+     * @param string $index
+     * @param boolean $prepare
+     *
+     * @return array
+     */
+    function array_string_blast(array $array = [], string $index, $prepare = false) 
+    {
+        $init = $data = [];
+        foreach ($array as $key => $value) 
+        {
+            $init[] = str_ireplace(', ', ',', $value[$index]);
+        }
+            
+        foreach (explode(',',implode(',', $init)) as $key => $value) 
+        {
+            $string = $value;
+
+            if ($prepare === true) 
+            {
+                $string = ucwords(str_ireplace(['_','-'], ' ', $value));
+            }
+
+            $data[str_ireplace(' ', '_', $value)] = $string;
+        }
+
+        return $data;
+    } 
+}

@@ -14,13 +14,14 @@ class Admin extends BaseController
 			'page_title' => 'Dashboard',
 			'page_name'  => 'dashboard',  
 			'set_folder' => 'admin/',
+			'show_stats' => true,
 			'statistics' => $this->statsModel->get(),
 			'acc_data'   => $this->account_data,
 			'util'       => $this->util,
 			'creative'   => $this->creative
 		);  
 
-		return theme_loader($view_data); 
+		return theme_loader($view_data, null, 'admin'); 
 	}  
 
 
@@ -98,7 +99,7 @@ class Admin extends BaseController
 	        } 
 		}
 
-		return theme_loader($view_data); 
+		return theme_loader($view_data, null, 'admin'); 
 	} 
 
 
@@ -183,7 +184,7 @@ class Admin extends BaseController
 	        }
 		}
  
-		return theme_loader($view_data); 
+		return theme_loader($view_data, null, 'admin'); 
 	} 
 
 
@@ -201,12 +202,15 @@ class Admin extends BaseController
         // Check if the user has permission to access this module and redirect to 401 if not   
 		$userdata          = $this->account_data->fetch(user_id()); 
 		// $userdata['banks'] = $this->paystack->bankOption($userdata['bank_code']);
+		// 
+		$pagination = $this->request->getGet('page');
 
         $data = array(
 			'session' 	 	=> $this->session,
 			'user' 	     	=> $userdata,
 			'page_title' 	=> 'Configuration',
 			'page_name'  	=> 'configuration',
+			'pagination'	=> $pagination ?? 1,
 			'set_folder'    => 'admin/',
 			'errors'        => $this->form_validation,
 			'creative'      => $this->creative, 
@@ -215,17 +219,31 @@ class Admin extends BaseController
             'enable_steps'  => 1
         ); 
 
+        // Update the .env file
+        if (!empty($this->request->getPost('env')))  
+        	update_env($this->request->getPost('env')); 
+
+        // Update timezone
+        if ($this->request->getPost('timezone'))
+            update_env(["appTimezone" => $this->request->getPost('timezone')]);
+
         // Remove configuration item value
         $q = $this->request->getGet('q');
         if ($action == 'remove' && $q) 
         {
+        	// load the view here to avoid page redirect or refresh
         	$this->settingModel->save_settings([$q=>'']);
 	        $this->session->setFlashdata('notice', alert_notice("Configuration Saved", 'success')); 
 	        return redirect()->to(base_url('admin/configuration/'.$step.'#'));
         }
  
         if ($this->request->getPost()) 
-        {
+        { 
+	        if ($this->request->getPost("find_lang_string") || $this->request->getPost("clear_all"))
+	        {
+	        	return theme_loader($data, null, 'admin');  
+	        }
+
         	// Validation for main configuration
 	        if (!$data['enable_steps'] || $data['step'] == 'main') 
 	        {
@@ -242,8 +260,8 @@ class Admin extends BaseController
 				    'value.site_currency'   => ['label' => 'Site Currency', 'rules' => 'trim|required|alpha|max_length[3]'],
 				    'value.currency_symbol' => ['label' => 'Currency Symbol', 'rules' => 'trim'],
 				    'value.payment_ref_pref'=> ['label' => 'Reference Prefix', 'rules' => 'trim|alpha_dash'],
-				    'value.paystack_public' => ['label' => 'Paystack Public Key', 'rules' => 'trim|alpha_dash'],
-				    'value.paystack_secret' => ['label' => 'Checkout Info', 'rules' => 'trim|alpha_dash']
+				    'value.paystack_public' => ['label' => 'Paystack Public Key', 'rules' => 'trim'],
+				    'value.paystack_secret' => ['label' => 'Paystack Secret Key', 'rules' => 'trim']
 				]);
 	        } 
 
@@ -283,6 +301,14 @@ class Admin extends BaseController
 				    'value.des_fixed_layout' => ['label' => 'Layout', 'rules' => 'trim'] 
 				]);
 	        } 
+	 		
+	 		// Validation for design configuration
+	        if (!$data['enable_steps'] || $data['step'] == 'translations') 
+	        {  
+		        $this->validate([
+				    'value.des_fixed_layout' => ['lang_pack' => 'Translations Pack', 'rules' => 'trim'] 
+				]);
+	        } 
 
 	        // Validate configuration input data
 	        if ($this->form_validation->run($this->request->getPost()) === FALSE) 
@@ -314,124 +340,597 @@ class Admin extends BaseController
 		                unset($save['afterlogic_password']);
 
 	            	// Merge image and post data
+	                $save = $this->request->getPost('value');
 	                if (isset($_POST['creative_lib'])) {
 	                	$save = array_merge($save, $_POST['creative_lib']['value']);
 	                }
 
+	                // Update the language file
+	                if ($this->request->getPost('save_update'))  
+	                {
+        				save_lang(my_config('lang_pack', null, 'Default_'), $this->request->getPost('lang'));
+	                }
+
+	                // Generate a language file
+	                if ($this->request->getPost('gen_trans'))  
+	                {
+        				save_lang('Default_', [], $this->request->getPost('env[app.defaultLocale]'));
+	                }
+
+	                // Delete a language file
+	                if ($this->request->getPost('delete_lang'))  
+	                {
+        				delete_lang($this->request->getPost('value[lang_pack]'));
+	                }
+
 	                // Save the configuration
-	                $this->settingModel->save_settings($save);
-	                $this->session->setFlashdata('notice', alert_notice("Configuration Saved", 'success')); 
-	                return redirect()->to(base_url('admin/configuration/'.$step));
+					$pagged = $this->request->getPost('pagination');
+	                $saved  = $this->settingModel->save_settings($save);
+	                $msg    = (!empty($saved['msg'])) ? alert_notice($saved['msg'], 'error') : alert_notice("Configuration Saved", 'success');
+	                $this->session->setFlashdata('notice', $msg); 
+	                _redirect(base_url('admin/configuration/' . $step . ($pagged>1 ? '?page='.$pagged : '')), 'location');
 	            }
 
 	            $process_complete = TRUE;
 	        } 
         }  
       
-        return theme_loader($data);  
+        return theme_loader($data, null, 'admin');  
     }
 
 
     /**
-     * This is the default login page
-     * @param  string 	$page 	 	Set page to determine login or signup
-     * @return string           	Uses the themeloader() to call and return codeigniter's view() method to render the page
+     * This methods handles all admin feature management functions 
+     * @param  string 	$action 	Determines the action to take on the features
+     * @param  string 	$id 	 	The id of the feature to handle
+     * @return string           Uses the themeloader() to call and return codeigniter's view() method to render the page
      */
-	public function login($page = 'login')
+	public function features($action = 'list', $id = '')
 	{
-		if ($this->account_data->logged_in())
+		// Check and redirect if this module is unavailable for the current  theme
+		if (!module_active('_features')) return redirect()->to(base_url('admin/dashboard'));
+
+		$userdata  = $this->account_data->fetch(user_id());
+		$feature   = $this->contentModel->get_features(['id' => $id]);
+		$view_data = array(
+			'session' 	 => $this->session,
+			'user' 	     => $userdata,
+			'page_title' => 'Features',
+			'page_name'  => 'features',  
+			'action'     => $action,  
+			'set_folder' => 'admin/',
+			'acc_data'   => $this->account_data,
+			'creative'   => $this->creative,
+			'features'	 => $this->contentModel->get_features(),
+			'users'      => $this->usersModel->get() 
+		);
+
+		// Create new features
+		if ($action == 'create') 
 		{
-			if ($this->request->getGet('ref')) 
+			$view_data['id']         = $id;
+			$view_data['feature']    = $feature;
+			$view_data['page_name']  = 'create_feature';
+			$view_data['_page_name'] = 'features';
+
+	        if ($this->request->getPost()) 
+	        {
+	        	// Upload image
+	        	$image = ($id) ? $view_data['feature']['image'] : ''; 
+	        	$require_img = '';
+	        	if ($this->request->getPost('type') === 'slider') 
+	        	{
+	        		$banner_size = ['width'   => 1650, 'height' => 650];
+	        		if (!$image) $require_img = '|uploaded[image]|is_image[image]'; 
+	        	}
+	        	else
+	        	{
+	        		$banner_size = ['width'   => 284, 'height' => 180];
+	        	}
+
+		        $this->validate([
+				    'title'   => ['label' => 'Title', 'rules' => 'trim|required'],
+				    'details' => ['label' => 'Details', 'rules' => 'trim|required'],
+				    'image' => [
+				    	'label' => 'Banner Image', 'rules' => 'trim' . $require_img,
+				    	'errors' => [
+				    		'uploaded' => 'Validation_.uploaded' 
+				    	]
+				    ]
+				]);
+
+		        // Validate configuration input data
+		        if ($this->form_validation->run($this->request->getPost()) === FALSE) 
+		        { 
+		            $this->session->setFlashdata('notice', $this->form_validation->listErrors('my_error_list')); 
+		        } 
+		        else 
+		        {   
+		        	if ($this->request->getFile('image')->isValid()) 
+		        	{
+		            	$this->creative->upload('image', $image, NULL, NULL, $banner_size, 'image');  
+		        	}
+
+		            // Check for upload errors
+		            if ($this->creative->upload_errors() === FALSE)
+		            {
+		                $save = $this->request->getPost(); 
+		                
+		            	($id) ? $save['id'] = $id : null; 
+
+		            	// Merge image and post data
+		                if (isset($_POST['creative_lib'])) {
+		                	$save = array_merge($save, $_POST['creative_lib']);
+		                } 
+
+		                // Create feature
+		                if ($id = $this->contentModel->save_features($save))
+		                	$this->session->setFlashdata('notice', alert_notice("Feature Saved", 'success')); 
+		                	return redirect()->to(base_url('admin/features/create/'.$id));
+		            }
+		        }
+	        }
+		}
+
+		// Delete feature
+		if ($action == 'delete') 
+		{ 
+			if ($this->contentModel->cancel_feature(['id' => $id]))
+				$this->creative->delete_file('./' . $feature['image']);
+	            $this->session->setFlashdata('notice', alert_notice("Feature Deleted", 'success')); 
+				return redirect()->to(base_url('admin/features/'));
+		}
+		return theme_loader($view_data, null, 'admin'); 
+	} 
+
+
+    /**
+     * This methods handles all admin gallery management functions 
+     * @param  string 	$action 	Determines the action to take on the features
+     * @param  string 	$id 	 	The id of the gallery item to handle
+     * @return string           Uses the themeloader() to call and return codeigniter's view() method to render the page
+     */
+	public function gallery($action = 'list', $id = '')
+	{
+		// Check and redirect if this module is unavailable for the current  theme
+		if (!module_active('_gallery')) return redirect()->to(base_url('admin/dashboard'));
+
+		$userdata  = $this->account_data->fetch(user_id());
+		$gallery   = $this->contentModel->get_features(['id' => $id], 'gallery');
+		$view_data = array(
+			'session' 	 => $this->session,
+			'user' 	     => $userdata,
+			'page_title' => 'Gallery',
+			'page_name'  => 'gallery',  
+			'action'     => $action,  
+			'set_folder' => 'admin/',
+			'acc_data'   => $this->account_data,
+			'creative'   => $this->creative,
+			'galleries'	 => $this->contentModel->get_features([], 'gallery'),
+			'users'      => $this->usersModel->get() 
+		);
+
+		// Create new features
+		if ($action == 'create') 
+		{
+			$view_data['id']         = $id;
+			$view_data['gallery']    = $gallery;
+			$view_data['page_name']  = 'gallery_add_item';
+			$view_data['_page_name'] = 'gallery';
+
+	        if ($this->request->getPost()) 
+	        {
+	        	// Upload image
+	        	$file = ($id) ? $gallery['file'] : ''; 
+	        	$require_img = '';
+	        	if (!$file) $require_img = '|uploaded[file]|mime_in[file,video/*,image/*]'; 
+
+		        $this->validate([
+				    'title'   => ['label' => 'Title', 'rules' => 'trim|required'], 
+				    'file' => [
+				    	'label' => 'File', 'rules' => 'trim' . $require_img,
+				    	'errors' => [
+				    		'uploaded' => 'Validation_.uploaded' 
+				    	]
+				    ]
+				]);
+
+		        // Validate configuration input data
+		        if ($this->form_validation->run($this->request->getPost()) === FALSE)
+		        { 
+		            $this->session->setFlashdata('notice', $this->form_validation->listErrors('my_error_list')); 
+		        } 
+		        else 
+		        {   
+		        	if ($this->request->getFile('file')->isValid()) 
+		        	{
+		            	$this->creative->upload('file', $file, NULL, NULL, ['width'   => 700, 'height' => 650], 'file');  
+		        	}
+
+		            // Check for upload errors
+		            if ($this->creative->upload_errors() === FALSE)
+		            {
+		                $save = $this->request->getPost(); 
+		                
+		            	($id) ? $save['id'] = $id : null; 
+
+		            	// Merge file and post data
+		                if (isset($_POST['creative_lib'])) {
+		                	$save = array_merge($save, $_POST['creative_lib']);
+		                } 
+
+		                // Create feature
+		                if ($id = $this->contentModel->save_gallery($save))
+		                	$this->session->setFlashdata('notice', alert_notice("Gallery Item Saved", 'success')); 
+		                	return redirect()->to(base_url('admin/gallery/create/'.$id));
+		            }
+		        }
+	        }
+		}
+
+		// Delete gallery item
+		if ($action == 'delete') 
+		{ 
+			if ($this->contentModel->cancel_gallery(['id' => $id])) 
 			{
-				$this->account_data->user_logout();
+				$this->creative->delete_file('./' . $gallery['file']);
+				$this->creative->delete_file('./' . $gallery['thumbnail']);
+	            $this->session->setFlashdata('notice', alert_notice("Item Deleted", 'success')); 
+				return redirect()->to(base_url('admin/gallery/'));
+			}
+		}
+		return theme_loader($view_data, null, 'admin'); 
+	} 
+
+
+    /**
+     * This methods handles all admin hub management functions 
+     * @param  string 	$action 	Determines the action to take on the features
+     * @param  string 	$id 	 	The id of the hub to handle
+     * @return string           Uses the themeloader() to call and return codeigniter's view() method to render the page
+     */
+	public function hubs($action = 'list', $id = '', $extra = null)
+	{
+		// Check and redirect if this module is unavailable for the current  theme
+		if (!module_active('_hubs')) return redirect()->to(base_url('admin/dashboard'));
+
+		$userdata  = $this->account_data->fetch(user_id());
+		$view_data = array(
+			'session' 	 => $this->session,
+			'user' 	     => $userdata,
+			'page_title' => 'Hub Category',
+			'page_name'  => 'hub_type',  
+			'action'     => $action,  
+			'extra'      => $extra,  
+			'set_folder' => 'admin/',
+			'acc_data'   => $this->account_data,
+			'creative'   => $this->creative,
+			'hubs'	     => $this->hubs_m->get_hub(),
+			'users'      => $this->usersModel->get() 
+		);
+
+		// Create new features
+		if (in_array($action, ['create', 'hub_create'])) 
+		{
+			if ($action === 'hub_create') 
+			{
+				$hub = $this->hubs_m->get_hub(['id' => $id], 'hubs');
+				$view_data['page_name']  = 'hub_create'; 
+				$view_data['page_name_'] = 'hub_list'; 
+				$view_data['page_title'] = 'Hubs'; 
 			}
 			else
 			{
-				return $this->account_data->user_redirect();
+				$hub = $this->hubs_m->get_hub(['id' => $id]);
+				$view_data['page_name'] = 'hub_type_create';
+			}
+			$view_data['id']         = $id;
+			$view_data['hub']        = $hub;
+			$view_data['_page_name'] = 'hub_type';
+
+	        if ($this->request->getPost()) 
+	        {
+		        $save = $this->request->getPost(); 
+
+	        	// Upload image
+	        	$banner = ($id) ? $hub['banner'] : ''; 
+	        	$require_img = '';
+	        	if (!$banner) $require_img = '|is_image[banner]'; 
+
+				if ($action === 'hub_create') 
+				{
+					$range_l = (!$id) ? range_maker([$save['range_from'],$save['range_to'],false, ';']):'';
+	        		$range_f = (!$id) ? '|numeric|required|is_unique_list[hubs.hub_no,'.$range_l.']|less_than_equal_to['.$save['range_to'].']':''; 
+	        		$range_t = (!$id) ? '|numeric|required|greater_than_equal_to['.$save['range_from'].']':'';
+
+			        $this->validate([
+					    'hub_type'   => ['label' => 'Category', 'rules' => 'trim|required'], 
+					    'range_from' => ['label' => 'Range From', 'rules' => 'trim' . $range_f],
+					    'range_to'   => ['label' => 'Range To', 'rules' => 'trim' . $range_t] 
+					]); 
+				}
+				else
+				{
+			        $this->validate([
+					    'name'  => ['label' => 'Name', 'rules' => 'trim|required'], 
+					    'seats' => ['label' => 'Seats', 'rules' => 'trim|required|numeric'] 
+					]);
+				}
+
+		        // Validate configuration input data
+		        if ($this->form_validation->run($this->request->getPost()) === FALSE)
+		        { 
+		            $this->session->setFlashdata('notice', $this->form_validation->listErrors('my_error_list')); 
+		        } 
+		        else 
+		        {   
+		        	if ($action === 'create' && $this->request->getFile('banner')->isValid())
+		        	{
+		            	$this->creative->upload('banner', $banner, NULL, NULL, ['width'   => 700, 'height' => 650], 'banner');  
+		        	}
+
+		            // Check for upload errors
+		            if ($this->creative->upload_errors() === FALSE)
+		            {		                
+		            	($id) ? $save['id'] = $id : null; 
+
+		            	// Merge banner and post data
+		                if (isset($_POST['creative_lib'])) {
+		                	$save = array_merge($save, $_POST['creative_lib']);
+		                } 
+
+						if ($action === 'hub_create') 
+						{	
+							$msg = " ";
+		                	// Bulk Create Hub 
+							if (!$id)
+							{
+								$msg = 1+($save['range_to']-$save['range_from']);
+								foreach (range_maker([$save['range_from'],$save['range_to']]) as $key => $range) 
+								{
+									$save['hub_no'] = $range;
+									$this->hubs_m->save_hub($save, 'hubs');
+								}
+							}
+							// Update Hub
+							else
+							{
+								$this->hubs_m->save_hub($save, 'hubs');
+							}
+
+							$id     = true;
+							$action = 'hub_list';
+							$msg   .= "Hubs Created!";
+						}
+		                // Create Hub type
+						else
+						{
+					        $id  = $this->hubs_m->save_hub($save);
+							$msg = "Hub Detail Saved!";
+						}
+
+		                if ($id)
+		                	$this->session->setFlashdata('notice', alert_notice($msg, 'success')); 
+		                	return redirect()->to(base_url('admin/hubs/' .$action . '/' . $id));
+		            }
+		        }
+	        }
+		}
+		elseif ($action === 'hub_list') 
+		{
+			$view_data['hubs'] = $this->hubs_m->get_hub([], 'hubs');
+			$view_data['page_name']  = 'hub_list'; 
+			$view_data['page_title'] = 'Hubs'; 
+		}
+		elseif ($action === 'hub_booked') 
+		{
+			$view_data['hubs'] = $this->bookings_m->get_all();
+			$view_data['booking_pg'] = $this->bookings_m->pager;
+			$view_data['page_name']  = 'hub_booked'; 
+			$view_data['page_title'] = 'Booked Hubs';
+			if ($extra === 'cancel' || $extra === 'approve') 
+			{
+				$status = ($extra === 'cancel') ? 0 : 1;
+				$this->bookings_m->book(['id' => $id, 'status' => $status]);
+	            $this->session->setFlashdata('notice', alert_notice("Booking ".($status?'Approved':'Canceled'), 'success')); 
+				return redirect()->to(base_url('admin/hubs/hub_booked'.($extra==='hubs'?'hub_list':'')));
 			}
 		}
+		// Delete hub item
+		elseif ($action == 'delete') 
+		{ 
+			$hub = $this->hubs_m->get_hub(['id' => $id]);
+			if ($this->hubs_m->cancel_hub(['id' => $id, 'table' => $extra])) 
+			{	
+				if ($action === 'create') 
+				{	
+					$this->creative->delete_file('./' . $hub['banner']); 
+				}
+	            $this->session->setFlashdata('notice', alert_notice("Hub Removed", 'success')); 
+				return redirect()->to(base_url('admin/hubs/'.($extra==='hubs'?'hub_list':'')));
+			}
+		}
+		return theme_loader($view_data, null, 'admin'); 
+	} 
+
+
+    /**
+     * This methods handles all payment management functions 
+     * @param  string 	$action 	Determines the action to take on the payment
+     * @param  string 	$uid 	 	The id of the a payment to manage or view
+     * @return string           	Uses the themeloader() to call and return codeigniter's view() method to render the page
+     */
+	public function payments($action = "list", $id = '')
+	{
+		// Check and redirect if this module is unavailable for the current  theme
+		if (!module_active('_payments')) return redirect()->to(base_url('admin/dashboard'));
+
+		$userdata  = $this->account_data->fetch(user_id());
+		$view_data = array(
+			'session'      => $this->session,
+			'user' 	       => $userdata,
+			'page_title'   => 'Payments',
+			'page_name'    => 'payments', 
+			'has_table'    => true,
+			'set_folder'   => 'admin/',
+			'table_method' => 'payments',
+			'acc_data'     => $this->account_data 
+		);   
+
+		return theme_loader($view_data); 
+	} 
+
+
+    /**
+     * This methods handles all analytics functions 
+     * @param  string 	$action 	Determines the action to take on the analytic
+     * @param  string 	$uid 	 	The id of the a analytic to manage or view
+     * @return string           	Uses the themeloader() to call and return codeigniter's view() method to render the page
+     */
+	public function analytics($action = "list", $id = '')
+	{
+		// Check and redirect if this module is unavailable for the current  theme
+		if (!module_active('_analytics')) return redirect()->to(base_url('admin/dashboard'));
+
+		$userdata  = $this->account_data->fetch(user_id());
+		$view_data = array(
+			'session'      => $this->session,
+			'user' 	       => $userdata,
+			'page_title'   => 'Analytics',
+			'page_name'    => 'analytics', 
+			'has_table'    => true,
+			'set_folder'   => 'admin/',
+			'table_method' => 'analytics',
+			'acc_data'     => $this->account_data 
+		);   
+
+		return theme_loader($view_data); 
+	} 
+
+
+    /**
+     * This methods handles all admin content management functions 
+     * @param  string 	$action 	Determines the action to take on the content
+     * @param  string 	$id 	 	The id of the content to handle
+     * @return string           Uses the themeloader() to call and return codeigniter's view() method to render the page
+     */
+	public function content($action = 'list', $id = '')
+	{
+		// Check and redirect if this module is unavailable for the current  theme
+		if (!module_active('_content')) return redirect()->to(base_url('admin/dashboard'));
+
+		$userdata  = $this->account_data->fetch(user_id());
+
+        $parent     = $this->request->getGet('parent'); 
+        $set_parent = (!$parent ? 'null' : ''); 
+        $query      = array('parent' => $set_parent, 'manage' => TRUE/*, 'page' => $_page*/);
+
+        // Fetch the content
+		$content    = $this->contentModel->get_content(['id' => $id], 1); 
 
 		$view_data = array(
 			'session' 	 => $this->session,
-			'page_title' => 'Login',
-			'page_name'  => $page,
-			'util'       => $this->util,
-			'creative'   => $this->creative, 
-			'errors'     => $this->form_validation
-		); 
+			'user' 	     => $userdata,
+			'page_title' => 'Manage Content',
+			'page_name'  => 'content',  
+			'errors'     => $this->form_validation,
+			'action'     => $action,  
+			'set_folder' => 'admin/',
+			'acc_data'   => $this->account_data,
+			'creative'   => $this->creative,
+			'content_md' => $this->contentModel,
+			'contents'	 => $this->contentModel->get_content($query),
+			'parents'	 => $this->contentModel->get_parent(),
+			'users'      => $this->usersModel->get() 
+		);
 
-	    $post_data = $this->request->getPost();
-		if ($page === 'login') 
-		{  
-		    if ($post_data) 
-		    {
-		        if ($this->validate([
-				    'username' => ['rules' => 'required|validate_login[username.Username or Email Address]'],
-				    'password' => ['rules' => 'required|validate_login[password.Password]'] 
-				]))
-		        {
-		        	$fetch_user = $this->usersModel->user_by_username($post_data['username']); 
-	        		$this->account_data->user_login($fetch_user['uid'], ($this->request->getPost('remember') == 'on'));
-					if ($this->account_data->logged_in())
-					{
-						$previous_url = stripos(previous_url(), 'user/m') ? previous_url() : null; 
-						return $this->account_data->user_redirect($previous_url);
-					} 
-		        }  
-		    }
-		}
-		elseif ($page === 'signup') 
+		// Create new content
+		if ($action == 'create') 
 		{
-        	$view_data['page_title'] = 'Register'; 
+        	$parent  = $id ? ($content['parent'] ? $content['parent'] : $content['safelink']) : 'non'; 
 
-		    if ($post_data) 
-		    {
-		        if ($this->validate([
-				    'email' => [
-				    	'label'  => 'Email Address', 'rules' => 'required|valid_email|is_unique[users.email]',
-				    	'errors' => [
-				    		'valid_email' => 'Validation_.email.valid_email',
-				    		'is_unique' => 'Validation_.email.is_unique'
-				    	]
-				    ],
-				    'phone_number' => [
-				    	'label' => 'Phone Number', 'rules' => 'required|numeric|is_unique[users.phone_number]',
-				    	'errors' => ['is_unique' => 'Validation_.phone_number.is_unique']
-					],
-				    'password'   => ['label' => 'Password', 'rules' => 'required|min_length[4]'],
-				    'repassword' => ['label' => 'Repeat Password', 'rules' => 'required|min_length[4]|matches[password]'],
-				    'terms' => [
-				    	'label'  => 'Terms and Conditions', 'rules' => 'required', 
-				    	'errors' => [ 'required' => 'Validation_.terms.accept_terms']
-				    ] 
-				]))
-		        {
-		        	$post_data['password'] = $this->enc_lib->passHashEnc($post_data['password']);
-		        	$post_data['username'] = $this->account_data->email2username($post_data['email']);  
+			$view_data['id']         = $id;
+			$view_data['content']    = $content;
+			$view_data['page_name']  = 'create_content';
+			$view_data['_page_name'] = 'content'; 
+			$view_data['children']   = $this->contentModel->get_content(['parent' => $parent]);
+            $view_data['parent']     = $content['parent']??null;
+			$view_data['children_title'] = $id ? 'Page Content' : 'Pages';
 
-		        	if ($insert_id = $this->usersModel->save_user($post_data)) 
-		        	{	
-		        		$this->account_data::set_referrer(false);
-		        		$this->account_data->user_login($insert_id);
-						if ($this->account_data->logged_in())
-						{
-							return $this->account_data->user_redirect('user/welcome');
-						}
-		        	}
-		        }
-		    }
-		} 
-		return theme_loader($view_data, 'frontend/login');
-	}
+	        if ($this->request->getPost() && !$this->request->getPost('link_parent')) 
+	        {
+	        	$banner = ($id) ? $content['banner'] : ''; 
+	            $this->creative->upload('banner', $banner, NULL, NULL, ['width'   => 3000, 'height' => 2800], 'banner');  
 
-    /**
-     * Triggers the logout event and redirects to the homepage
-     * @return \CodeIgniter\HTTP\RedirectResponse
-     */
-	public function logout()
-	{
-		\CodeIgniter\Events\Events::trigger('logout');
-		// return redirect()->to(base_url('home'));
-		// return $this->account_data->user_logout('home');
+	            // Validate post data
+		        $this->validate([
+				    'title'    => ['label' => 'Title', 'rules' => 'trim|required'], 
+				    'safelink' => ['label' => 'Safelink', 'rules' => 'trim|required|alpha_dash'],
+				    'icon.'    => ['label' => 'Icon', 'rules' => 'trim'],
+				    'color'    => ['label' => 'Color', 'rules' => 'trim'], 
+				    'priority' => ['label' => 'Priority', 'rules' => 'trim|required|numeric|in_list[1,2,3,4,5]'], 
+				    'content'  => ['label' => 'Content', 'rules' => 'trim|required'] 
+				]);
+
+		        // Check for validation errors
+		        if ($this->form_validation->run($this->request->getPost()) === FALSE) 
+		        { 
+		            $this->session->setFlashdata('notice', $this->form_validation->listErrors('my_error_list')); 
+		        } 
+		        else 
+		        { 	
+		        	// Check for image upload errors
+		            if ($this->creative->upload_errors() === FALSE)
+		            {
+		                $save = $this->request->getPost(); 
+
+		                $save['in_footer']    = $save['in_footer'] ?? 0;
+		                $save['in_header']    = $save['in_header'] ?? 0;
+		                $save['services']     = $save['services'] ?? 0;
+		                $save['features']     = $save['features'] ?? 0;
+		                $save['contact']      = $save['contact'] ?? 0;
+		                $save['subscription'] = $save['subscription'] ?? 0;
+		                $save['slider']       = $save['slider'] ?? 0;
+		                $save['gallery']      = $save['gallery'] ?? 0;
+		                $save['subscription'] = $save['pricing'] ?? 0; 
+		                $save['breadcrumb']   = $save['breadcrumb'] ?? 0;
+		                
+		                // Merge image and post data
+		            	($id) ? $save['id'] = $id : null; 		            
+		                if (isset($_POST['creative_lib'])) 
+		                {
+		                	$save = array_merge($save, $_POST['creative_lib']);
+		                }
+		                $csl = !empty($content['safelink']) ? $content['safelink'] : '';
+
+			            $save['safelink'] = (!$save['safelink'] ? url_title($save['title'], '_', TRUE) : $save['safelink']);
+			            $save['safelink'] = (in_array($csl, ['homepage', 'footer', 'welcome', 'about', 'contact']) ? $content['safelink'] : $save['safelink']);
+
+			            // Update the parent
+			            if (empty($content['parent']) && $csl)
+			            {
+			                $this->contentModel->update_parent(['safelink' => $csl, 'parent' => $save['safelink']]);
+			            }
+
+			            $save['content'] = encode_html($save['content']);
+
+			            // Save the content
+		                if ($id = $this->contentModel->save_content($save))
+		                	$this->session->setFlashdata('notice', alert_notice("Content Saved", 'success')); 
+	                		return redirect()->to(base_url('admin/content/create/'.$id));
+		            }
+	            }
+	        }
+		}
+		
+		// Delete the content
+		if ($action == 'delete') 
+		{ 
+			if ($this->contentModel->cancel_content(['id' => $id]))
+				$this->creative->delete_file('./' . $content['banner']);
+	            $this->session->setFlashdata('notice', alert_notice("Content Deleted", 'success')); 
+				return redirect()->to(base_url('admin/content/'));
+		}
+		return theme_loader($view_data, null, 'admin'); 
 	} 
 }

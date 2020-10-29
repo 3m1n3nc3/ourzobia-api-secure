@@ -1,12 +1,9 @@
 		<div class="row"> 
-			<div class="col-md-12 table-responsive"> 
-				<div class="mb-3">
-					<?=anchor('admin/products/create', "Add Product", ['class'=>'btn btn-primary'])?>
-				</div>
+			<div class="col-md-12 table-responsive">  
 				<div class="card"> 
 					<div class="card-header border-0"> 
 						<div class="d-flex justify-content-between"> 
-							<h3 class="card-title">Manage Products</h3> 
+							<h3 class="card-title">View Products</h3> 
 						</div> 
 					</div> 
 					<div class="card-body"> 

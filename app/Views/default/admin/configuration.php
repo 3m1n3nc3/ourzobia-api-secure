@@ -40,6 +40,12 @@
                         </a>
                         <?php endif; ?>
 
+                        <?php if ($step !== 'translations'): ?>
+                        <a href="<?= site_url('admin/configuration/translations')?>" class="btn btn-danger btn-round btn-md rounded-0 text-white<?=active_page('translations', $step)?>">
+                            <i class="fas fa-language"></i> Translations
+                        </a>
+                        <?php endif; ?>
+
                         <?php if ($step !== 'system'): ?>
                         <a href="<?= site_url('admin/configuration/system')?>" class="btn btn-danger btn-round btn-md rounded-0 text-white">
                             <i class="fas fa-desktop"></i> System
@@ -176,7 +182,29 @@
                             <?= $errors->showError('value.tawk_id', 'my_single_error'); ?>
                         </div>
 
-                        <div class="form-group col-md-12">
+                        <div class="row col-md-6">
+                            <div class="form-group col-md-8">
+                                <label class="text-info" for="ipapi_key">IApi API Access Key</label>
+                                <input type="text" name="value[ipapi_key]" value="<?= set_value('value[ipapi_key]', my_config('ipapi_key')) ?>" class="form-control" >
+                                <small class="text-muted">Get your Keys from <a href="https://ipapi.com">https://ipapi.com</a></small>
+                                <?= $errors->showError('value.ipapi_key', 'my_single_error'); ?>
+                            </div>
+
+                            <div class="form-group col-md-4">
+                                <div class="form-group">
+                                    <label class="text-info" for="ipapi_protocol">IpApi Protocol</label>
+                                    <select id="ipapi_protocol" name="value[ipapi_protocol]" class="form-control" required>
+                                        <option value="http" <?= set_select('value[ipapi_protocol]', 'http', my_config('ipapi_protocol', null, 'http') == 'http')?>>Insecure (HTTP)
+                                        </option>
+                                        <option value="https" <?= set_select('value[ipapi_protocol]', 'https', my_config('ipapi_protocol', null, 'http') == 'https')?>>Secure (HTTPS)
+                                        </option>
+                                    </select> 
+                                    <?= $errors->showError('value.ipapi_protocol', 'my_single_error'); ?>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-md-6">
                             <label class="text-info" for="fb_app_id">Facebook App ID</label>
                             <input type="text" name="value[fb_app_id]" value="<?= set_value('value[fb_app_id]', my_config('fb_app_id')) ?>" class="form-control" >
                             <small class="text-muted">Facebook App ID, get your IDs from <a href="https://developers.facebook.com">https://developers.facebook.com</a></small>
@@ -274,14 +302,14 @@
                         <div class="form-group col-md-6">
                             <label class="text-info" for="afterlogic_username">Admin Username</label>
                             <input type="text" name="value[afterlogic_username]" value="<?= set_value('value[afterlogic_username]', my_config('afterlogic_username')) ?>" class="form-control" >
-                            <small class="text-muted">Username for all Cpanel requests</small>
+                            <small class="text-muted">Username for all AfterLogic Api requests</small>
                             <?= $errors->showError('value.afterlogic_username', 'my_single_error'); ?>
                         </div>
 
                         <div class="form-group col-md-6">
                             <label class="text-info" for="afterlogic_password">Admin Password</label>
                             <input type="password" name="value[afterlogic_password]" value="<?= set_value('value[afterlogic_password]') ?>" class="form-control" >
-                            <small class="text-muted">Password for all Cpanel requests</small>
+                            <small class="text-muted">Password for all AfterLogic Api requests</small>
                             <?= $errors->showError('value.afterlogic_password', 'my_single_error'); ?>
                         </div> 
                     </div>
@@ -294,7 +322,7 @@
                     <div class="row p-3 mb-3" id="payment_block">
                         <div class="form-group col-md-4">
                             <label class="text-info" for="password">Site Currency</label>
-                            <input type="text" name="value[site_currency]" value="<?= set_value('value[site_currency]', my_config('site_currency')) ?>" class="form-control" >
+                            <input type="text" name="value[site_currency]" value="<?= set_value('value[site_currency]', my_config('site_currency', NULL, "USD")) ?>" class="form-control" >
                             <small class="text-muted">
                             The base currency for all purchases originating from this site (E.g USD)
                             </small>
@@ -318,25 +346,6 @@
                     
                     <div class="row p-3 mb-3">
                         <div class="form-group col-md-6">
-                            <label class="text-info" for="pref_fetch_bank_mode">Preferred Method to Fetch Banks </label>
-                                <select id="pref_fetch_bank_mode" name="value[pref_fetch_bank_mode]" class="form-control">
-                                    <option value="api" <?= set_select('value[pref_fetch_bank_mode]', 'api', (my_config('pref_fetch_bank_mode')=='api'))?>>API
-                                    </option>
-                                    <option value="db" <?= set_select('value[pref_fetch_bank_mode]', 'db', (my_config('pref_fetch_bank_mode')=='db'))?>>DB
-                                    </option>
-                                </select>
-                            <small class="text-muted">Choose whether to use the API or use database when fetching banks.</small>
-                            <?= $errors->showError('value.pref_fetch_bank_mode', 'my_single_error');?>
-                        </div> 
-
-                        <div class="form-group col-md-6">
-                            <label class="text-info" for="allowed_wallets">Allowed Crypto Wallets</label>
-                            <input type="text" name="value[allowed_wallets]" value="<?= set_value('value[allowed_wallets]', my_config('allowed_wallets')) ?>" class="form-control" >
-                            <small class="text-muted">Comma separated list of Crypto wallets that users can add (E.g. Bitcoin,Litecoin,Etherium).</small>
-                            <?= $errors->showError('value.allowed_wallets', 'my_single_error'); ?>
-                        </div>
-                        
-                        <div class="form-group col-md-6">
                             <label class="text-info" for="paystack_public">Paystack Public Key</label>
                             <input type="text" name="value[paystack_public]" value="<?= set_value('value[paystack_public]', my_config('paystack_public')) ?>" class="form-control" >
                             <?= $errors->showError('value.paystack_public', 'my_single_error'); ?>
@@ -346,6 +355,59 @@
                             <label class="text-info" for="paystack_secret">Paystack Secret Key</label>
                             <input type="text" name="value[paystack_secret]" value="<?= set_value('value[paystack_secret]', my_config('paystack_secret')) ?>" class="form-control" >
                             <?= $errors->showError('value.paystack_secret', 'my_single_error'); ?>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label class="text-info" for="stripe_public">Stripe Public Key</label>
+                            <input type="text" name="value[stripe_public]" value="<?= set_value('value[stripe_public]', my_config('stripe_public')) ?>" class="form-control" >
+                            <?= $errors->showError('value.stripe_public', 'my_single_error'); ?>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label class="text-info" for="stripe_secret">Stripe Secret Key</label>
+                            <input type="text" name="value[stripe_secret]" value="<?= set_value('value[stripe_secret]', my_config('stripe_secret')) ?>" class="form-control" >
+                            <?= $errors->showError('value.stripe_secret', 'my_single_error'); ?>
+                        </div> 
+
+                        <div class="form-group col-md-6">
+                            <label class="text-info" for="password">Stripe Currency</label>
+                            <input type="text" name="value[stripe_currency]" value="<?= set_value('value[stripe_currency]', my_config('stripe_currency', NULL, "USD")) ?>" class="form-control" >
+                            <small class="text-muted">
+                            The currency for all Stripe Transaction (E.g USD)
+                            </small>
+                            <?= $errors->showError('value.stripe_currency', 'my_single_error'); ?>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label class="text-info" for="password">Stripe Currency Conversion Rate</label>
+                            <input type="text" name="value[stripe_currency_rate]" value="<?= set_value('value[stripe_currency_rate]', my_config('stripe_currency_rate', NULL, "5.00")) ?>" class="form-control" >
+                            <small class="text-muted">
+                            If the Base currency is different from the stripe currency please enter the conversion rate.  
+                            <?php if (my_config('site_currency', NULL, "USD") !== my_config('stripe_currency', NULL, "USD")): ?>
+                                <i>1 <?=my_config('stripe_currency', NULL, "USD")?> = <?=1*my_config('stripe_currency_rate', NULL, "5.00")?> <?=my_config('site_currency', NULL, "USD")?></i>
+                            <?php endif ?>
+                            </small>
+                            <?= $errors->showError('value.stripe_currency_rate', 'my_single_error'); ?>
+                        </div>
+
+                        <div class="col-12 text-sm">
+                            <div class="card card-success">
+                                <div class="card-header">
+                                    <h3 class="card-title">Payment Methods</h3>
+                                </div>
+                                <div class="form-row card-body">  
+                                    <div class="form-group col-sm-4">
+                                        <label class="text-info" for="enable_paystack">Paystack</label><br/>
+                                        <input type="hidden" name="value[enable_paystack]" value="0">
+                                        <input type="checkbox" name="value[enable_paystack]" value="1" id="enable_paystack" data-bootstrap-switch data-off-color="danger" data-on-color="success"<?=set_checkbox('value[enable_paystack]', '1',(my_config('enable_paystack') == '1'))?>>
+                                    </div> 
+                                    <div class="form-group col-sm-4">
+                                        <label class="text-info" for="enable_stripe">Stripe</label><br/>
+                                        <input type="hidden" name="value[enable_stripe]" value="0">
+                                        <input type="checkbox" name="value[enable_stripe]" value="1" id="enable_stripe" data-bootstrap-switch data-off-color="danger" data-on-color="success"<?=set_checkbox('value[enable_stripe]', '1',(my_config('enable_stripe') == '1'))?>>
+                                    </div> 
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <?php endif?> 
@@ -390,6 +452,13 @@
                             <?= $errors->showError('value.contact_telegram', 'my_single_error'); ?>
                         </div>
 
+                        <div class="form-group col-md-4">
+                            <label class="text-info" for="contact_phone">Contact Phone </label>
+                            <input type="text" name="value[contact_phone]" value="<?= set_value('value[contact_phone]', my_config('contact_phone')) ?>" class="form-control" >
+                            <small class="text-muted">Phone number for the site</small>
+                            <?= $errors->showError('value.contact_phone', 'my_single_error'); ?>
+                        </div>
+
                         <div class="form-group col-md-12">
                             <label class="text-info" for="contact_address">Contact Address</label>
                             <textarea name="value[contact_address]" class="form-control textarea" ><?= set_value('value[contact_address]', my_config('contact_address')) ?></textarea>
@@ -400,13 +469,13 @@
                     <?php endif; ?>
 
                     <?php if ($enable_steps &&  $step === 'design'):
-                    $curr_theme = theme_info(my_config('theme'));
-                    $curr_adm_theme = theme_info(my_config('theme'))?>
+                    $curr_theme = theme_info(my_config('site_theme', NULL, my_config('site_theme')));
+                    $frontend_theme = theme_info(my_config('frontend_theme', NULL, my_config('frontend_theme')))?>
                     <input type="hidden" name="step" value="design">
                     <label class="font-weight-bold" for="design_block">Design Settings</label>
  
                     <div class="row border p-1 rounded text-info font-weight-bold small">
-                        <div class="col-md-12">
+                        <div class="col-md-6">
                             <div class="text-success">Current Theme</div>
                             <div class="text-muted"><?=$curr_theme['name'];?></div>
                             <div>Author: <span class="text-muted"><?=$curr_theme['author'];?></span></div>
@@ -414,37 +483,99 @@
                             <div>Available For: <span class="text-muted"><?=$curr_theme['availability'];?></span></div>
                             <div>Stable Modules: <span class="text-muted"><?=implode(', ', $curr_theme['stable']);?></span></div>
                         </div> 
+                        <div class="col-md-6">
+                            <div class="text-success">Front Theme</div>
+                            <div class="text-muted"><?=$frontend_theme['name'];?></div>
+                            <div>Author: <span class="text-muted"><?=$frontend_theme['author'];?></span></div>
+                            <div>Version: <span class="text-muted">v<?=$frontend_theme['version'];?></span></div>
+                            <div>Available For: <span class="text-muted"><?=$frontend_theme['availability'];?></span></div>
+                            <div>Stable Modules: <span class="text-muted"><?=implode(', ', $frontend_theme['stable']);?></span></div>
+                        </div> 
                     </div>
 
                     <div class="row p-3 mb-3" id="design_block">
-                        <div class="form-group col-md-6">
+                        <div class="form-group col-md-3">
                             <div class="form-group">
-                                <label class="text-info" for="theme">Site Theme</label>
+                                <label class="text-info" for="site_theme">Site Theme</label>
+                                <?=select_theme(
+                                fetch_themes('user'),
+                                'class="form-control" name="value[site_theme]"',
+                                set_value('value[site_theme]', my_config('site_theme')));
+                                ?>
+                                <small class="text-muted">
+                                Sets the user theme for the site.
+                                </small>
+                                <?= $errors->showError('value.site_theme', 'my_single_error'); ?>
+                            </div>
+                        </div> 
+
+                        <div class="form-group col-md-3">
+                            <div class="form-group">
+                                <label class="text-info" for="frontend_theme">Front Theme</label>
+                                <?=select_theme(
+                                fetch_themes('frontend'),
+                                'class="form-control" name="value[frontend_theme]"',
+                                set_value('value[frontend_theme]', my_config('frontend_theme', NULL, my_config('theme'))));
+                                ?>
+                                <small class="text-muted">
+                                Sets the front theme for the site.
+                                </small>
+                                <?= $errors->showError('value.frontend_theme', 'my_single_error'); ?>
+                            </div>
+                        </div> 
+
+                        <div class="form-group col-md-3">
+                            <div class="form-group">
+                                <label class="text-info" for="admin_theme">Admin Theme</label>
                                 <?=select_theme(
                                 fetch_themes('admin'),
-                                'class="form-control" name="value[theme]"',
-                                set_value('value[theme]', my_config('theme')));
+                                'class="form-control" name="value[admin_theme]"',
+                                set_value('value[admin_theme]', my_config('admin_theme', NULL, my_config('theme'))));
                                 ?>
                                 <small class="text-muted">
                                 Sets the admin theme for the site.
                                 </small>
-                                <?= $errors->showError('value.theme', 'my_single_error'); ?>
+                                <?= $errors->showError('value.admin_theme', 'my_single_error'); ?>
                             </div>
                         </div> 
 
-                        <div class="form-group col-md-6">
+                        <div class="form-group col-md-3">
                             <div class="form-group">
                                 <label class="text-info" for="theme_mode">Theme Mode</label>
-                                <?=select_theme_modes(my_config('theme'), 'class="form-control" name="value[theme_mode]"', my_config('theme_mode'))?>
+                                <?=select_theme_modes(my_config('site_theme'), 'class="form-control" name="value[theme_mode]"', my_config('theme_mode'))?>
                                 <small class="text-muted">
-                                    Set the mode for this theme, availabilty is subject to theme.
+                                    Set the mode for this theme, availability is subject to theme.
                                 </small>
                             </div>
                         </div>   
 
+                        <div class="form-group col-md-6">
+                            <label class="text-info" for="admin_active_modules">Admin Theme Active Modules</label> 
+                            <input 
+                                type="text" id="admin_active_modules" name="value[admin_active_modules]" 
+                                value="<?= set_value('value[admin_active_modules]', my_config('admin_active_modules', NULL, implode(",",array_values(theme_info(my_config('admin_theme'), 'modules'))))) ?>" 
+                                class="form-control selectize" placeholder="Admin Theme Active Modules"
+                                data-options='<?="[{\"title\": \"".implode("\"},\n{\"title\": \"",array_values(theme_info(my_config('admin_theme'), 'modules')))."\"}]"?>'
+                            > 
+                            <small class="text-muted">Set Modules that will be active for admin section (Admin modules begin with an _underscore)</small>
+                            <?= $errors->showError('value.admin_active_modules', 'my_single_error'); ?>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label class="text-info" for="site_active_modules">Site Theme Active Modules</label>
+                            <input 
+                                type="text" id="site_active_modules" name="value[site_active_modules]" 
+                                value="<?= set_value('value[site_active_modules]', my_config('site_active_modules', NULL, implode(",",array_values(theme_info(my_config('site_theme'), 'modules'))))) ?>" 
+                                class="form-control selectize" placeholder="Site Theme Active Modules"
+                                data-options='<?="[{\"title\": \"".implode("\"},\n{\"title\": \"",array_values(theme_info(my_config('site_theme'), 'modules')))."\"}]"?>'
+                            >  
+                            <small class="text-muted">Set Modules that will be active for user section (Admin modules begin with an _underscore)</small>
+                            <?= $errors->showError('value.site_active_modules', 'my_single_error'); ?>
+                        </div>
+
                         <div class="form-group col-md-12">
                             <label class="text-info" for="site_slogan">Slogan</label>
-                            <input type="text" name="value[site_slogan]" value="<?= set_value('value[site_slogan]', my_config('site_slogan')) ?>" class="form-control" >
+                            <input type="text" name="value[site_slogan]" value="<?= set_value('value[site_slogan]', my_config('site_slogan')) ?>" class="form-control">
                             <small class="text-muted">Set a slogan for this site</small>
                             <?= $errors->showError('value.site_slogan', 'my_single_error'); ?>
                         </div>
@@ -544,14 +675,127 @@
                             <small class="text-muted">The SMTP Password for sending emails</small>
                             <?= $errors->showError('value.smtp_pass', 'my_single_error'); ?>
                         </div>
-                    </div>     
-                    <?php endif; ?>
+                    </div>    
 
-                    <?php if (empty($hide_update_btn)): ?>
-                    <div class="send-button">
-                        <button type="submit" class="btn btn-info btn-round btn-sm text-white">Update Configuration</button>
+                    <label class="font-weight-bold" for="system_block">System</label>
+                    <hr class="my-0"> 
+                             
+                    <div class="row p-3 mb-3"> 
+                        <div class="form-group col-md-6">
+                            <label class="text-info" for="timmezone">System Timezone</label>
+                            <?=timezone_select('form-control custom-select', config('App')->appTimezone); ?>
+                            <small class="text-muted">System Timezone for your location</small>
+                            <?= $errors->showError('timezone', 'my_single_error'); ?>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="text-info" for="env[CI_ENVIRONMENT]">Developer Mode</label>
+                            <div class="form-group">
+                                <input type="hidden" name="env[CI_ENVIRONMENT]" value="production">
+                                <input type="checkbox" name="env[CI_ENVIRONMENT]" value="development" id="env[CI_ENVIRONMENT]" data-bootstrap-switch data-off-color="danger" data-on-color="success"<?=set_checkbox('env[CI_ENVIRONMENT]', '1',(env('CI_ENVIRONMENT') == 'development'))?>>
+                            </div>
+                        </div>
                     </div>
                     <?php endif; ?>
+
+                    <?php if ($enable_steps &&  $step === 'translations'): 
+                        $translations = read_lang(my_config('lang_pack', null, 'Default_'));
+                        $limit  = 16;
+                        $page   = min($pagination, ceil( count($translations)/ $limit )); //get last page when $_GET['page'] > $totalPages
+                        $offset = ($page - 1) * $limit;
+                        if( $offset < 0 ) $offset = 0;
+                        if (my_config('lang_pack', null, 'Default_') === 'Default_') 
+                            $prevent_update = 'You cant update the default Pack';
+                        if (!empty($translations)) 
+                            $show_save_update = true;
+                        ?>
+
+                    <input type="hidden" name="step" value="translations">
+                    <input type="hidden" name="pagination" value="<?=$pagination?>">
+                    <input type="hidden" name="lang_pack" value="<?=my_config('lang_pack', null, 'Default_')?>">
+                    <label class="font-weight-bold" for="translations_block">Language and Translations</label>
+                    <hr class="my-0">
+                    <div class="row p-3 mb-3" id="translations_block">
+
+                        <div class="form-group col-md-6">
+                            <div class="form-group">
+                                <label class="text-info" for="locale">Locale</label>
+                                <?=select_lang('class="form-control" name="env[app.defaultLocale]"', set_value("env[app.defaultLocale]", env('app.defaultLocale', 'en')), true)?>
+                                <small class="text-muted">
+                                    Set the preferred locale for this system.
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <div class="form-group">
+                                <label class="text-info" for="lang_pack">Translations Pack</label>
+                                <?=select_lang('class="form-control" name="value[lang_pack]"', my_config('lang_pack', null, 'Default_'));?>
+                                <small class="text-muted">
+                                    Set the preferred translations pack for this system.
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 row border-bottom mb-5">
+                            <div class="form-group col-8">
+                                <label class="text-info" for="find_string">Find Translation String</label>
+                                <input type="text" name="find_string" value="<?=set_value('find_string') ?>" class="form-control" > 
+                            </div>
+                            <div class="form-group col-4"><br/>
+                                <input name="find_lang_string" type="submit" value="Search" class="btn btn-info btn-round btn-md text-white mt-2">
+                                <?php if ($request->getPost("find_lang_string")): ?>
+                                <input name="clear_all" type="submit" value="Clear" class="btn btn-danger btn-md text-white mt-2">
+                                <?php endif ?>
+                            </div> 
+                        </div>
+
+                        <?php 
+                                if ($request->getPost("find_lang_string") && $request->getPost("find_string")) {
+                                    $list_translations = array_find($request->getPost("find_string"), $translations);
+                                }
+                                elseif ($translations) 
+                                {
+                                    $list_translations = array_slice($translations, $offset, $limit);
+                                }
+
+                               if ($translations && $list_translations): ?>
+                            <?php foreach ($list_translations as $lang_key => $lang_lines): ?>
+                            <div class="form-group col-md-6">
+                                <label class="text-info" for="lkey"><?=$lang_key?></label>
+                                <textarea name="lang[<?=$lang_key?>]" class="form-control" rows="1"><?= set_value("lang[$lang_key]", $lang_lines) ?></textarea> 
+                                <?= $errors->showError("lang.$lang_key", 'my_single_error'); ?>
+                            </div>
+                            <?php endforeach ?>  
+                        <?php else: ?>
+                        <div class="col-md-12">
+                            <?=alert_notice("No Translations Found!", "warning", false, false, NULL, "Notice!")?>
+                        </div>
+                        <?php endif ?>
+                        <div class="col-md-12">
+                            <input name="gen_trans" type="submit" value="Clone Default" class="btn btn-secondary btn-round btn-md text-white mb-3"> 
+                        </div>
+                    </div>
+                    <?php if (!$request->getPost("find_lang_string")): ?>
+                        <?=service('pager')->makeLinks($pagination, $limit, count($translations), 'custom_full');?>
+                    <?php endif;
+                     endif; ?>
+
+
+                    <div class="send-button mb-3">
+                    <?php if (empty($hide_update_btn)): ?>
+                        <button type="submit" class="btn btn-info btn-round btn-md text-white mb-3">Update Configuration</button> 
+                    <?php endif; ?>
+
+                    <?php if (!empty($show_save_update) && empty($prevent_update)):
+                        if (env('installation.demo', false) === false || logged_user('admin')>=3): ?> 
+                        <input name="save_update" type="submit" value="Save Changes" class="btn btn-success btn-round btn-md text-white mb-3">
+
+                        <?php if (!empty($translations)): ?>
+                        <input name="delete_lang" type="submit" value="Delete Trans. Pack" class="btn btn-danger btn-round btn-md text-white mb-3">
+                        <?php endif;
+                        endif ?>
+                    <?php else: !empty($show_save_update) ? alert_notice($prevent_update, 'error', true, 'FLAT') : ''; endif; ?>
+                    </div> 
 
                     <?= form_close(); ?>
 
@@ -574,4 +818,33 @@
     </div>
     <!-- Right profile sidebar -->
     <!-- <?php //$this->load->view('layout/_right_profile_sidebar') ?> -->
-</div> 
+</div>  
+
+<script>
+    window.onload = function() { 
+        $(".selectize").each(function(e) { 
+            $(this).selectize({
+                plugins: ['drag_drop', 'remove_button', 'restore_on_backspace'], 
+                delimiter: ',',
+                persist: false,
+                hideSelected: true,
+                valueField: 'title',
+                searchField: 'title',
+                options: $(this).data("options"),
+                render: {
+                    option: function(data, escape) {
+                        return '<div class="title pl-1">' + escape(data.title) + '</div>';
+                    },
+                    item: function(data, escape) {
+                        return '<div class="item">' + escape(data.title) + '</div>';
+                    }
+                },
+                create: function(input) { 
+                    return { 
+                        title: input 
+                    }
+                }
+            }); 
+        }); 
+    }
+</script> 

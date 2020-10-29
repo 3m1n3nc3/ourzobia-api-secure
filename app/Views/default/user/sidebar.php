@@ -27,7 +27,7 @@
 								<a href="<?=site_url('user/dashboard')?>" class="nav-link<?=active_page('dashboard', $_page_name??$page_name)?>">
 									<i class="nav-icon fas fa-tachometer-alt"></i>
 									<p>
-										Dashboard 
+										<?=_lang('dashboard')?> 
 									</p>
 								</a>
 							</li>
@@ -38,9 +38,9 @@
 									<i class="nav-icon fas fa-user"></i>
 									<p>
                     					<?php if (!empty($profile['uid']) && user_id() !== user_id($profile['uid'])): ?>
-										<?=ucwords($profile['firstname']) . '\'s'?> Account 
+										<?=_lang('named_users_acount', [ucwords($profile['firstname'])])?> 
 										<?php else: ?>  
-										My Account 
+										<?=_lang('my_account')?> 
 										<?php endif ?>  
 									</p>
 								</a>
@@ -52,20 +52,68 @@
 									<i class="nav-icon fas fa-box-open"></i>
 									<p>
                     					<?php if (!empty($profile['uid']) && user_id() !== user_id($profile['uid'])): ?>
-										<?=ucwords($profile['firstname']) . '\'s'?> Products 
+										<?=_lang('named_users_products', [ucwords($profile['firstname'])])?> 
 										<?php else: ?>  
-										My Products 
+										<?=_lang('my_products')?> 
 										<?php endif ?>  
 									</p>
 								</a>
 							</li>
-							<?php endif ?>    
-							<?php if (module_active('_dashboard')):?> 
+							<?php endif ?> 
+							<?php if (module_active('hub_type') || module_active('hubs')):?>
+							<li class="nav-item has-treeview<?=active_page(['hubs','hub_info','hubs_booked'], $_page_name??$page_name, false, 'menu-open')?>">
+								<a href="#" class="nav-link<?=active_page(['hubs','hub_info','hubs_booked'], $_page_name??$page_name)?>">
+									<i class="nav-icon fas fa-building"></i>
+									<p>
+										<?=_lang('hubs')?>
+									</p>
+								</a>
+            					<ul class="nav nav-treeview"> 
+									<?php if (module_active('hub_type')): ?>
+									<li class="nav-item">
+										<a href="<?=site_url('user/hubs')?>" class="nav-link<?=active_page('hubs', $page_name_??$_page_name??$page_name)?>">
+											<i class="nav-icon fas fa-columns"></i>
+											<p>
+												<?=_lang('book_hub')?>
+											</p>
+										</a>
+									</li>
+									<?php endif ?>  
+								</ul>
+            					<ul class="nav nav-treeview"> 
+									<?php if (module_active('hubs')): ?>
+									<li class="nav-item">
+										<a href="<?=site_url('user/hubs/my_hubs')?>" class="nav-link<?=active_page('hubs_booked', $page_name_??$_page_name??$page_name)?>">
+											<i class="nav-icon fas fa-columns"></i>
+											<p>
+												<?=_lang('my_hubs')?>
+											</p>
+										</a>
+									</li>
+									<?php endif ?>  
+								</ul>
+							</li>
+							<?php endif ?>   
+							<?php if (module_active('payments')): ?>
+							<li class="nav-item">
+								<a href="<?=site_url('user/payments')?>" class="nav-link<?=active_page('payments', $page_name)?>">
+									<i class="nav-icon fas fa-credit-card"></i>
+									<p>
+                    					<?php if (!empty($profile['uid']) && user_id() !== user_id($profile['uid'])): ?>
+										<?=_lang('named_users_payments', [ucwords($profile['firstname'])])?> 
+										<?php else: ?>  
+										<?=_lang('my_payments')?> 
+										<?php endif ?>  
+									</p>
+								</a>
+							</li>
+							<?php endif ?>  
+							<?php if (module_active('_dashboard') && logged_user('admin')):?> 
 							<li class="nav-item">
 								<a href="<?=site_url('admin')?>" class="nav-link<?=active_page('admin', $_page_name??$page_name)?>">
 									<i class="nav-icon fas fa-user-secret"></i>
 									<p>
-										Admin Dashboard 
+										<?=_lang('admin_dashboard')?>
 									</p>
 								</a>
 							</li> 

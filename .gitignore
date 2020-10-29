@@ -67,6 +67,7 @@ public/uploads/*
 !pubic/uploads/content/site_logo.png
 
 php_errors.log
+paystack.svg
 
 #-------------------------
 # User Guide Temp Files

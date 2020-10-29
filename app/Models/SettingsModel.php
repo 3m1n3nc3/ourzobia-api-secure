@@ -31,7 +31,7 @@ class SettingsModel extends Model
         } 
         else 
         {
-            $this->order_by('setting_key');
+            $this->orderBy('setting_key');
         }
 
         $query   = $this->get();
@@ -49,20 +49,27 @@ class SettingsModel extends Model
 
     public function save_settings($data) 
     {
-        $insert_id = [];
-        foreach (array_keys($data) as $setting_key) 
-        {
-            if ($this->get_settings($setting_key) !== NULL) 
-            { 
-                $setting = array('setting_value' => $data[$setting_key]); 
-                $return  = $this->builder->where('setting_key', $setting_key)->set($setting)->update();  
-            }
-            else 
+        if (env('installation.demo', false) === false || logged_user('admin')>=3) 
+        { 
+            $insert_id = [];
+            foreach (array_keys($data) as $setting_key) 
             {
-                $setting = array('setting_key' => $setting_key, 'setting_value' => $data[$setting_key]);
-                $return  = $this->builder->insert($setting); 
-            }
-        }  
-        return $return;
-    }  
+                if ($this->get_settings($setting_key) !== NULL) 
+                { 
+                    $setting = array('setting_value' => $data[$setting_key]); 
+                    $return  = $this->builder->where('setting_key', $setting_key)->set($setting)->update();  
+                }
+                else 
+                {
+                    $setting = array('setting_key' => $setting_key, 'setting_value' => $data[$setting_key]);
+                    $return  = $this->builder->insert($setting); 
+                }
+            }  
+            return $return;
+        }
+        else
+        {
+            return ['msg' => _lang('cant_do_in_demo', ['update configuration'])]; 
+        } 
+    }    
 }

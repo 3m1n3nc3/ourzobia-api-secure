@@ -1,9 +1,9 @@
 <!DOCTYPE html> 
-<html lang="en"> 
+<html lang="en">
  	<!-- Header -->
-	<?=view('default/header'); ?>
+	<?=view('default/header', ['show_stats' => $show_stats??false]); ?>
 
-	<body class="hold-transition sidebar-mini<?=my_config('des_fixed_layout').my_config('des_body_small_text').my_config('des_accent_color_variant')?>">
+	<body class="hold-transition sidebar-mini<?=my_config('des_fixed_layout').my_config('des_body_small_text').my_config('des_accent_color_variant')?>" data-payment_host="<?=site_url('ajax/payments')?>">
 		<div class="wrapper">
 
 			<!-- Navbar -->
@@ -19,7 +19,7 @@
 					<div class="container-fluid">
 						<div class="row mb-2">
 							<div class="col-sm-6">
-								<h1 class="m-0 text-dark"><?=$page_title?></h1>
+								<h1 class="m-0 text-dark"><?=$page_title;?></h1>
 								</div><!-- /.col -->
 								<div class="col-sm-6">
 									<ol class="breadcrumb float-sm-right">
@@ -56,6 +56,7 @@
 		<!-- ./wrapper -->
 
 		<!-- Footer Content -->
-		<?=view('default/dashboard_footer'); ?> 
+		<?=view('default/dashboard_footer'); ?>
+		<?php //=load_widget('content/js_payment_processor_widget', ['load' => 1])?> 
 	</body>
 </html>

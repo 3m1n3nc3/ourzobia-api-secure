@@ -52,8 +52,44 @@ Events::on('pre_system', function () {
 	}
 });
 
-Events::on('logout', function() {
+Events::on('logout', function($to)
+{
 	$ad = new Account_Data;
 	$ad->logout();
-	return redirect()->to(base_url('home'));
+	return _redirect(base_url($to?$to:'home'));
+});
+
+Events::on('redirect', function($to) 
+{
+ 	return _redirect(base_url($to)); 
+});
+
+Events::on('login_redirect', function($uid, $to = null)
+{
+	$ad = new Account_Data; 
+	$ad->user_login($uid);
+	if ($ad->logged_in())
+	{ 
+        $request  = \Config\Services::request();  
+    	$session  = \Config\Services::session();
+        $users_m  = model('App\Models\UsersModel', false);
+
+        if ($session->has('username') OR get_cookie('username')) 
+        {
+            $_user = ($session->get('username') ?? get_cookie('username'));
+            $user  = $users_m->user_by_username($_user); 
+            if (!empty($user)) 
+            { 
+                if (!empty($to)) 
+                {
+                    return _redirect(base_url($to)); 
+                }
+                return _redirect(base_url('dashboard'));   
+            } 
+        }  
+
+        return _redirect(base_url('login'));  
+	}
+
+	return _redirect(base_url('home'));
 });

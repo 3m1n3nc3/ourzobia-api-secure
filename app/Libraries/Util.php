@@ -304,30 +304,33 @@ class Util
         return $label;
     }
     
-    public function statsJsVars($add_script = false)
+    public function statsJsVars($add_script = false, $load = false)
     {
-        $users    = $this->statsConf('o', 'users')->statsCharts();  
-        $visitors    = $this->statsConf('o', 'visitors')->statsCharts();
-        $validation  = $this->statsConf('o', 'visitors', 'validation')->statsCharts();   
-        $activation  = $this->statsConf('o', 'visitors', 'activation')->statsCharts();
- 
-        $vars = ($add_script == true) ? "
-        <script type=\"text/javascript\">\n" : "\n";
- 
-        $vars .= "var users_data_set  = {$users['items']}\n"; 
-        $vars .= "var visitors_data_set  = {$visitors['items']}\n"; 
-        $vars .= "var validation_data_set = {$validation['items']}\n"; 
-        $vars .= "var activation_data_set  = {$activation['items']}"; 
- 
-        $vars .= ($add_script == true) ? "
-            addEventListener('load', function() {
-                $('.users_data_set').html({$users['count']});
-                $('.visitors_data_set').html({$visitors['count']});
-                $('.validation_data_set').html({$validation['count']});
-                $('.activation_data_set').html({$activation['count']});
-            })
-        </script>\n" : "\n";
+        if ($load === true) 
+        {
+            $users    = $this->statsConf('o', 'users')->statsCharts();  
+            $visitors   = $this->statsConf('o', 'visitors')->statsCharts();
+            $validation = $this->statsConf('o', 'visitors', 'validation')->statsCharts();   
+            $activation = $this->statsConf('o', 'visitors', 'activation')->statsCharts();
+     
+            $vars = ($add_script == true) ? "
+            <script type=\"text/javascript\">\n" : "\n";
+     
+            $vars .= "var users_data_set  = {$users['items']}\n"; 
+            $vars .= "var visitors_data_set  = {$visitors['items']}\n"; 
+            $vars .= "var validation_data_set = {$validation['items']}\n"; 
+            $vars .= "var activation_data_set  = {$activation['items']}"; 
+     
+            $vars .= ($add_script == true) ? "
+                addEventListener('load', function() {
+                    $('.users_data_set').html({$users['count']});
+                    $('.visitors_data_set').html({$visitors['count']});
+                    $('.validation_data_set').html({$validation['count']});
+                    $('.activation_data_set').html({$activation['count']});
+                })
+            </script>\n" : "\n";
 
-        return $vars;
+            return $vars;
+        }
     }
 }

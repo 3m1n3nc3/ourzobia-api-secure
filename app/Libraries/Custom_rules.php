@@ -1,4 +1,8 @@
-<?php namespace App\Libraries; 
+<?php 
+
+namespace App\Libraries; 
+
+use Config\Database;
 
 class Custom_rules
 {
@@ -62,5 +66,51 @@ class Custom_rules
  		}
 
 	    return true;
+	}
+
+	//--------------------------------------------------------------------
+
+	/**
+	 * Checks the database to see if values of the given list is unique. Can
+	 * ignore a single record by field/value to make it useful during
+	 * record updates.
+	 *
+	 * Example:
+	 *    is_unique_list[table.field,operator]
+	 *    is_unique_list[users.email,id,!]
+	 *
+	 * @param string $str
+	 * @param string $field
+	 * @param array  $data
+	 *
+	 * @return boolean
+	 */
+	public function is_unique_list(string $str = null, string $field, array $data, string &$error = null): bool
+	{
+		// Grab any data for exclusion of a single row.
+		list($field, $list, $operator) = array_pad(explode(',', $field), 3, null);
+
+		// Break the table and field apart
+		sscanf($field, '%[^.].%[^.]', $table, $field);
+
+		$db = Database::connect($data['DBGroup'] ?? null);
+
+		$row = $db->table($table)
+				  ->select('1')
+				  ->whereIn($field, explode(";", $list))
+				  ->limit(1);
+
+		if ($operator === "!") 
+		{
+			$result = ($row->get()->getRow() !== null);
+		}
+		else
+		{
+			$result = ($row->get()->getRow() === null);
+		}
+	    
+	    $error = lang('Validation_.is_unique_list', ['field' => $field]); 
+
+		return (bool) $result;
 	}
 }

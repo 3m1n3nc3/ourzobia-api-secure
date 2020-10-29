@@ -1,7 +1,6 @@
 <?php namespace App\Libraries; 
 
-use DateTime;
-use App\Libraries\Paystack_validate;
+use DateTime; 
 
 class Account_Data { 
 
@@ -97,8 +96,7 @@ class Account_Data {
     } 
 
     public function fetch($id = null)
-    {    
-        $paystack = new Paystack_validate;
+    {     
         $data = $this->usersModel->get_user($id);  
 
         if (!empty($data['uid'])) 

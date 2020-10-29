@@ -42,7 +42,9 @@ class Autoload extends AutoloadConfig
 	public $psr4 = [
 		APP_NAMESPACE => APPPATH, // For custom app namespace
 		'Config'      => APPPATH . 'Config',
-		'n1ghteyes'   => APPPATH . 'ThirdParty/apicore-master/src'
+		'n1ghteyes'   => APPPATH . 'ThirdParty/apicore-master/src',
+		'Melbahja\\Seo\\' => APPPATH . 'ThirdParty/melbahja/seo/src',
+		'Stripe' => APPPATH . 'ThirdParty/stripe/stripe-php/lib'
 	];
 
 	/**

@@ -8,14 +8,14 @@ if (! function_usable('money'))
 	 * @param  string $str
 	 * @return string
 	 */
-	function money($amount, $span = []): string
+	function money($amount, $span = [], $currency = null): string
 	{
 		$span_o = (!empty($span[0])) ? $span[0] : '';
 		$span_c = (!empty($span[1])) ? $span[1] : '';
 		if ($amount < 0) {
 			$amount = 0;
 		}
-		return $span_o.currency(3, my_config('site_currency')).$span_c . number_format((int)$amount, 2);
+		return $span_o.currency(3, $currency??my_config('site_currency')).$span_c . number_format((int)$amount, 2);
 	}
 } 
 
