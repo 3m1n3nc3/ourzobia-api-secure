@@ -1,7 +1,7 @@
 <?php 
 $location = '';
-if ($analytics['referrer']) 
-{ 
+if (!empty($analytics['referrer'])) 
+{
     $referrer = parse_url($analytics['referrer'], PHP_URL_HOST);
     $analytics['referrer'] = $analytics['referrer'] ? anchor(prep_url($analytics['referrer']), prep_url($referrer) . "...", ['data-toggle'=>'tooltip', 'title'=>prep_url($analytics['referrer'])]) : null;
     $a_user = $account_data->fetch($analytics['uid']);
