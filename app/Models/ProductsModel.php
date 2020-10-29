@@ -66,13 +66,15 @@ class ProductsModel extends Model
         return $this->get()->getRowArray();
     } 
 
-    public function remove(array $data = [])
+    public function remove($data = [])
     { 
-        return $this->delete($data['id'], true);
+        $id = (is_array($data)) ? $data['id'] : $data;
+        return $this->delete($id, true);
     }
 
-    public function cancel(array $data = [])
+    public function cancel($data = [])
     { 
-        return $this->remove($data['id']);
+        $id = (is_array($data)) ? $data['id'] : $data;
+        return $this->remove($id);
     }
 }
