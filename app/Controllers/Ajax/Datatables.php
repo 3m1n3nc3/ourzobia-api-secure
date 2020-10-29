@@ -276,7 +276,7 @@ class Datatables extends BaseController
                     <button 
                         type="button" 
                         class="btn btn-danger btn-sm btn-spinner font-weight-bold px-1 m-1 cancel"  
-                        data-type="products"
+                        data-type="products_model"
                         data-id="'.$rows->id.'"
                         data-toggle="tooltip" 
                         title="Delete Product"
