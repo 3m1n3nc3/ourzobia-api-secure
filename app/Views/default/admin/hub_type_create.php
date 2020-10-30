@@ -18,11 +18,13 @@
 									<input type="number" class="form-control" name="seats" id="seats" placeholder="Enter Available Seats" value="<?=set_value('seats', $hub['seats']??'') ?>" required>
 								</div>
 
-								<div class="col-md-6 form-group"> 
+								<div class="col-md-6"> 
 									<label for="icon">Icon</label>
-									<select name="icon" class="form-control">
-										<?=pass_icon(1, set_value('icon', ($hub['icon']??'')), TRUE)?>
-									</select> 
+									<div class="form-group"> 
+										<select name="icon" class="form-control">
+											<?=pass_icon(1, set_value('icon', ($hub['icon']??'')), TRUE)?>
+										</select> 
+									</div>
 								</div>
 
 								<div class="col-md-4 form-group">
@@ -106,5 +108,10 @@
 	                    }
 	                }
 	            });  
+  
+				$('select[name=icon]').fontIconPicker({
+					theme: 'fip-bootstrap',
+            		iconsPerPage: 25
+				});   
 		    }
 		</script> 

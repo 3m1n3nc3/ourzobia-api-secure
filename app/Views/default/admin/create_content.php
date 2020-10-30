@@ -1,4 +1,4 @@
-f<div class="content">
+<div class="content">
     <div class="row">
         <div class="col-md-8">
             <div class="card">
@@ -40,13 +40,13 @@ f<div class="content">
                     </div>
                     <div class="form-row mb-2">
                         <div class="col-md-4 pr-1">
-                            <div class="form-group">
-                                <label for="icon">Icon</label>
+                            <label for="icon">Icon</label>
+                            <div class="form-group"> 
                                 <select class="form-control" id="icon" name="icon">
                                     <?=pass_icon(1, set_value('icon', $content['icon']??''), TRUE);?>
                                 </select>
-                                <?=$errors->showError('icon', 'my_single_error');?>
                             </div>
+                            <?=$errors->showError('icon', 'my_single_error');?> 
                         </div>
                         
                         <div class="col-md-4">
@@ -321,3 +321,13 @@ f<div class="content">
         
     </div>
 </div>
+
+<script type="text/javascript">
+    // Make sure to fire only when the DOM is ready
+    window.onload = function() {  
+        $('select[name=icon]').fontIconPicker({
+            theme: 'fip-bootstrap',
+            iconsPerPage: 25
+        });  
+    }
+</script>

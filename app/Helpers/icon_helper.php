@@ -20,7 +20,7 @@ if ( ! function_usable('pass_icon'))
      * @param  boolean $literal   Treats the search string literally instead of using the processed value
      * @return variable           Depending on the type, returns a string or boolean
     */
-	function pass_icon($type, $ic = '', $literal = FALSE) {
+	function pass_icon($type, $ic = '', $literal = FALSE, $picker = false) {
             
             $literal_ic = $ic;
 
@@ -880,7 +880,7 @@ if ( ! function_usable('pass_icon'))
                         }
 
                         $rows .= '
-                                    <option value="'.$name.'"'.$selected.'>'.$icon_title."</option>";
+                                    <option value="'.$name.'"'.$selected.'>'. ($picker === true ? $name : $icon_title) ."</option>";
                   }
                         $rows .= "\n";
 

@@ -21,11 +21,13 @@
 										<option value="slider"<?=set_select('type', 'slider', ($feature['type']??'') == 'slider')?>>Slider Item</option>
 									</select> 
 								</div>
-								<div class="col form-group"> 
+								<div class="col"> 
 									<label for="feature">Icon</label>
-									<select name="icon" class="form-control" required>
-										<?=pass_icon(1, set_value('icon', ($feature['icon']??'')), TRUE)?>
-									</select> 
+									<div class="form-group"> 
+										<select name="icon" class="form-control" required>
+											<?=pass_icon(1, set_value('icon', ($feature['icon']??'')), TRUE, TRUE)?>
+										</select> 
+									</div>
 								</div>
 							</div>
 
@@ -72,3 +74,13 @@
 				</div>
 			</div> 
 		</div>
+
+		<script type="text/javascript">
+			// Make sure to fire only when the DOM is ready
+			window.onload = function() {  
+				$('select[name=icon]').fontIconPicker({
+					theme: 'fip-bootstrap',
+            		iconsPerPage: 25
+				});  
+			}
+		</script>
