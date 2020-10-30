@@ -14,7 +14,7 @@ your script enter an activation code, before they are able to use the product.
   5. Validation is done outside the validating script, making it rather difficult to break.
 
 
-###### Documentation
+##### Documentation Content
  1. Introduction
  	1. Use Cases
  	2. Who can use
