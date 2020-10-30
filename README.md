@@ -25,18 +25,18 @@ your script enter an activation code, before they are able to use the product.
  	2. How to
  3. Usage
  	1. Product Activation and Validations
- 		i. Setup Product
- 		ii.	Adding a new product
- 		iii. Updating a product
- 		iv. Listing products
- 		v. Activating and Validating a product
+ 		1. Setup Product
+ 		2.	Adding a new product
+ 		3. Updating a product
+ 		4. Listing products
+ 		5. Activating and Validating a product
  	2. Cpanel and AfterLogic Webmails
- 		i. Setup Webmail
- 		ii. Create Email addresses
- 		iii. Login to Webmail
- 		iv. Delete Webmail Account
+ 		1. Setup Webmail
+ 		2. Create Email addresses
+ 		3. Login to Webmail
+ 		4. Delete Webmail Account
  	3. Hubs and office management
- 		i. Create a Hub Category
- 		ii. Add Hubs
- 		iii. Book Hub
- 		iv. View Booked Hubs
+ 		1. Create a Hub Category
+ 		2. Add Hubs
+ 		3. Book Hub
+ 		4. View Booked Hubs
