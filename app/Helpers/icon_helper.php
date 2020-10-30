@@ -918,7 +918,7 @@ if ( ! function_usable('pass_icon'))
             'fa-chevron-left',
             'fa-chevron-right',
             'fa-chevron-up',
-            'fa-child', 
+            'fa-child',  
             'fa-circle', 
             'fa-clipboard', 
             'fa-clone',   
