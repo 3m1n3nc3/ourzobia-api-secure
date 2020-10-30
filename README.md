@@ -14,5 +14,30 @@ your script enter an activation code, before they are able to use the product.
   5. Validation is done outside the validating script, making it rather difficult to break.
 
 
-######Password Validate
-``^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!"#\$%&'\(\)\*\+,-\.\/:;<=>\?@[\]\^_`\{\|}~])[a-zA-Z0-9!"#\$%&'\(\)\*\+,-\.\/:;<=>\?@[\]\^_`\{\|}~]{10,}$``
+###### Documentation
+ 1. Introduction
+ 	1.1 Use Cases
+ 	1.2 Who can use
+ 	1.3 Security
+ 	1.4 Features
+ 2. Installation
+ 	2.1. Requirements
+ 	2.2. How to
+ 3. Usage
+ 	3.1 Product Activation and Validations
+ 		i. Setup Product
+ 		ii.	Adding a new product
+ 		iii. Updating a product
+ 		iv. Listing products
+ 		v. Activating and Validating a product
+ 	3.2. Cpanel and AfterLogic Webmails
+ 		i. Setup Webmail
+ 		ii. Create Email addresses
+ 		iii. Login to Webmail
+ 		iv. Delete Webmail Account
+ 	3.3. Hubs and office management
+ 		i. Create a Hub Category
+ 		ii. Add Hubs
+ 		iii. Book Hub
+ 		iv. View Booked Hubs
+ 		
