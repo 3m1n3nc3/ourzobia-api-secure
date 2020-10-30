@@ -16,13 +16,13 @@ your script enter an activation code, before they are able to use the product.
 
 ###### Documentation
  1. Introduction
- 	1.1 Use Cases
- 	1.2 Who can use
- 	1.3 Security
- 	1.4 Features
+ 	1. Use Cases
+ 	2. Who can use
+ 	3. Security
+ 	4. Features
  2. Installation
- 	2.1. Requirements
- 	2.2. How to
+ 	1. Requirements
+ 	2. How to
  3. Usage
  	1. Product Activation and Validations
  		i. Setup Product
