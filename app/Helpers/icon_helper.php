@@ -816,106 +816,465 @@ if ( ! function_usable('pass_icon'))
             787 => 'fa-chart-bar',
             788 => 'fa-chart-line',
             789 => 'fa-chart-pie',
-            );
+        );
+
+        $all_icons = array ( 
+            'fa-address-book', 
+            'fa-address-card', 
+            'fa-adjust', 
+            'fa-align-center',
+            'fa-align-justify',
+            'fa-align-left',
+            'fa-align-right', 
+            'fa-ambulance',
+            'fa-american-sign-language-interpreting',
+            'fa-anchor',  
+            'fa-angle-double-down',
+            'fa-angle-double-left',
+            'fa-angle-double-right',
+            'fa-angle-double-up',
+            'fa-angle-down',
+            'fa-angle-left',
+            'fa-angle-right',
+            'fa-angle-up', 
+            'fa-angry', 
+            'fa-archive', 
+            'fa-arrow-circle-down',
+            'fa-arrow-circle-left', 
+            'fa-arrow-alt-circle-down',
+            'fa-arrow-alt-circle-left', 
+            'fa-arrow-alt-circle-right',
+            'fa-arrow-alt-circle-up', 
+            'fa-arrow-down',
+            'fa-arrow-left',
+            'fa-arrow-right',
+            'fa-arrow-up', 
+            'fa-arrows-alt',   
+            'fa-assistive-listening-systems',
+            'fa-asterisk',
+            'fa-at',
+            'fa-audio-description', 
+            'fa-backward',
+            'fa-balance-scale',
+            'fa-ban', 
+            'fa-barcode',
+            'fa-bars',
+            'fa-bath', 
+            'fa-battery-empty',
+            'fa-battery-full',
+            'fa-battery-half',
+            'fa-battery-quarter',
+            'fa-battery-three-quarters',
+            'fa-bed',
+            'fa-beer', 
+            'fa-bell', 
+            'fa-bell-slash', 
+            'fa-bicycle',
+            'fa-binoculars',
+            'fa-birthday-cake', 
+            'fa-blind', 
+            'fa-bold',
+            'fa-bolt',
+            'fa-bomb',
+            'fa-book',
+            'fa-bookmark', 
+            'fa-braille',
+            'fa-briefcase', 
+            'fa-bug',
+            'fa-building', 
+            'fa-bullhorn',
+            'fa-bullseye',
+            'fa-bus', 
+            'fa-calculator',
+            'fa-calendar', 
+            'fa-calendar-alt', 
+            'fa-calendar-check', 
+            'fa-calendar-minus', 
+            'fa-calendar-plus', 
+            'fa-calendar-times', 
+            'fa-camera',
+            'fa-camera-retro',
+            'fa-car',
+            'fa-caret-down',
+            'fa-caret-left',
+            'fa-caret-square-down',
+            'fa-caret-right', 
+            'fa-caret-up',
+            'fa-cart-arrow-down',
+            'fa-cart-plus', 
+            'fa-certificate', 
+            'fa-chart-area',
+            'fa-chart-bar',
+            'fa-chart-line',
+            'fa-chart-pie',
+            'fa-check',
+            'fa-check-circle', 
+            'fa-check-square', 
+            'fa-chevron-circle-down',
+            'fa-chevron-circle-left',
+            'fa-chevron-circle-right',
+            'fa-chevron-circle-up',
+            'fa-chevron-down',
+            'fa-chevron-left',
+            'fa-chevron-right',
+            'fa-chevron-up',
+            'fa-child', 
+            'fa-circle', 
+            'fa-clipboard', 
+            'fa-clone',   
+            'fa-code',  
+            'fa-coffee',
+            'fa-cog',
+            'fa-cogs',
+            'fa-columns',
+            'fa-comment', 
+            'fa-comments', 
+            'fa-compass',
+            'fa-compress', 
+            'fa-copy',
+            'fa-copyright', 
+            'fa-credit-card', 
+            'fa-crop',
+            'fa-crosshairs', 
+            'fa-cube',
+            'fa-cubes',
+            'fa-cut', 
+            'fa-database',
+            'fa-deaf', 
+            'fa-desktop', 
+            'fa-download',  
+            'fa-edit', 
+            'fa-eject',
+            'fa-ellipsis-h',
+            'fa-ellipsis-v', 
+            'fa-envelope-square', 
+            'fa-eraser', 
+            'fa-exclamation',
+            'fa-exclamation-circle',
+            'fa-exclamation-triangle',
+            'fa-expand', 
+            'fa-eye',
+            'fa-eye-slash', 
+            'fa-fax', 
+            'fa-female',
+            'fa-fighter-jet',  
+            'fa-film',
+            'fa-filter',
+            'fa-fire',
+            'fa-fire-extinguisher', 
+            'fa-flag',
+            'fa-flag-checkered', 
+            'fa-flask', 
+            'fa-folder', 
+            'fa-folder-open',  
+            'fa-font', 
+            'fa-forward', 
+            'fa-gamepad',
+            'fa-gavel', 
+            'fa-genderless', 
+            'fa-gift', 
+            'fa-globe', 
+            'fa-graduation-cap', 
+            'fa-h-square',  
+            'fa-hashtag', 
+            'fa-headphones',
+            'fa-heart', 
+            'fa-heartbeat',
+            'fa-history',
+            'fa-home', 
+            'fa-hotel',
+            'fa-hourglass', 
+            'fa-hourglass-end',
+            'fa-hourglass-half', 
+            'fa-hourglass-start', 
+            'fa-i-cursor',
+            'fa-id-badge',
+            'fa-id-card', 
+            'fa-image', 
+            'fa-inbox',
+            'fa-indent',
+            'fa-industry',
+            'fa-info',
+            'fa-info-circle', 
+            'fa-italic', 
+            'fa-key', 
+            'fa-language',
+            'fa-laptop', 
+            'fa-leaf',  
+            'fa-life-ring', 
+            'fa-link', 
+            'fa-list',
+            'fa-list-alt',
+            'fa-list-ol',
+            'fa-list-ul', 
+            'fa-low-vision',
+            'fa-magic',
+            'fa-magnet',  
+            'fa-male',
+            'fa-map',
+            'fa-map-marker', 
+            'fa-map-pin',
+            'fa-map-signs',
+            'fa-mars',
+            'fa-mars-double',
+            'fa-mars-stroke',
+            'fa-mars-stroke-h',
+            'fa-mars-stroke-v', 
+            'fa-medkit', 
+            'fa-mercury',
+            'fa-microchip',
+            'fa-microphone',
+            'fa-microphone-slash',
+            'fa-minus',
+            'fa-minus-circle',
+            'fa-minus-square', 
+            'fa-mobile', 
+            'fa-motorcycle',
+            'fa-mouse-pointer',
+            'fa-music', 
+            'fa-neuter', 
+            'fa-object-group',
+            'fa-object-ungroup', 
+            'fa-outdent', 
+            'fa-paint-brush',
+            'fa-paper-plane', 
+            'fa-paperclip',
+            'fa-paragraph',
+            'fa-paste',
+            'fa-pause',
+            'fa-pause-circle', 
+            'fa-paw', 
+            'fa-percent',
+            'fa-phone',
+            'fa-phone-square', 
+            'fa-plane',
+            'fa-play',
+            'fa-play-circle', 
+            'fa-plug',
+            'fa-plus',
+            'fa-plus-circle',
+            'fa-plus-square', 
+            'fa-podcast',
+            'fa-power-off',
+            'fa-print', 
+            'fa-puzzle-piece', 
+            'fa-qrcode',
+            'fa-question',
+            'fa-question-circle', 
+            'fa-quote-left',
+            'fa-quote-right', 
+            'fa-random', 
+            'fa-recycle', 
+            'fa-registered', 
+            'fa-reply',
+            'fa-reply-all', 
+            'fa-retweet', 
+            'fa-road',
+            'fa-rocket',  
+            'fa-rss',
+            'fa-rss-square',  
+            'fa-save', 
+            'fa-search',
+            'fa-search-minus',
+            'fa-search-plus', 
+            'fa-server',
+            'fa-share',
+            'fa-share-alt',
+            'fa-share-alt-square',
+            'fa-share-square',  
+            'fa-shopping-bag',
+            'fa-shopping-basket',
+            'fa-shopping-cart',
+            'fa-shower', 
+            'fa-sign-language', 
+            'fa-signal', 
+            'fa-sitemap', 
+            'fa-sort', 
+            'fa-sort-down', 
+            'fa-sort-up', 
+            'fa-space-shuttle',
+            'fa-spinner', 
+            'fa-square', 
+            'fa-star',
+            'fa-star-half', 
+            'fa-step-backward',
+            'fa-step-forward',
+            'fa-stethoscope',
+            'fa-sticky-note', 
+            'fa-stop',
+            'fa-stop-circle', 
+            'fa-street-view',
+            'fa-strikethrough', 
+            'fa-subscript',
+            'fa-subway',
+            'fa-suitcase', 
+            'fa-superscript', 
+            'fa-table',
+            'fa-tablet', 
+            'fa-tag',
+            'fa-tags',
+            'fa-tasks',
+            'fa-taxi', 
+            'fa-terminal',
+            'fa-text-height',
+            'fa-text-width',
+            'fa-th',
+            'fa-th-large',
+            'fa-th-list', 
+            'fa-thermometer',  
+            'fa-thermometer-empty',
+            'fa-thermometer-full',
+            'fa-thermometer-half',
+            'fa-thermometer-quarter',
+            'fa-thermometer-three-quarters', 
+            'fa-thumbs-down', 
+            'fa-thumbs-up', 
+            'fa-times',
+            'fa-times-circle', 
+            'fa-tint', 
+            'fa-toggle-off',
+            'fa-toggle-on', 
+            'fa-trademark',
+            'fa-train',
+            'fa-transgender',
+            'fa-transgender-alt',
+            'fa-trash', 
+            'fa-tree', 
+            'fa-trophy',
+            'fa-truck', 
+            'fa-tty', 
+            'fa-tv', 
+            'fa-umbrella',
+            'fa-underline',
+            'fa-undo',
+            'fa-universal-access',
+            'fa-university',
+            'fa-unlink',
+            'fa-unlock',
+            'fa-unlock-alt', 
+            'fa-upload', 
+            'fa-user',
+            'fa-user-circle', 
+            'fa-user-md', 
+            'fa-user-plus',
+            'fa-user-secret',
+            'fa-user-times',
+            'fa-users', 
+            'fa-venus',
+            'fa-venus-double',
+            'fa-venus-mars',  
+            'fa-vimeo', 
+            'fa-volume-down',
+            'fa-volume-off',
+            'fa-volume-up', 
+            'fa-wheelchair', 
+            'fa-wifi', 
+            'fa-window-close', 
+            'fa-window-maximize',
+            'fa-window-minimize',
+            'fa-window-restore',  
+            'fa-wrench', 
+            'fa-youtube-square', 
+        );
  
-            // Find the particular icon
-            $ic = str_replace('fa fa-', '', $ic) ;
-            $ic = str_replace($ic, 'fa-'.$ic, $ic);
-            $search = $ic; 
+        // Find the particular icon
+        $ic = str_replace('fa fa-', '', $ic) ;
+        $ic = str_replace($ic, 'fa-'.$ic, $ic);
+        $search = $ic; 
 
-            $icon = array_search($search, $all_icons, true);
+        $icon = array_search($search, $all_icons, true);
 
-            if ($icon) 
-            {
-                $icon_key = $icon;
-            } 
-            elseif (isset($all_icons[$ic])) 
-            {
-                $icon = pass_icon(3, $all_icons[$ic]);
-                $icon_key = pass_icon(2, $icon);
-            } 
-            else 
-            {
-                $icon_key = array_search($ic, $all_icons, true);
-            }
+        if ($icon) 
+        {
+            $icon_key = $icon;
+        } 
+        elseif (isset($all_icons[$ic])) 
+        {
+            $icon = pass_icon(3, $all_icons[$ic]);
+            $icon_key = pass_icon(2, $icon);
+        } 
+        else 
+        {
+            $icon_key = array_search($ic, $all_icons, true);
+        }
 
-            if ($icon_key) 
-            {
-                $icon_key = $icon_key;
-            } 
-            else 
-            {
-                $icon_key = 99;
-            }      
+        if ($icon_key) 
+        {
+            $icon_key = $icon_key;
+        } 
+        else 
+        {
+            $icon_key = 99;
+        }      
 
-            if ($icon_key) 
-            {
-                $icon_value = $all_icons[$icon_key];
-            } 
-            else 
-            {
-                $icon_value = '';
-            }
+        if ($icon_key) 
+        {
+            $icon_value = $all_icons[$icon_key];
+        } 
+        else 
+        {
+            $icon_value = '';
+        }
 
-            $icon_t = ucfirst(str_replace('fa-', '', $icon_value)); 
-            $icon_title = ucfirst(str_replace('-', ' ', $icon_t)); 
+        $icon_t = ucfirst(str_replace('fa-', '', $icon_value)); 
+        $icon_title = ucfirst(str_replace('-', ' ', $icon_t)); 
 
-              // Generate select options for icons
-            if($type == 1) 
+          // Generate select options for icons
+        if($type == 1) 
+        {
+            $rows = '';
+            foreach($all_icons as $key => $name) 
             {
-                $rows = '';
-                foreach($all_icons as $key => $name) 
+                $icon_t_ = ucfirst(str_replace('fa-', '', $name)); 
+                $icon_title = ucfirst(str_replace('-', ' ', $icon_t_)); 
+                $name = 'fa '.$name;
+
+                if(($literal === TRUE ? $literal_ic : $ic) == $name) 
                 {
-                    $icon_t_ = ucfirst(str_replace('fa-', '', $name)); 
-                    $icon_title = ucfirst(str_replace('-', ' ', $icon_t_)); 
-                    $name = 'fa '.$name;
-
-                    if(($literal === TRUE ? $literal_ic : $ic) == $name) 
-                    {
-                        $selected = ' selected="selected"';
-                    } 
-                    else 
-                    {
-                        $selected = '';
-                    }
-
-                    $rows .= '
-                        <option value="'.$name.'"'.$selected.'>'. ($picker === true ? $name : $icon_title) ."</option>";
+                    $selected = ' selected="selected"';
+                } 
+                else 
+                {
+                    $selected = '';
                 }
 
-                $rows .= "\n";
-
-                return $rows;
-            } 
-            elseif($type == 2)
-            {
-                foreach($all_icons as $key => $name) 
-                {
-                    if($icon_value == $name) 
-                    {
-                        return $key;
-                    } 
-                }
-            } 
-            elseif($type == 3) 
-            {
-                return $icon_value;
-            } 
-            elseif($type == 4) 
-            {
-                return '<i class="fa '.$icon_value.'"></i>';
-            } 
-            elseif($type == 5) 
-            {
-                return $all_icons;
-            } 
-            else 
-            { 
-                if(in_array($icon_value, $all_icons)) 
-                {
-                    return 1;
-                }
+                $rows .= '
+                    <option value="'.$name.'"'.$selected.'>'. ($picker === true ? $name : $icon_title) ."</option>";
             }
+
+            $rows .= "\n";
+
+            return $rows;
+        } 
+        elseif($type == 2)
+        {
+            foreach($all_icons as $key => $name) 
+            {
+                if($icon_value == $name) 
+                {
+                    return $key;
+                } 
+            }
+        } 
+        elseif($type == 3) 
+        {
+            return $icon_value;
+        } 
+        elseif($type == 4) 
+        {
+            return '<i class="fa '.$icon_value.'"></i>';
+        } 
+        elseif($type == 5) 
+        {
+            return $all_icons;
+        } 
+        else 
+        { 
+            if(in_array($icon_value, $all_icons)) 
+            {
+                return 1;
+            }
+        }
 	}
 }
 
@@ -2600,7 +2959,7 @@ if ( ! function_usable('font_awesome'))
                 }
                 
                 case "brands": {
-                    $fa = $duotones;
+                    $fa = $brands;
                     break;
                 }
                 
