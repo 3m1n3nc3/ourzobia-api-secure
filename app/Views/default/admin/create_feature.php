@@ -24,9 +24,7 @@
 								<div class="col"> 
 									<label for="feature">Icon</label>
 									<div class="form-group"> 
-										<select name="icon" class="form-control" required>
-											<?=pass_icon(1, set_value('icon', ($feature['icon']??'')), TRUE, TRUE)?>
-										</select> 
+										<?=icon_selector(4, set_value('icon', ($hub['icon']??'')), "form-control", "regular")?>
 									</div>
 								</div>
 							</div>

@@ -4,7 +4,7 @@
 					<div class="card-header">
 						<h3 class="card-title"><?=$id ? 'Edit Feature' : 'Create Hub Category';?></h3>
 					</div>
-					<?=form_open_multipart('admin/hubs/'.$action.($id?'/'.$id:''))?>
+					<?=form_open_multipart('admin/hubs/'.$action.($id?'/'.$id:''));?>
 						<?=csrf_field()?>
 						<div class="card-body">
 							<div class="form-group">
@@ -21,9 +21,7 @@
 								<div class="col-md-6"> 
 									<label for="icon">Icon</label>
 									<div class="form-group"> 
-										<select name="icon" class="form-control">
-											<?=pass_icon(1, set_value('icon', ($hub['icon']??'')), TRUE)?>
-										</select> 
+										<?=icon_selector(4, set_value('icon', ($hub['icon']??'')), "form-control", "regular")?>
 									</div>
 								</div>
 

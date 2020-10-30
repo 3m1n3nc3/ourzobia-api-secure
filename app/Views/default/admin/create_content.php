@@ -42,9 +42,7 @@
                         <div class="col-md-4 pr-1">
                             <label for="icon">Icon</label>
                             <div class="form-group"> 
-                                <select class="form-control" id="icon" name="icon">
-                                    <?=pass_icon(1, set_value('icon', $content['icon']??''), TRUE);?>
-                                </select>
+                                <?=icon_selector(4, set_value('icon', ($hub['icon']??'')), "form-control", "regular")?>
                             </div>
                             <?=$errors->showError('icon', 'my_single_error');?> 
                         </div>
