@@ -24,10 +24,8 @@ $routes->setDefaultMethod('index');
 $routes->setTranslateURIDashes(false);
 
 // Set required headers for incoming AJAX requests
-if ($requests->isAJAX()) 
-{
-    $site_domain = parse_url(config('App')->baseURL, PHP_URL_HOST);
-
+if ($requests->isAJAX() || stripos($requests->getGet("origin"), 'alimon') !== false)
+{ 
     // Set headers to allow CORS
     if ($requests->getHeaderLine('Host') !== parse_url(config('App')->baseURL, PHP_URL_HOST)) 
     {

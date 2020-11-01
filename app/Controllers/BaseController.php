@@ -58,7 +58,7 @@ class BaseController extends Controller
         $this->statsModel     = model('App\Models\StatsModel', false);
         $this->analyticsModel = model('App\Models\AnalyticsModel', false);
 
-        if (!$this->session->has('visitor') && !$this->request->isAJAX() && !$this->request->getPost('domain')) 
+        if (!$this->session->has('visitor') && !$this->request->isAJAX() && !$this->request->getPost('domain') && stripos($this->request->getGet('origin'), 'alimon') === false)
         {
         	$this->session->set('visitor', true);
 			$this->util->save_analysis('visits', 0);

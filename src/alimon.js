@@ -1,5 +1,5 @@
 /**
- * Ourzobia PHP Api v1.1.2
+ * Ourzobia PHP Api v1.1.4
  * dependency loader
  * var src_url is the url to include all required resources 
  * from either public/src or src directories
@@ -14,6 +14,11 @@ var _script = document.querySelector('[data-current="true"]');
 
 if (typeof _script !== "undefined") {
 	var current_src = _script.getAttribute('data-src');
+	var _endpoint   = _script.getAttribute('data-endpoint');
+
+	if (_endpoint) {
+		current_src += _endpoint + "/";
+	}
 
 	if (typeof current_src !== "undefined") {
 		var src_url = current_src.replace(/(\w+\b)(\.min.js\b\/|\.js\/|\.min.js\b|\.js\b)/gi, "");
@@ -36,19 +41,19 @@ var head = document.getElementsByTagName("head")[0];
 // load cookie.js
 var script1 = document.createElement("script");
 script1.async = true;
-script1.src = src_url+"js.cookie.js";
+script1.src = src_url+"js.cookie.js?origin=alimon.js";
 script1.setAttribute('crossorigin','*');
 head.appendChild(script1); 
  
 // Load alimontaziba.js
 var script2 = document.createElement("script");
 script2.async = true;
-script2.src = src_url+"alimontaziba.js";
+script2.src = src_url+"alimontaziba.js?origin=alimon.js";
 script2.setAttribute('crossorigin','*');
 head.appendChild(script2);
 
 // Load alimon.css
 var style = document.createElement("link");
 style.rel = "stylesheet";
-style.href = src_url+"alimon.css"; 
+style.href = src_url+"alimon.css?origin=alimon.js"; 
 head.insertBefore(style, head.getElementsByTagName("link")[0]); 

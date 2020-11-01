@@ -13,7 +13,7 @@
 							</div>
 
 							<div class="form-row"> 
-								<div class="col form-group"> 
+								<div class="col-lg-10 form-group"> 
 									<label for="feature">Feature Type</label>
 									<select name="type" class="form-control" required>
 										<option value="feature"<?=set_select('type', 'feature', ($feature['type']??'') == 'feature')?>>Feature</option>
@@ -76,9 +76,10 @@
 		<script type="text/javascript">
 			// Make sure to fire only when the DOM is ready
 			window.onload = function() {  
-				$('select[name=icon]').fontIconPicker({
+				let fi_cons = $('select[name=icon]').fontIconPicker({
 					theme: 'fip-bootstrap',
             		iconsPerPage: 25
 				});  
+        		fi_cons.setIcon( '<?=set_value('icon', ($hub['icon']??''))?>' );
 			}
 		</script>
