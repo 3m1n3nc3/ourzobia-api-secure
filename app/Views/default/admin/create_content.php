@@ -323,9 +323,10 @@
 <script type="text/javascript">
     // Make sure to fire only when the DOM is ready
     window.onload = function() {  
-        $('select[name=icon]').fontIconPicker({
+        let fi_cons = $('select[name=icon]').fontIconPicker({
             theme: 'fip-bootstrap',
             iconsPerPage: 25
         });  
-    }
+        fi_cons.setIcon( '<?=set_value('icon', ($content['icon']??''))?>' );
+    } 
 </script>

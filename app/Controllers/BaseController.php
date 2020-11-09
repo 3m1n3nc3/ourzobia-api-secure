@@ -40,28 +40,39 @@ class BaseController extends Controller
 		// Preload any models, libraries, etc, here.
 		//--------------------------------------------------------------------  
 
-        // Init all models globally 
-        $this->form_validation = \Config\Services::validation();  
-		$this->session         = \Config\Services::session();
-        $this->account_data    = new \App\Libraries\Account_Data;
-        $this->creative        = new \App\Libraries\Creative_lib;
-        $this->enc_lib         = new \App\Libraries\Enc_lib;
-        $this->util            = new \App\Libraries\Util;
-
-        $this->actives_m  = model('App\Models\ActivesModel', false);
-        $this->hubs_m     = model('App\Models\HubsModel', false);
-        $this->bookings_m = model('App\Models\BookingsModel', false);
-        $this->products_m = model('App\Models\ProductsModel', false);
-        $this->contentModel = model('App\Models\ContentModel', false);
-        $this->usersModel   = model('App\Models\UsersModel', false);
-        $this->settingModel   = model('App\Models\SettingsModel', false);
-        $this->statsModel     = model('App\Models\StatsModel', false);
-        $this->analyticsModel = model('App\Models\AnalyticsModel', false);
-
-        if (!$this->session->has('visitor') && !$this->request->isAJAX() && !$this->request->getPost('domain') && stripos($this->request->getGet('origin'), 'alimon') === false)
+        // Check if ourzobia has been installed
+        if (env('installation.status', false) === false) 
         {
-        	$this->session->set('visitor', true);
-			$this->util->save_analysis('visits', 0);
+            if ($request->uri->getSegment(1) !== 'install') 
+            {
+                _redirect(prep_url($_SERVER['HTTP_HOST']).'/install/start');
+            }
+        }
+        else
+        {
+	        // Init all models globally 
+	        $this->form_validation = \Config\Services::validation();  
+			$this->session         = \Config\Services::session();
+	        $this->account_data    = new \App\Libraries\Account_Data;
+	        $this->creative        = new \App\Libraries\Creative_lib;
+	        $this->enc_lib         = new \App\Libraries\Enc_lib;
+	        $this->util            = new \App\Libraries\Util;
+
+	        $this->actives_m  = model('App\Models\ActivesModel', false);
+	        $this->hubs_m     = model('App\Models\HubsModel', false);
+	        $this->bookings_m = model('App\Models\BookingsModel', false);
+	        $this->products_m = model('App\Models\ProductsModel', false);
+	        $this->contentModel = model('App\Models\ContentModel', false);
+	        $this->usersModel   = model('App\Models\UsersModel', false);
+	        $this->settingModel   = model('App\Models\SettingsModel', false);
+	        $this->statsModel     = model('App\Models\StatsModel', false);
+	        $this->analyticsModel = model('App\Models\AnalyticsModel', false);
+
+	        if (!$this->session->has('visitor') && !$this->request->isAJAX() && !$this->request->getGetPost('domain') && stripos($this->request->getGetPost('origin'), 'alimon') === false)
+	        {
+	        	$this->session->set('visitor', true);
+				$this->util->save_analysis('visits', 0);
+	        }
         }
 	}
 

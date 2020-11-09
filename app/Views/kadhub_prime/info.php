@@ -1,5 +1,5 @@
 <?php  
-$theme = array(
+return array(
 	'name'        => 'KadHub Prime',
 	'version'     => '1.1.0',
 	'author'      => 'Ourzobia',

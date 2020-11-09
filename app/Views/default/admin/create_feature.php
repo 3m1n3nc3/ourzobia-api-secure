@@ -13,7 +13,7 @@
 							</div>
 
 							<div class="form-row"> 
-								<div class="col-lg-10 form-group"> 
+								<div class="col-lg-8 form-group"> 
 									<label for="feature">Feature Type</label>
 									<select name="type" class="form-control" required>
 										<option value="feature"<?=set_select('type', 'feature', ($feature['type']??'') == 'feature')?>>Feature</option>
@@ -21,7 +21,7 @@
 										<option value="slider"<?=set_select('type', 'slider', ($feature['type']??'') == 'slider')?>>Slider Item</option>
 									</select> 
 								</div>
-								<div class="col"> 
+								<div class="col-lg-4"> 
 									<label for="feature">Icon</label>
 									<div class="form-group"> 
 										<?=icon_selector(4, set_value('icon', ($hub['icon']??'')), "form-control", "regular")?>

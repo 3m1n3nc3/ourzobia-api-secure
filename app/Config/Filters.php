@@ -19,12 +19,14 @@ class Filters extends BaseConfig
 			'admincontrol' => [
 				'except' => [
 					'login', 'signup', 'logout', 'home/*', '/', 'connect/*', 'api', 'api/*', 'ajax/*', 'user/*', 'cli/*', 'error', 
-					'error/*', 'install/*', 'curl', 'curl/*', 'home', 'home/*', 'requests', 'requests/*', 'resource', 'src', 'src/*']
+					'error/*', 'install/*', 'curl', 'curl/*', 'home', 'home/*', 'api', 'api/*', 'requests', 'requests/*', 'resource', 
+					'src', 'src/*']
 			], 
 			'accesscontrol' => [
 				'except' => [
 					'login', 'signup', 'logout', 'home/*', '/', 'connect/*', 'api', 'api/*', 'ajax/*', 'cli/*', 'error', 'error/*', 
-					'user/m', 'install/*', 'curl', 'curl/*', 'home', 'home/*', 'requests', 'requests/*', 'resource', 'src', 'src/*']
+					'user/m', 'install/*', 'curl', 'curl/*', 'home', 'home/*', 'api', 'api/*', 'requests', 'requests/*', 'resource', 
+					'src', 'src/*']
 			],  
 			//'honeypot'
 			// 'csrf',

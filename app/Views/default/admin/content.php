@@ -6,31 +6,7 @@
                     <a href="<?= site_url('admin/content/create')?>" class="btn btn-success text-white mr-1">Create New Page</a>
                 </div> 
             </div>
-            <div class="card-body"> 
-                <!-- <?= form_open(uri_string(), ['method' => 'get']);?> -->
-  <!--               <label class="text-info" for="parent">Filter by Parent</label>
-                <div class="form-row">
-                    <div class="form-group col">
-                        <select class="form-control" id="parent" name="parent">
-                            <option value="non" <?= set_select('parent', 'non') ?>>No Parent</option>
-                            <option value="" <?= set_select('parent', '') ?>>All</option>
-                            <?php foreach($parents AS $parent): ?> 
-                            <?php 
-                                $pager = $content_md->get_content(['safelink' => $parent['parent']]);
-                                if($parent['parent'] != ''): ?>
-                                    <?='<option value="'.$parent['parent'].'"'.set_select('parent', $parent['parent']).'>'.ucwords($pager['title']).'</option>' ?>   
-                                <?php endif; ?>
-                            <?php endforeach; ?> 
-                        </select>
-                    </div>
-
-                    <div class="form-group col">
-                        <button class="btn btn-primary btn-md font-weight-bold pass"><i class="fa fa-spinner"></i> Filter</button>
-                    </div>
-                </div> -->
-                <!-- <?= form_close(); ?> -->
-
-                <!-- <hr class="bg-warning"> -->
+            <div class="card-body">  
 
                 <div class="row container">
                     <?php if($contents): ?> 

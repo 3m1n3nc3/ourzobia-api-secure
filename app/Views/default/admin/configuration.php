@@ -1,4 +1,7 @@
-<?php $switch = ($request->getPost() ? 1 : null) ?>
+<?php 
+    $switch = ($request->getPost() ? 1 : null);
+    $attribution = theme_info(my_config('frontend_theme'),'attribution'); ?>
+
 <div class="row">
     <div class="col-md-12">
         <div class="card">
@@ -58,15 +61,17 @@
                     <label class="font-weight-bold" for="basic_block">Main Configuration</label>
                     <hr class="my-0">
                     <div class="form-row p-3 mb-3" id="basic_block">
-                        <div class="form-group col-md-6">
+                        <div class="form-group col-md-<?=$attribution?'6':'12'?>">
                             <label class="text-info" for="site_name">Site Name</label>
                             <input type="text" name="value[site_name]" value="<?= set_value('value[site_name]', my_config('site_name')) ?>" class="form-control" >
                             <small class="text-muted">The name of this website</small>
                             <?= $errors->showError('value.site_name', 'my_single_error'); ?>
                         </div>
+
+                        <?php if ($attribution): ?>
                         <div class="form-group col-md-6">
                             <div class="form-group">
-                                <label class="text-info" for="show_link_back">Show Link Back</label>
+                                <label class="text-info" for="show_link_back">Show Attribution</label>
                                 <select id="show_link_back" name="value[show_link_back]" class="form-control" required>
                                     <option value="0" <?= set_select('value[show_link_back]', '0', int_bool(my_config('show_link_back') == 0))?>>Hide
                                     </option>
@@ -74,11 +79,12 @@
                                     </option>
                                 </select>
                                 <small class="text-muted">
-                                The public facing section of this software has been designed by Colorlib and licensed under CC BY 3.0, You can choose to show or hide the credits.
+                                Part of this software has been <?=$attribution?>. You can choose to show or hide the credits.
                                 </small>
                                 <?= $errors->showError('value.show_link_back', 'my_single_error'); ?>
                             </div>
                         </div>
+                        <?php endif ?>
                     </div>
 
                     <hr>
@@ -573,6 +579,38 @@
                             <?= $errors->showError('value.site_active_modules', 'my_single_error'); ?>
                         </div>
 
+                        <div class="form-group col-md-6">
+                            <div class="form-group">
+                                <label class="text-info" for="front_skin">Front Page Skin</label>
+                                <select id="front_skin" name="value[front_skin]" class="form-control">
+                                    <option value="0"<?=set_select('value[front_skin]', '0',( my_config('front_skin') == '0'))?>>Unset
+                                    </option>
+                                    <option value="1"<?=set_select('value[front_skin]', '1', (my_config('front_skin') == '1'))?>>Default Theme Skin
+                                    </option>  
+                                </select>
+                                <small class="text-muted">
+                                Use the default theme skin on front page when available.
+                                </small>
+                                <?= $errors->showError('value.front_skin', 'my_single_error'); ?>
+                            </div>
+                        </div> 
+
+                        <div class="form-group col-md-6">
+                            <div class="form-group">
+                                <label class="text-info" for="scrollspy_nav">Front Page Navigation</label>
+                                <select id="scrollspy_nav" name="value[scrollspy_nav]" class="form-control">
+                                    <option value="1"<?=set_select('value[scrollspy_nav]', '1', (my_config('scrollspy_nav') == '1'))?>>Scrollspy
+                                    </option> 
+                                    <option value="0"<?=set_select('value[scrollspy_nav]', '0',(my_config('scrollspy_nav') == '0'))?>>Site Pages
+                                    </option> 
+                                </select>
+                                <small class="text-muted">
+                                Choose to use a scrollspy navigation bar or show site pages on navigation when available.
+                                </small>
+                                <?= $errors->showError('value.scrollspy_nav', 'my_single_error'); ?>
+                            </div>
+                        </div> 
+
                         <div class="form-group col-md-12">
                             <label class="text-info" for="site_slogan">Slogan</label>
                             <input type="text" name="value[site_slogan]" value="<?= set_value('value[site_slogan]', my_config('site_slogan')) ?>" class="form-control">
@@ -592,7 +630,7 @@
                             <textarea name="value[site_description]" class="form-control" ><?= set_value('value[site_description]', character_limiter(my_config('site_description'), 200,'')) ?></textarea><small class="text-muted">The site description might be used for SEO and other sections (Less than 200 characters)</small>
                             <?= $errors->showError('value.site_description', 'my_single_error'); ?>
                         </div>  
-
+<!-- 
                         <div class="form-group col-md-12">
                             <label class="text-info" for="email_template">Email Template</label>
                             <textarea name="value[email_template]" class="form-control textarea" ><?= set_value('value[email_template]', my_config('email_template')) ?></textarea>
@@ -601,7 +639,7 @@
                                 <div class="text-info">Variables: {$conf=site_name}, {$user}, {$title}, {$message}, {$link}, {$link_title}</div>
                             </small>
                             <?= $errors->showError('value.email_template', 'my_single_error'); ?>
-                        </div>
+                        </div> -->
                     </div>
                     <?php endif; ?>
 

@@ -10,7 +10,10 @@
 		"ext-intl": "*",
 		"ext-json": "*",
 		"ext-mbstring": "*", 
-		"guzzlehttp/guzzle": "^7.1"
+		"guzzlehttp/guzzle": "^7.1",
+        "yabacon/paystack-php": "2.1.23",
+        "endroid/qr-code": "^3.9",
+        "nelexa/zip": "^3.3"
 	},
 	"require-dev": {
 		"codeigniter4/codeigniter4-standard": "^1.0",  

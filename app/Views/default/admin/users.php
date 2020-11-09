@@ -55,14 +55,14 @@
 						text = "Uncheck All";
 					}
 
-					if ($(".checkboxes:checkbox:checked").length>0) { 
-						$(".generate_email").removeAttr('disabled').removeClass('disabled'); 
-					} else {
-						$(".generate_email").attr('disabled');
-						$(".generate_email").addClass('disabled');
-					}
+					check_the_boxes($(e.target).prop("checked"));
 
 					$("label#clabel").text(text);
+				});
+
+				$("body").on("change", ".checkboxes", function(e) 
+				{
+					check_the_boxes($(e.target).prop("checked"));
 				});
 
 				$(".generate_email").click(function() {
@@ -71,22 +71,35 @@
 					$(".checkboxes:checkbox:checked").each(function() {
 						ids.push($(this).data('uid'))
 					});
- 
-					if ($(".checkboxes:checkbox:checked").length>0) { 
-						$.ajax({
-							url: link("connect/generate_emails"),
-							method: "post",
-							dataType: "JSON",
-							data: {uids:ids,action:$this.data('action')},
-							beforeSend: function() { 
-                				$this.buttonLoader('start');  
-							}, 
-							success: function(data) {
-                				$this.buttonLoader('stop'); 
-                				show_toastr(data.message, data.status);  
-							}
-						});
+ 					
+ 					if (!$this.prop("disabled")) 
+ 					{ 
+						if ($(".checkboxes:checkbox:checked").length>0) { 
+							$.ajax({
+								url: link("connect/generate_emails"),
+								method: "post",
+								dataType: "JSON",
+								data: {uids:ids,action:$this.data('action')},
+								beforeSend: function() { 
+	                				$this.buttonLoader('start');  
+								}, 
+								success: function(data) {
+	                				$this.buttonLoader('stop'); 
+	                				show_toastr(data.message, data.status);  
+								}
+							});
+						}
 					}
 				});
+			}
+
+			function check_the_boxes(chcked) {
+
+				if ($(".checkboxes:checkbox:checked").length>0) { 
+					$(".generate_email").removeAttr('disabled').removeClass('disabled'); 
+				} else {
+					$(".generate_email").attr('disabled');
+					$(".generate_email").addClass('disabled');
+				}
 			}
 		</script>

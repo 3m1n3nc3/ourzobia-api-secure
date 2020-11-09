@@ -998,6 +998,8 @@ if ( ! function_usable('update_env') )
 {
     /**
      * A convenience method to update the values of the .env file
+     * Supply a $fields and $value or array of $fields => $value pairs to $fields
+     * or set $fields to null and supply a qualified .env configuration string to $value
      *
      * @param string        $fields
      * @param string|int    $value 
@@ -1005,8 +1007,8 @@ if ( ! function_usable('update_env') )
      * @return bool
      */
     function update_env($fields = null, $value = null) : bool
-    {    
-        if (!empty($fields) && (is_array($fields) OR $value)) 
+    {
+        if ((!empty($fields) || !empty($value)) && (is_array($fields) OR $value)) 
         {
             $dot_env_path = ROOTPATH . '.env'; 
 
@@ -1030,7 +1032,7 @@ if ( ! function_usable('update_env') )
                     }
                 } 
             }
-            else
+            elseif (!empty($fields))
             {
                 $curr_val     = env($fields);
 
@@ -1042,6 +1044,10 @@ if ( ! function_usable('update_env') )
                 {
                     $dot_env_file = str_replace("#---#", "#---#\n$field = $value", $dot_env_file);  
                 }
+            }
+            elseif (!empty($value))
+            {
+                $dot_env_file = $value;  
             }
 
             if (!$fp = fopen($dot_env_path, 'wb')) 
@@ -1067,7 +1073,7 @@ if ( ! function_usable('Alogic') )
         $session = \Config\Services::session();    
         $client  = \Config\Services::curlrequest();
 
-        if (my_config('afterlogic_domain')) 
+        if (my_config('afterlogic_domain') && my_config('afterlogic_username') && my_config('afterlogic_password')) 
         { 
             try 
             { 
@@ -1136,6 +1142,10 @@ if ( ! function_usable('Alogic') )
 
             return $logic;
         }
+        else
+        {
+            return json_decode(json_encode(['Result' => false, 'Errors' => _lang("auth_failed_check_credentials", ["AfterLogic"])]));
+        }
         
         return;
     } 
@@ -1146,10 +1156,17 @@ if ( ! function_usable('Cpanel') )
     function Cpanel($schema = 'https') 
     {
         $cpanel_api = new client();
+        if (my_config('cpanel_url') && my_config('cpanel_username') && my_config('cpanel_password')) 
+        {
+            $cpanel_api->setServer(my_config('cpanel_url'), my_config('cpanel_port'))->setBasePath('execute')->setSchema($schema . '://');
+            $cpanel_api->auth(my_config('cpanel_username'), my_config('cpanel_password'));
 
-        $cpanel_api->setServer(my_config('cpanel_url'), my_config('cpanel_port'))->setBasePath('execute')->setSchema($schema . '://');
-        $cpanel_api->auth(my_config('cpanel_username'), my_config('cpanel_password'));
-
+            return $cpanel_api;
+        }
+        
+        $cpanel_api->status = 0;
+        $cpanel_api->errors = _lang("auth_failed_check_credentials", ["Cpanel"]);
+        
         return $cpanel_api;
     } 
 } 

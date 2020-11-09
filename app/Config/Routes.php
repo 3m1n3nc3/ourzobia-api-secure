@@ -24,7 +24,7 @@ $routes->setDefaultMethod('index');
 $routes->setTranslateURIDashes(false);
 
 // Set required headers for incoming AJAX requests
-if ($requests->isAJAX() || stripos($requests->getGet("origin"), 'alimon') !== false)
+if ($requests->isAJAX() || stripos($requests->getGetPost("origin"), 'alimon') !== false)
 { 
     // Set headers to allow CORS
     if ($requests->getHeaderLine('Host') !== parse_url(config('App')->baseURL, PHP_URL_HOST)) 
@@ -62,9 +62,8 @@ $routes->setAutoRoute(true);
 // route since we don't have to scan directories.
 $routes->get('/', 'Home::index');
 $routes->get('page/(:any)', 'Home::index/$1'); 
-
-$routes->post('requests/activate', 'Home::activate'); 
-$routes->match(['get', 'post'], 'requests/(:any)', 'Home::$1'); 
+ 
+$routes->match(['get', 'post'], 'requests/(:any)', 'Api::$1'); 
  
 $routes->get('src/(:any)', 'Src::index/$1');
 

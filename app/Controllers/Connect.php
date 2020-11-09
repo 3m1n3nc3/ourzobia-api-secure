@@ -259,9 +259,13 @@ class Connect extends BaseController
             // $login = $this->curler->ssl_fetch($host, $post);
             // redirect($host);     
         } 
-        else
+        elseif (!empty($webmailer->data->errors))
         {
             $set_response['message'] = CpanelErrors($webmailer->data->errors, 'Login'); 
+        }
+        else
+        {
+            $set_response['message'] = CpanelErrors(["Unable to connect..."], 'Login'); 
         }
 
         return $this->response->setJSON($set_response);
@@ -288,101 +292,108 @@ class Connect extends BaseController
             foreach ($uids as $key => $uid) 
             {
                 $_user  = $this->usersModel->get_user($uid); 
-                $Cpanel = Cpanel(my_config('cpanel_protocol')); 
+                $Cpanel = Cpanel(my_config('cpanel_protocol'));
 
-                if ($this->request->getPost('action') === 'generate') 
+                if (empty($Cpanel->errors)) 
                 { 
-                    // Check if this email has been generated before
-                    if ($_user['cpanel'] !== '1') 
+                    if ($this->request->getPost('action') === 'generate') 
+                    { 
+                        // Check if this email has been generated before
+                        if ($_user['cpanel'] !== '1') 
+                        { 
+                            $response = $Cpanel->GET->Email->list_pops(['skip_main'=>1]);
+                            if (!empty($response->data->status)) 
+                            {
+                                // Check if this email account does not exist
+                                if (!in_array("{$_user['username']}@" . my_config('cpanel_domain'), array_column(toArray($response->data->data), 'email')))
+                                { 
+                                    // Actually generate the accounts
+                                    $add_pop = $Cpanel->GET->add_pop([
+                                        'email'   => $_user['username'],
+                                        'domain'  => my_config('cpanel_domain'),
+                                        'password'=> my_config('default_password'),
+                                        'send_welcome_email' => 1
+                                    ]);
+     
+                                    if (!empty($add_pop->data->status)) 
+                                    {
+                                        $emails_count++;
+
+                                        // Add new user to After logic
+                                        $tenant = Alogic('http', ['Module' => 'Core', 'Method' => 'GetTenantList']); 
+                                        if (!empty($tenant->Result->Items[0]->Id)) 
+                                        {
+                                            $tenant_id = $tenant->Result->Items[0]->Id;
+                                            $alwm_user = Alogic('http', ['Module' => 'Core', 'Method' => 'CreateUser', 'Parameters' => [
+                                                'TenantId' => $tenant_id, 
+                                                'PublicId' => str_ireplace('+', '@', $add_pop->data->data), 
+                                                'Role' => 2
+                                            ]]);
+                                            $alwm_id = $alwm_user->Result;
+                                        }
+
+                                        $this->usersModel->save_user(['uid' => $uid, 'cpanel' => '1', 'alwm_id' => $alwm_id]);
+                                    }
+
+                                    $errors .= CpanelErrors($add_pop->data->errors, $_user['username']);
+                                }
+                            }
+                        }
+                    }
+                    elseif ($this->request->getPost('action') === 'delete')
                     { 
                         $response = $Cpanel->GET->Email->list_pops(['skip_main'=>1]);
                         if (!empty($response->data->status)) 
                         {
-                            // Check if this email account does not exist
-                            if (!in_array("{$_user['username']}@" . my_config('cpanel_domain'), array_column(toArray($response->data->data), 'email')))
+                            // Check if this email account does exist
+                            if (in_array("{$_user['username']}@" . my_config('cpanel_domain'), array_column(toArray($response->data->data), 'email')))
                             { 
-                                // Actually generate the accounts
-                                $add_pop = $Cpanel->GET->add_pop([
-                                    'email'   => $_user['username'],
-                                    'domain'  => my_config('cpanel_domain'),
-                                    'password'=> my_config('default_password'),
-                                    'send_welcome_email' => 1
+                                // Actually delete the accounts
+                                $delete_pop = $Cpanel->GET->delete_pop([
+                                    'email'  => $_user['username'], 
+                                    'domain' => my_config('cpanel_domain')
                                 ]);
- 
-                                if (!empty($add_pop->data->status)) 
+
+                                if (!empty($delete_pop->data->status)) 
                                 {
                                     $emails_count++;
-
-                                    // Add new user to After logic
-                                    $tenant = Alogic('http', ['Module' => 'Core', 'Method' => 'GetTenantList']); 
-                                    if (!empty($tenant->Result->Items[0]->Id)) 
+                                    if ($_user['alwm_id']) 
                                     {
-                                        $tenant_id = $tenant->Result->Items[0]->Id;
-                                        $alwm_user = Alogic('http', ['Module' => 'Core', 'Method' => 'CreateUser', 'Parameters' => [
-                                            'TenantId' => $tenant_id, 
-                                            'PublicId' => str_ireplace('+', '@', $add_pop->data->data), 
-                                            'Role' => 2
-                                        ]]);
-                                        $alwm_id = $alwm_user->Result;
+                                        Alogic('http', ['Module' => 'Core', 'Method' => 'DeleteUser', 'Parameters' => [
+                                            'UserId' => $_user['alwm_id']]
+                                        ]); 
                                     }
-
-                                    $this->usersModel->save_user(['uid' => $uid, 'cpanel' => '1', 'alwm_id' => $alwm_id]);
-                                }
-
-                                $errors .= CpanelErrors($add_pop->data->errors, $_user['username']);
+                                    $this->usersModel->save_user(['uid' => $uid, 'cpanel' => '0', 'alwm_id' => NULL]);
+                                }  
+                                    
+                                $errors .= CpanelErrors($delete_pop->data->errors, $_user['username']);
+                            }
+                        }
+                    }
+                    elseif ($this->request->getPost('action') === 'alwm')
+                    { 
+                        if ($_user['cpanel'] && !$_user['alwm_id']) 
+                        {
+                            // Add new user to After logic
+                            $tenant = Alogic('http', ['Module' => 'Core', 'Method' => 'GetTenantList']); 
+                            if (!empty($tenant->Result->Items[0]->Id)) 
+                            {
+                                $emails_count++;
+                                $tenant_id = $tenant->Result->Items[0]->Id;
+                                $alwm_user = Alogic('http', ['Module' => 'Core', 'Method' => 'CreateUser', 'Parameters' => [
+                                    'TenantId' => $tenant_id, 
+                                    'PublicId' => $_user['username'] . '@' . my_config('cpanel_domain'), 
+                                    'Role' => 2
+                                ]]);
+                                $alwm_id = $alwm_user->Result;
+                                $this->usersModel->save_user(['uid' => $uid, 'alwm_id' => $alwm_id]);
                             }
                         }
                     }
                 }
-                elseif ($this->request->getPost('action') === 'delete')
-                { 
-                    $response = $Cpanel->GET->Email->list_pops(['skip_main'=>1]);
-                    if (!empty($response->data->status)) 
-                    {
-                        // Check if this email account does exist
-                        if (in_array("{$_user['username']}@" . my_config('cpanel_domain'), array_column(toArray($response->data->data), 'email')))
-                        { 
-                            // Actually delete the accounts
-                            $delete_pop = $Cpanel->GET->delete_pop([
-                                'email'  => $_user['username'], 
-                                'domain' => my_config('cpanel_domain')
-                            ]);
-
-                            if (!empty($delete_pop->data->status)) 
-                            {
-                                $emails_count++;
-                                if ($_user['alwm_id']) 
-                                {
-                                    Alogic('http', ['Module' => 'Core', 'Method' => 'DeleteUser', 'Parameters' => [
-                                        'UserId' => $_user['alwm_id']]
-                                    ]); 
-                                }
-                                $this->usersModel->save_user(['uid' => $uid, 'cpanel' => '0', 'alwm_id' => NULL]);
-                            }  
-                                
-                            $errors .= CpanelErrors($delete_pop->data->errors, $_user['username']);
-                        }
-                    }
-                }
-                elseif ($this->request->getPost('action') === 'alwm')
-                { 
-                    if ($_user['cpanel'] && !$_user['alwm_id']) 
-                    {
-                        // Add new user to After logic
-                        $tenant = Alogic('http', ['Module' => 'Core', 'Method' => 'GetTenantList']); 
-                        if (!empty($tenant->Result->Items[0]->Id)) 
-                        {
-                            $emails_count++;
-                            $tenant_id = $tenant->Result->Items[0]->Id;
-                            $alwm_user = Alogic('http', ['Module' => 'Core', 'Method' => 'CreateUser', 'Parameters' => [
-                                'TenantId' => $tenant_id, 
-                                'PublicId' => $_user['username'] . '@' . my_config('cpanel_domain'), 
-                                'Role' => 2
-                            ]]);
-                            $alwm_id = $alwm_user->Result;
-                            $this->usersModel->save_user(['uid' => $uid, 'alwm_id' => $alwm_id]);
-                        }
-                    }
+                else
+                {
+                    $errors = $Cpanel->errors;
                 }
             }
         } 

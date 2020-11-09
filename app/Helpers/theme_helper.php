@@ -223,7 +223,7 @@ if (! function_usable('theme_info'))
         }
         $theme_directory = set_realpath($file, TRUE);
         $info_file = $theme_directory . 'info.php';
-        require $info_file;
+        $theme = require($info_file);
 
         if ($info) 
         {

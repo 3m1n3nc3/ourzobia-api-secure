@@ -31,6 +31,7 @@
         <!-- Jodit text editor -->
         <link rel="stylesheet" href="<?= base_url('resources/plugins/jodit/jodit.css'); ?>">
         <link rel="stylesheet" href="<?=base_url('resources/plugins/dropzone/dropzone.min.css')?>">  
+        <link rel="stylesheet" href="<?=base_url('resources/distr/css/color-theme.css')?>">
     <!-- Datatables -->
     <?php if (isset($has_table) && $has_table): ?>
         <link rel="stylesheet" href="<?php echo base_url('resources/plugins/datatables-bs4/css/dataTables.bootstrap4.css'); ?>">

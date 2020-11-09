@@ -44,7 +44,7 @@ class Autoload extends AutoloadConfig
 		'Config'      => APPPATH . 'Config',
 		'n1ghteyes'   => APPPATH . 'ThirdParty/apicore-master/src',
 		'Melbahja\\Seo\\' => APPPATH . 'ThirdParty/melbahja/seo/src',
-		'Stripe' => APPPATH . 'ThirdParty/stripe/stripe-php/lib'
+		'Stripe' => APPPATH . 'ThirdParty/stripe/stripe-php/lib' 
 	];
 
 	/**

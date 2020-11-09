@@ -144,7 +144,7 @@ class Admin extends BaseController
                 
             	($id) ? $save['id'] = $id : null;
             	$require_domain     = (!empty($view_data['product']['domain'])) ? '|valid_url|required' : '';
-            	$empty_domain       = ($this->request->getPost('domain')) ? '|is_unique[all_products.domain,id,$id]' : '';
+                $empty_domain       = ($this->request->getPost('domain')) ? "|is_unique[all_products.domain,id,$id]" : '';
 
 	            // Validate post data
 		        $this->validate([
@@ -195,7 +195,7 @@ class Admin extends BaseController
      * @return string           Uses the themeloader() to call and return codeigniter's view() method to render the page
      */
     public function configuration($step = 'main', $action = '')
-    { 
+    {
 		// Check and redirect if this module is unavailable for the current  theme
 		if (!module_active('_config')) return redirect()->to(base_url('admin/dashboard'));
 
@@ -232,6 +232,7 @@ class Admin extends BaseController
         if ($action == 'remove' && $q) 
         {
         	// load the view here to avoid page redirect or refresh
+            $this->creative->delete_file(PUBLICPATH . my_config($q));
         	$this->settingModel->save_settings([$q=>'']);
 	        $this->session->setFlashdata('notice', alert_notice("Configuration Saved", 'success')); 
 	        return redirect()->to(base_url('admin/configuration/'.$step.'#'));
@@ -404,6 +405,42 @@ class Admin extends BaseController
 			'features'	 => $this->contentModel->get_features(),
 			'users'      => $this->usersModel->get() 
 		);
+
+		// Update featured related config
+		if ($action == 'config') 
+		{
+	        // Remove configuration item value 
+	        if ($this->request->getGet('remove')) 
+	        {
+	        	// load the view here to avoid page redirect or refresh
+                $this->creative->delete_file(PUBLICPATH . my_config($this->request->getGet('remove')));
+	        	$this->settingModel->save_settings([$this->request->getGet('remove')=>'']);
+		        $this->session->setFlashdata('notice', alert_notice("Removed", 'success')); 
+		        return redirect()->to(base_url('admin/features/'.$action.'#paform'));
+	        }
+
+        	// Upload configuration images 
+            $l_resize = ['width'   => 350, 'height' => 350]; 
+            $this->creative->upload('feature_sprite', my_config('feature_sprite'), 'feature_sprite', NULL, $l_resize, ['value' => 'feature_sprite']);  
+
+            // Check for image upload errors
+            if ($this->creative->upload_errors() === FALSE)
+            { 
+            	// Merge image and post data
+                $save = $this->request->getPost('value');
+                if (isset($_POST['creative_lib'])) {
+                	$save = $_POST['creative_lib']['value'];
+	                $saved = $this->settingModel->save_settings($save);
+                } 
+                // Save the configuration
+                if (isset($saved))
+                {
+	                $msg   = (!empty($saved['msg'])) ? alert_notice($saved['msg'], 'error') : alert_notice("Updated", 'success');
+	                $this->session->setFlashdata('notice', $msg); 
+                }
+                _redirect(base_url('admin/features/'), 'location');
+            }
+        }
 
 		// Create new features
 		if ($action == 'create') 
@@ -940,6 +977,287 @@ class Admin extends BaseController
 	            $this->session->setFlashdata('notice', alert_notice("Content Deleted", 'success')); 
 				return redirect()->to(base_url('admin/content/'));
 		}
+		return theme_loader($view_data, null, 'admin'); 
+	} 
+
+
+    /**
+     * This methods handles automatic updates 
+     * @param  string 	$action 	Determines the action to take on the update page [upload,view]
+     * @param  string 	$id 	 	The id of the update item to handle
+     * @return string           	CodeIgniter\HTTP
+     */
+	public function updates($action = 'view', $id = '')
+	{	 
+		$zipFile = new \App\ThirdParty\nelexa\ZipFile();
+
+		// Check and redirect if this module is unavailable for the current  theme
+		if (!module_active('_updates')) return redirect()->to(base_url('admin/dashboard'));
+
+		$userdata   = $this->account_data->fetch(user_id());
+		$update_file = $new_updates = '';
+		$available_updates = [];
+		
+		// Read the info file withing the zip directory
+		$updates_dir = WRITEPATH . 'uploads/updates/';
+		// deleteAll(WRITEPATH . 'uploads/updates/', TRUE);
+
+		// Set the default ajax responses
+	    $data['success'] = false;
+	    $data['status']  = 'error';
+	    $data['message'] = _lang('an_error_occurred'); 
+
+		$view_data = array(
+			'session' 	 => $this->session,
+			'user' 	     => $userdata,
+			'page_title' => 'System Updates',
+			'page_name'  => 'updates',  
+			'set_folder' => 'admin/', 
+			'acc_data'   => $this->account_data,
+			'creative'   => $this->creative 
+		);
+
+		// Load all the uploaded packages
+		if (file_exists($updates_dir))
+		{ 
+			$load_updates = directory_map($updates_dir, 1);
+
+			foreach ($load_updates as $key => $update_item) 
+			{ 
+				$update_info = (object)[];
+				try
+				{ 
+					$info_file = $zipFile->openFile($updates_dir . $update_item)->getEntryContents('installer.php');
+					if ($info_file) 
+					{
+						$update_info = json_decode($info_file); 
+						$update_info->file = $updates_dir . $update_item;
+						$update_info->file_name = $update_item;
+						$update_info->info_file_name = pathinfo($update_item, PATHINFO_BASENAME); 
+						$update_info->requirements = check_requirements($update_info->requirements);  
+						// print_r($zipFile->getEntryInfo('installer.php'));
+			    		$available_updates[] = $update_info; 
+						$zipFile->close();
+					}
+				}
+				catch(\Exception $e)
+				{ 
+				    // $this->session->setFlashdata('notice', alert_notice($e->getMessage(), 'error', FALSE, 'FLAT'));
+				}  
+			}
+		}
+
+		// Get the names, versions and types of all available updates
+		$available_updates_vars = ['name'=>[], 'version'=>[], 'type'=>[]];
+		if ($available_updates) 
+		{
+		    foreach (toArray($available_updates) as $k => $au) 
+		    {
+		    	$a_item[] = $au['realname'];
+		    	$b_item[] = $au['version'];
+		    	$c_item[] = $au['type'];
+		    }
+
+	    	$available_updates_vars = ['realname'=>$a_item, 'version'=>$b_item, 'type'=>$c_item];
+		}
+
+        $new_updates = ($available_updates) ? 'Updates are available!' : 'No Updates Available...';
+        $error = "";
+        if (!is_really_writable($updates_dir))
+        	$error .= "<br>Error: '$updates_dir' is not writable..."; 
+        if (!is_really_writable(WRITEPATH . 'uploads'))
+        	$error .= "<br>Error: '" . WRITEPATH . "uploads' is not writable..."; 
+        if (!is_really_writable(APPPATH . 'Views'))
+        	$error .= "<br>Error: '" . APPPATH . "Views' is not writable..."; 
+        if (!is_really_writable(APPPATH . 'Controllers'))
+        	$error .= "<br>Error: '" . APPPATH . "Controllers' is not writable..."; 
+        if (!is_really_writable(PUBLICPATH . 'resources/theme'))
+        	$error .= "<br>Error: '" . PUBLICPATH . "resources/theme' is not writable...";
+
+        if ($error !== "") 
+        {
+        	$new_updates .= "<span class=\"text-danger\">$error</span>"; 
+        	$new_updates .= "<br>[<span class=\"text-danger\">If you don't fix these errors, you may not be able to upload or install some updates</span>]"; 
+        }
+ 
+
+		// Delete an uploaded update file
+		if ($action === 'delete') 
+		{
+			if (deleteAll($updates_dir . $id, true)) 
+			{
+		    	$data['message'] = 'Update package deleted!';
+			} 
+
+			return $this->response->setJSON($data);   
+		}
+		// Upload a new zip file
+		if ($action === 'upload') 
+		{
+			// Get the uploaded file
+			$uploaded_file   = $this->request->getFile('update_file');
+		    $data['message'] = 'This update file is corrupt!';  
+ 
+			if ($uploaded_file) 
+			{
+				// Generate a temporary file
+				$rename   = $uploaded_file->getRandomName();
+				$tempfile = $uploaded_file->getTempName();
+
+			    try
+			    {
+			    	// Open the package
+			    	$check_installer = $zipFile->openFile($tempfile); 
+			    	if ($check_installer->hasEntry('installer.php')) 
+			    	{ 
+				    	$installer = json_decode($check_installer->getEntryContents('installer.php'));
+						if (!empty($installer->name))
+						{
+							// Validate the package before upload
+							$u_vars = $available_updates_vars;
+
+							if (in_array($installer->type, $u_vars['type']) && in_array($installer->realname, $u_vars['realname']) && in_array($installer->version, $u_vars['version'])) 
+							{
+								$data['message'] = 'This package has already been uploaded!'; 
+							}
+							elseif (strtolower($installer->type) === 'update' && $installer->version === env('installation.version')) 
+							{
+								$data['message'] = 'This update has already been installed!'; 
+							}
+							elseif (strtolower($installer->type) === 'theme' && in_array($installer->realname, fetch_themes()) && in_array($installer->version, fetch_themes(null, 'version'))) 
+							{
+								$data['message'] = 'This theme has already been installed!'; 
+							}
+							else
+							{ 
+								if (is_really_writable($updates_dir)) 
+								{ 
+									// Upload the package if all validations passed
+					           		$uploaded_file->move($updates_dir, $rename);
+
+								    $data['success'] = true;
+								    $data['status']  = 'success';
+								    $data['notice']  = $new_updates;
+							    	$data['message'] = 'Update file has been uploaded to the server, please refresh your browser!'; 
+								}
+								else
+								{
+									$data['message'] = "`$updates_dir` directory not writable!"; 
+								}
+				           	}
+			           		$zipFile->close();
+			           	}
+		           	}
+			    } 
+			    catch(\Exception $e)
+			    {
+				    $data['success'] = false;
+				    $data['status']  = 'error';
+			    	$data['message'] = (stripos($e->getMessage(),'not exist')!==false ? $data['message'] : $e->getMessage());
+			    } 
+			}
+
+			return $this->response->setJSON($data);   
+		}
+
+
+		// Install the selected update
+		if ($action === 'install') 
+		{
+			$meta            = $this->request->getPost('meta');
+			$update_file     = $this->request->getPost('update_file');
+			$update_filename = $this->request->getPost('update_filename');
+			$output_folder   = $updates_dir . substr($update_filename, 0, -4);
+
+			if (file_exists($update_file)) 
+			{ 
+				// Check if this file has been extracted before then delete the old files
+				if (file_exists($output_folder . '/installer.php')) 
+				{
+					deleteAll($output_folder, TRUE);
+				}
+
+				// Check if the output directory does not exist then create it
+				if (!file_exists($output_folder)) 
+				{
+					mkdir($output_folder, 0777, true);
+				}
+
+				// Try extracting the file now
+				try
+				{ 
+					$installation = $zipFile->openFile($update_file);
+
+			    	$installer = json_decode($installation->getEntryContents('installer.php'));
+			    	$output_root_dir = !empty($installer->root_dir) ? constant($installer->root_dir) : $output_folder;
+
+ 					// Extract the update files
+					if (!empty($installer->root_dir)) 
+					{
+						$installation->preventTouch()->extractTo($output_root_dir); 
+
+			    		// Install the update database
+	 					if ($installation->hasEntry('db.sql')) 
+	 					{	
+	 						$idb = \Config\Database::connect(); 
+	 						$db_sql = $installation->getEntryContents('db.sql');
+		                    if (mysqli_multi_query($idb->connID, $db_sql)) 
+		                    {
+		                        $this->clean_up_db_query();
+		                        $idb->reconnect();
+		                    }
+	 					}
+
+	 					$update_env = [];
+
+		           		// Set the version type of the installation
+		           		if (!empty($installer->version_type) && env('installation.version.type') !== 'full') 
+		           		{ 
+		           			$update_env['installation.version.type'] = $installer->version_type; 
+		           		}
+
+		           		// Set the version of the installation
+		           		if (!empty($installer->install_version))
+		           		{ 
+		           			$update_env['installation.version'] = $installer->install_version; 
+		           		}
+		           		
+		           		// Update the .env file
+		           		update_env($update_env);
+
+		           		// Delete the installer
+						if (file_exists($output_root_dir . 'installer.php')) deleteAll($output_root_dir . 'installer.php', TRUE);
+						if (file_exists($output_root_dir . 'db.sql')) deleteAll($output_root_dir . 'db.sql', TRUE);
+					}
+
+					// Close the zip and delete left over files
+					$zipFile->close();
+					if (file_exists($update_file)) deleteAll($update_file);
+					deleteAll($output_folder, TRUE);
+
+				    $data['success'] = true;
+				    $data['status']  = 'success';
+				    $data['notice']  = $new_updates;
+		    		$data['message'] = 'Update Installed ('.$meta.').'; 
+				}
+				catch(s\Exception $e)
+				{
+				    $data['message'] = $e->getMessage();
+				} 
+			} 
+			else
+			{ 
+		    	$data['message'] = 'This update file is corrupt!'; 
+			}
+
+			return $this->response->setJSON($data); 
+		}
+
+
+		$view_data['available_updates'] = $available_updates;
+  
+        $view_data['new_updates'] = $new_updates;
+
 		return theme_loader($view_data, null, 'admin'); 
 	} 
 }

@@ -25,6 +25,7 @@
     <link rel="stylesheet" href="<?=base_url('resources/plugins/plyr/plyr.css')?>"> 
   
     <link rel="stylesheet" href="<?=base_url('resources/theme/kadhub_prime/css/colors/preset.css')?>">
+    <link rel="stylesheet" href="<?=base_url('resources/distr/css/color-theme.css')?>">
     <script>
         function link(path){
             var url = '<?=site_url()?>' + path;

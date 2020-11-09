@@ -13,6 +13,7 @@ return [
    'admin_level'                    => 'Admin Level', 
    'already_have_an_account'        => 'Already have an account?',  
    'analytics'                      => 'Analytics',  
+   'auth_failed_check_credentials'  => '{0} Authentication Failed, Invalid Credentials',
    'awaiting_comfirmation'          => 'Awaiting Confirmation',
    'balance'                        => 'Balance',
    'bank'                           => 'Bank',

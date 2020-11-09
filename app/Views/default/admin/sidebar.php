@@ -183,17 +183,37 @@
 									</p>
 								</a>
 							</li> 
-							<?php endif ?> 
+							<?php endif ?>  
+  
+							<div class="mt-2 border-top d-flex justify-content-left"> 
+								<div class="h7 mt-2">
+									GET STARTED
+								</div>
+							</div>
+
 							<?php if (module_active('_updates') && $user['admin']>=3):?> 
 							<li class="nav-item">
 								<a href="<?=site_url('admin/updates')?>" class="nav-link<?=active_page('updates', $_page_name??$page_name)?>">
 									<i class="nav-icon fas fa-box-open"></i>
 									<p>
-										<?=_lang('updates')?>  
+										Updates 
 									</p>
 								</a>
 							</li> 
 							<?php endif ?> 
+							<li class="nav-item">
+								<a href="https://toneflixcode.cf/hubboxx" class="nav-link">
+									<i class="nav-icon fas fa-book"></i>
+									<p>
+										Documentation 
+									</p>
+								</a>
+							</li> 
+							<li class="nav-item">
+								<a href="https://toneflixcode.cf/hubboxx" class="nav-link">
+									<span class="nav-link-text text-sm">System Version: v<?=env('installation.version')?></span>
+								</a>
+							</li> 
 						</ul>
 					</nav>
 					<!-- /.sidebar-menu -->
