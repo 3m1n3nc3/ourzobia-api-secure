@@ -2,11 +2,11 @@
 
 function get_mime_type($filename) 
 {
-    $idx = explode( '.', $filename );
-    $count_explode = count($idx);
-    $idx = strtolower($idx[$count_explode-1]);
+    $extension     = explode( '.', $filename );
+    $count_explode = count($extension);
+    $extension     = strtolower($extension[$count_explode-1]);
 
-    $mimet = array( 
+    $mime = array( 
         'txt' => 'text/plain',
         'htm' => 'text/html',
         'html' => 'text/html',
@@ -65,9 +65,9 @@ function get_mime_type($filename)
         'ods' => 'application/vnd.oasis.opendocument.spreadsheet',
     );
 
-    if (isset( $mimet[$idx] )) 
+    if (isset( $mime[$extension] )) 
     {
-        return $mimet[$idx];
+        return $mime[$extension];
     } 
     else 
     {

@@ -3,7 +3,7 @@
  	<!-- Header -->
 	<?=view('default/header', ['show_stats' => $show_stats??false]); ?>
 
-	<body class="hold-transition sidebar-mini<?=(my_config('front_skin') ? " custom-theme" : "") . my_config('des_fixed_layout').my_config('des_body_small_text').my_config('des_accent_color_variant')?>" data-payment_host="<?=site_url('ajax/payments')?>">
+	<body class="hold-transition sidebar-mini<?=(!empty($custom_skin) ? " custom-theme" : "") . my_config('des_fixed_layout').my_config('des_body_small_text').my_config('des_accent_color_variant')?>" data-payment_host="<?=site_url('ajax/payments')?>">
 		<div class="wrapper"> 
 			<!-- Navbar -->
 			<?=view('default/navbar'); ?>

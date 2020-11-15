@@ -1,5 +1,5 @@
 /**
- * Ourzobia PHP Api v1.1.4
+ * HubBoxx PHP Api Plugin v1.1.5
  * dependency loader
  * var src_url is the url to include all required resources 
  * from either public/src or src directories

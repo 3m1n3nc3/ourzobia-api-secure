@@ -4,10 +4,14 @@ use DateTime;
 
 class Account_Data { 
 
-    function __construct() {
-        $this->session     = \Config\Services::session();    
-        $this->creative    = new \App\Libraries\Creative_lib;  
-        $this->usersModel  = model('App\Models\UsersModel', false);
+    function __construct() 
+    {
+        $this->session    = \Config\Services::session();    
+        $this->creative   = new \App\Libraries\Creative_lib;  
+        $this->usersModel = model('App\Models\UsersModel', false);
+        $this->util       = new \App\Libraries\Util;
+
+        helper(['site']);
     }
 
     public function email2username(String $email)
@@ -18,11 +22,10 @@ class Account_Data {
     }   
 
     /*
-    this checks to see if the admin is logged in
-    we can provide a link to redirect to, and for the login page, we have $default_redirect,
-    this way we can check if they are already logged in, but we won't get stuck in an infinite loop if it returns false.
+     * this checks to see if the admin is logged in
+     * we can provide a link to redirect to, and for the login page, we have $default_redirect,
+     * this way we can check if they are already logged in, but we won't get stuck in an infinite loop if it returns false.
      */
-
     public function user_id($default = null)
     {    
         if (isset($default)) 
@@ -38,7 +41,116 @@ class Account_Data {
         }
         return NULL;
     }  
+
+
+    /**
+     * Method to verify user account
+     * Best used as a filter
+     * @return mixed
+     */
+    public function no_info_verify()
+    {
+        $request  = \Config\Services::request();   
+
+        helper('theme');
+        // Check if the user is not verified
+        if (!logged_user('verified') && my_config('send_activation', null, false))
+        { 
+            $now_time   = new DateTime(date('Y-m-d H:i:s', time()));
+            $past_time  = new DateTime(date('Y-m-d H:i:s', logged_user('last_update')));
+            $time_diff  = $now_time->diff($past_time);  
+
+            $minute_diff = ($time_diff->days * 24 * 60) + ($time_diff->h * 60) + $time_diff->i;  
  
+            // Check if the user has provided a token
+            if ($request->getGet('token')) 
+            {
+                $activation_successully_done = false;
+
+                $tokened = $this->usersModel->user_by_token($request->getGet('token'));
+                if ($minute_diff >= my_config('token_lifespan', null, 5) || !$tokened) 
+                {
+                    $act['status']  = 'error';
+                    $act['message'] = _lang('m_expired_token');
+                }
+                else
+                {
+                    // Activate the account
+                    $activation_successully_done = true;
+                    $act = welcomeEmail(logged_user('username'), 'welcome', false);
+                }
+
+                $this->session->setFlashdata('notice', alert_notice($act['message'], $act['status'], FALSE, FALSE, NULL, 'Notice'));
+
+                if ($activation_successully_done === true)
+                {
+                    return redirect()->to(base_url('user/account'));
+                }
+
+                return false;
+            }
+        }
+    }
+
+
+    /**
+     * Method to check if user account is missing any required information
+     * Best used as a filter
+     * @return mixed
+     */
+    public function no_info_redirect()
+    {
+        $request  = \Config\Services::request();  
+
+        helper('cookie');
+        if ($this->logged_in()) 
+        {
+            // Check if the user is not verified
+            if (!logged_user('verified') && my_config('send_activation', null, false))
+            {
+                $this->session->setFlashdata('notice',
+                    alert_notice(
+                        _lang('your_account_is_not_verified',[my_config('site_name')]) . 
+                        $this->util->set_form('verification_form', '!btn btn-success', _lang('request_verification'), NULL, [
+                            'verify' => $this->user_id()
+                    ])->quickForm($this->user_id(), 'verify'), 'error', FALSE, FALSE, NULL, _lang('verification_required'))
+                );
+
+                $now_time   = new DateTime(date('Y-m-d H:i:s', time()));
+                $past_time  = new DateTime(date('Y-m-d H:i:s', logged_user('last_update')));
+                $time_diff  = $now_time->diff($past_time);  
+
+                $minute_diff = ($time_diff->days * 24 * 60) + ($time_diff->h * 60) + $time_diff->i;  
+
+                // Check if the user is attempting to verify
+                if ($request->getPost('verify')) 
+                { 
+                    if ($minute_diff >= my_config('token_lifespan', null, 5)) 
+                    {
+                        $act = welcomeEmail(logged_user('username'), 'activation', false);
+                        $this->session->setFlashdata('notice', alert_notice($act['message'], $act['status'], FALSE, FALSE, NULL, 'Notice')); 
+                    }
+                    else
+                    {
+                        $this->session->setFlashdata('notice', alert_notice(_lang('token_already_sent',[my_config('token_lifespan', null, 5)-$minute_diff]), 'info', FALSE, FALSE, NULL, 'Notice'));
+                    }
+                    
+                    return redirect()->to(base_url('user/account')); 
+                }
+                // Check if the user has provided a token
+                elseif ($request->getGet('token')) 
+                {  
+                    return $this->no_info_verify();
+                }
+
+                return redirect()->to(base_url('user/account'));
+            }
+
+            return true;
+        }
+    }
+ 
+
     public function logged_in()
     {     
         $username = $this->session->get('username') ?? get_cookie('username');

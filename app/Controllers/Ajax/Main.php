@@ -1,6 +1,7 @@
 <?php namespace App\Controllers\Ajax;
 
-use App\Controllers\BaseController; 
+use App\Controllers\BaseController;
+use DateTime;
 
 class Main extends BaseController
 { 
@@ -55,7 +56,8 @@ class Main extends BaseController
 	    $data['message'] = _lang('an_error_occurred');
 
         $validation =  \Config\Services::validation();
-        $email      = \Config\Services::email();
+        $email      = \Config\Services::email(); 
+        $util       = new \App\Libraries\Util;
 
 		$post_data  = $this->request->getPost();  
 		$token 		= sha1(date('Y-m-d H:i:s', time()).rand());
@@ -70,34 +72,32 @@ class Main extends BaseController
 				    'email' => ['rules' => 'required|valid_email'] 
 				]))
 		        {  
-		        	$email_user      = $this->usersModel->user_by_username($this->request->getPost('email'));
+		        	$receiver = $this->usersModel->user_by_username($this->request->getPost('email'));
 
-		        	if (!empty($email_user['uid'])) 
+		        	if (!empty($receiver['uid'])) 
 		        	{ 
 				        $now_time   = new DateTime(date('Y-m-d H:i:s', time()));
-				        $past_time  = new DateTime(date('Y-m-d H:i:s', $email_user['last_update']));   
+				        $past_time  = new DateTime(date('Y-m-d H:i:s', $receiver['last_update']));   
 				        $time_diff  = $now_time->diff($past_time);  
 
-		        		if ($time_diff->h >= 1 || $time_diff->i >= 5) 
-		        		{
-		        			$this->usersModel->save_user(['uid'=>$email_user['uid'], 'token'=>$token, 'last_update'=>time()]);
+						$minute_diff = ($time_diff->days * 24 * 60) + ($time_diff->h * 60) + $time_diff->i; 
 
-				        	$email->initialize($this->process->email_config());
-				        	$email->setFrom(my_config('contact_email'), my_config('site_name'));
-				        	$email->setTo($this->request->getPost('email'));
+		        		if ($minute_diff >= my_config('token_lifespan', null, 5)) 
+		        		{
+            				$data['message'] = _lang('activation_token_sent');
 
 				        	if ($this->request->getPost('type') == 'recover_password') 
 				        	{
 				        		$link    = 'user/m/password?token=' . $token;
 				        		$link_t  = 'Change Password';
-				        		$subject = 'Password reset request for ' . $email_user['username'] . ' on ' . my_config('site_name'); 
+				        		$subject = 'Password reset request for ' . $receiver['username'] . ' on ' . my_config('site_name'); 
 				        		$message = my_config('email_recovery');
 				        	}
 							elseif ($this->request->getPost('type') == 'access_token') 
 				        	{
 				        		$link    = 'user/m/access?token=' . $token;
 				        		$link_t  = 'Token Access';
-				        		$subject = 'You requested access to ' . $email_user['username'] . ' on ' . my_config('site_name'); 
+				        		$subject = 'You requested access to ' . $receiver['username'] . ' on ' . my_config('site_name'); 
 				        		$message = my_config('email_token');
 				        	}
 							elseif ($this->request->getPost('type') == 'incognito_token') 
@@ -115,53 +115,29 @@ class Main extends BaseController
 				        		$message = my_config('email_activation');
 				        	}
 
-				        	$data['message'] = 'Thank You!';
+					        if (!empty($message)) 
+					        { 
+					            // Send the mail now 
+					            $data = $util::sendMail([
+					                'subject'  => $subject,
+					                'message'  => $message,
+					                'link'     => $link,
+					                'link_t'   => $link_t,
+					                'receiver' => $receiver,
+					                'success'  => $data['message'],
+					            ]);
 
-				        	if ($message) 
-				        	{ 
-					        	$anchor_link = anchor($link);
-								$message = $this->process::parse_content(my_config('email_template'), [
-									'message' => $this->process::parse_content($message, [ 
-										'title'   => $subject, 
-										'user'    => $email_user['fullname'],  
-										'anchor_link' => $anchor_link, 
-										'link'        => site_url($link), 
-										'link_title'  => $link_t
-									]), 
-									'title'   => $subject,
-									'user'    => $email_user['fullname'],
-									'anchor_link' => $anchor_link,
-									'link'        => site_url($link),
-									'link_title'  => $link_t
-								]);
-
-								$email->setSubject($subject);
-								$email->setMessage($message);
-
-								try 
-								{
-									$email->send(my_config('mail_debug') ? false : true); 
-									$email->printDebugger(['headers', 'subject', 'body']); 
-
-					                if (my_config('mail_debug')) 
-					                {
-					                    $data['message'] = $email->printDebugger(['headers', 'subject']);
-					                }
-					                else
-					                {
-					                    $data['message'] = _lang('activation_token_sent');
-					                    $data['success'] = true;
-					                    $data['status']  = 'success';    
-					                }
-								} 
-								catch (ErrorException $e) {
-			        				$data['message'] = $e;
-								}
-							}
+					            if (($data['success']??false) === true) 
+					            {
+		        					$this->usersModel->save_user([
+		        						'uid' => $receiver['uid'], 'token' => $token, 'last_update'=>time()
+		        					]); 
+					            }
+					        }
 		        		}
 		        		else
 		        		{
-		        			$data['message'] = _lang('token_already_sent',[5]);
+		        			$data['message'] = _lang('token_already_sent',[my_config('token_lifespan', null, 5)-$minute_diff]);
 						    $data['success'] = true;
 						    $data['status']  = 'info';
 		        		}
@@ -194,13 +170,22 @@ class Main extends BaseController
 			        {    
 		                $save['uid']          = $tokened['uid'];
 		                $save['password']     = $this->enc_lib->passHashEnc($post_data['password']);
-		                if ($this->usersModel->save_user($save)) {
+		                if ($this->usersModel->save_user($save)) 
+		                {
 		                	$this->usersModel->save_user(['uid'=>$tokened['uid'],'token'=>$token]);
 		                	$this->account_data->user_login($tokened['uid']);
+			    			if (my_config('cpanel_domain') && $tokened['cpanel']) 
+			    			{ 
+			    				Cpanel(my_config('cpanel_protocol'))->GET->Email->passwd_pop([
+			    					'email'    => $tokened['username'], 
+			    					'password' => $save['password'], 
+			    					'domain'   => my_config('cpanel_domain')
+			    				]);
+			    			}
 		    				$data['redirect'] = site_url('user/dashboard');
 		    				$data['success']  = true;
 			    			$data['status']   = 'success';
-		                    $data['message']  = 'Your password has been changed successfully';
+		                    $data['message']  = 'Your password has been changed successfully, please wait...';
 		                } 
 			        } 
 			        else
@@ -384,4 +369,78 @@ class Main extends BaseController
 
 		return $this->response->setJSON($data);  
 	} 
+
+	/**
+	 * Send Emails and subscribe to marketing
+	 * @return json response to send to the client
+	 */
+	public function marketing_form()
+	{ 
+	    $data['success'] = false;
+	    $data['status']  = 'error';
+	    $data['message'] = _lang('an_error_occurred'); 
+
+		if ($this->request->isAJAX())
+		{
+        	$validation =  \Config\Services::validation();
+        	$util       = new \App\Libraries\Util;
+
+			$post_data = $this->request->getPost();
+			if ($post_data['type'] === 'message') 
+			{
+		        if ($this->validate([ 
+				    'first_name' => ['label' => 'First Name', 'rules' => 'trim|required'],
+				    'last_name' => ['label' => 'Last Name', 'rules' => 'trim|required'],
+				    'email' => ['label' => 'Email Address', 'rules' => 'trim|required|valid_email'],
+				    'message' => ['label' => 'Message', 'rules' => 'trim|required|min_length[20]'] 
+				]))
+		        {     
+				    $data = $util::sendMail([
+		                'subject'  => "New message from {$post_data['first_name']} {$post_data['last_name']} on " . my_config('site_name'),
+		                'message'  => _lang('contact_form_email_template', [
+		                	my_config('site_name'), 
+		                	"{$post_data['first_name']} {$post_data['last_name']}", 
+		                	$post_data['email'], 
+		                	$post_data['phone'], 
+		                	$post_data['message']
+		                ]), 
+		                'receiver' => [
+		                	'email' => my_config('contact_email'), 
+		                	'fullname' => my_config('site_name')
+		                ],
+		                'success'  => _lang('message_sent'),
+		            ]); 
+		        } 
+		        else
+		        {
+		        	$data['message'] = $validation->listErrors();
+		        } 
+			}
+			elseif ($post_data['type'] === 'subscribe') 
+			{
+		        if ($this->validate([  
+				    'email' => ['label' => 'Email Address', 'rules' => 'trim|required|valid_email']  
+				]))
+		        {     
+				    $subscribe = \Config\Services::mailjet_subscribe(my_config('mailjet_api_key'), my_config('mailjet_secret_key'), [$post_data['email']], my_config('mail_debug'));
+        			if ($subscribe === true)
+        			{
+					    $data['success'] = true;
+					    $data['status']  = 'success';
+					    $data['message'] = _lang('subscription_was_successful');
+        			}
+        			else
+        			{
+					    $data['message'] = $subscribe;
+        			}
+		        } 
+		        else
+		        {
+		        	$data['message'] = $validation->listErrors();
+		        }
+			}
+		}
+
+		return $this->response->setJSON($data);
+	}   
 }

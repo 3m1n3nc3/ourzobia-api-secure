@@ -11,18 +11,27 @@ class Creative_lib {
 
     public function resize_image($src = '', $_config = '')
 	{	 
-		$image_library  = isset($_config['image_library']) ? $_config['image_library'] : 'gd';
-		$maintain_ratio = isset($_config['maintain_ratio']) ? $_config['maintain_ratio'] : TRUE;
-		$width 	        = isset($_config['width']) ? $_config['width'] : 450;
-		$height         = isset($_config['height'])? $_config['height'] : 450; 
+		$image_library  = !empty($_config['image_library']) ? $_config['image_library'] : 'gd';
+		$maintain_ratio = !empty($_config['maintain_ratio']) ? $_config['maintain_ratio'] : TRUE;
+        $width          = !empty($_config['width']) ? $_config['width'] : 450;
+        $height         = !empty($_config['height']) ? $_config['height'] : 450; 
+		$crop   	    = !empty($_config['crop']) ? $_config['crop'] : NULL; 
 
         $_image = \Config\Services::image($image_library);
 
-        try { 
-            $_image
-            ->withFile($src)
-            ->resize($width, $height, $maintain_ratio)
-            ->save($src);
+        try 
+        { 
+            $_image->withFile($src);
+            if (!empty($crop)) 
+            {
+                $_image->fit($crop[0], $crop[1]);
+            }
+            else
+            {
+                $_image->resize($width, $height, $maintain_ratio); 
+            }
+ 
+            $_image->save($src);
 
             chmod($src, 0777);
             return TRUE;
@@ -81,9 +90,14 @@ class Creative_lib {
         {
             $image = 'resources/img/default_'.$default.'.png';
 
-            if (!file_exists(PUBLICPATH . 'resources/img/default_'.$default.'.png')) 
+            if (!file_exists(PUBLICPATH . $image))
             {
                 $image = my_config('default_banner'); 
+            }
+
+            if (!file_exists($image))
+            {
+                $image = 'resources/img/default_logo.png'; 
             }
 
             if (env('installation.status', 'false') === false) 

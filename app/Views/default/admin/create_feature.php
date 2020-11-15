@@ -1,5 +1,5 @@
 		<div class="row"> 
-			<div class="col-md-12"> 
+			<div class="col-md-8"> 
 				<div class="card card-primary">
 					<div class="card-header">
 						<h3 class="card-title"><?=$id ? 'Edit Feature' : 'Create Feature';?></h3>
@@ -41,7 +41,7 @@
 	                            </div> 
 
 	                            <label>Button Link Example: </label> <br>
-	                            <code>[link=https://example.com class=primary-btn howit-btn] Example[/link]</code>
+	                            <code>[link=https://example.com class=btn btn-primary]Example Button[/link]</code>
 	                            <hr class="border-danger">
 	                        </div>
 
@@ -70,7 +70,55 @@
 						</div>
 					<?=form_close()?>
 				</div>
-			</div> 
+			</div>
+
+			<div class="col-md-4"> 
+				<div class="card card-primary">
+					<div class="card-header">
+						<h3 class="card-title">Features</h3>
+						<a href="<?=site_url('admin/features/create')?>" class="btn btn-sm btn-success ml-2">Add New</a> 
+					</div>
+					<div class="card-body">
+						<table class="table table-hover">
+							<thead>
+								<tr> 
+									<th>Title</th>
+									<th>Icon</th>  
+									<th>Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+							<?php if ($features): 
+								$i = 0?>
+								<?php foreach ($features as $key => $featureX): 
+									$i++;?>
+								<tr<?=$id===$featureX['id'] ? ' class="shadow border border-info"' : '';?>> 
+									<td><?=$featureX['title']?></td> 
+									<td>
+			                            <?php if ($featureX['image']): ?> 
+			                               <img src="<?= $creative->fetch_image($featureX['image']??'', my_config('default_banner')); ?>" style="max-height: 15px;" id="image_preview"> 
+			                            <?php else: ?>
+										<span class="badge bg-success">
+											<i class="<?=$featureX['icon']?> fa-fw"></i> 
+										</span>
+			                            <?php endif ?>
+									</td> 
+									<td>
+										<a href="<?=site_url('admin/features/create/'.$featureX['id'])?>"><i class="fa fa-edit text-info fa-fw"></i></a>
+	                                    <a href="javascript:void(0)"
+	                                        class="deleter" 
+	                                        onclick="confirmAction('<?=site_url('admin/features/delete/'.$featureX['id']);?>', true)">
+	                                        <i class="text-danger fa fa-trash fa-fw"></i>
+	                                    </a>  
+									</td>
+								</tr> 
+								<?php endforeach ?>
+							<?php endif ?>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
 		</div>
 
 		<script type="text/javascript">
@@ -80,6 +128,10 @@
 					theme: 'fip-bootstrap',
             		iconsPerPage: 25
 				});  
-        		fi_cons.setIcon( '<?=set_value('icon', ($hub['icon']??''))?>' );
+        		fi_cons.setIcon( '<?=set_value('icon', ($feature['icon']??''))?>' );
+        		
+	            $(document).on("shown", function(e) {
+	                $(".selector-popup-wrap.icons-selector").attr("style", "left: -100px; top: 76px;"); 
+	            });
 			}
 		</script>

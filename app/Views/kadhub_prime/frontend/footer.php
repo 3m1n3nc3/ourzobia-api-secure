@@ -57,6 +57,8 @@
     </div> -->
     <script src="<?=base_url('resources/theme/kadhub_prime/js/jquery-min.js')?>" type="text/javascript"></script>
     <script src="<?=base_url('resources/js/jquery-ui.min.js')?>"></script>
+    <script src="<?=base_url('resources/js/jquery.form.js')?>"></script> 
+    <script src="<?=base_url('resources/plugins/toastr/toastr.min.js')?>"></script>
     <script src="<?=base_url('resources/theme/kadhub_prime/js/popper.min.js')?>" type="text/javascript"></script>
     <script src="<?=base_url('resources/theme/kadhub_prime/js/bootstrap.min.js')?>" type="text/javascript"></script>
     <script src="<?=base_url('resources/theme/kadhub_prime/js/classie.js')?>" type="text/javascript"></script>
@@ -73,10 +75,15 @@
     <script src="<?=base_url('resources/theme/kadhub_prime/js/waypoints.min.js')?>" type="text/javascript"></script>  
     <script src="<?=base_url('resources/theme/kadhub_prime/js/form-validator.min.js')?>" type="text/javascript"></script>    
     <script src="<?=base_url('resources/theme/kadhub_prime/js/contact-form-script.js')?>" type="text/javascript"></script>    
-    <script src="<?=base_url('resources/theme/kadhub_prime/js/main.js')?>" type="text/javascript"></script>     
+    <script src="<?=base_url('resources/theme/kadhub_prime/js/main.js')?>" type="text/javascript"></script>    
+     
+    <!-- Custom Functions -->
+    <script src="<?=base_url('resources/js/custom.functions.js')?>"></script>
+    <script src="<?=base_url('resources/js/button.loader.js')?>"></script>
 
     <script src="<?=base_url('resources/plugins/plyr/plyr.js')?>"></script>
     <script src="<?=base_url('resources/js/custom.scripts.js')?>"></script>  
+    <script src="<?=base_url('resources/js/custom.forms.js')?>"></script> 
 
     <script src="https://maps.googleapis.com/maps/api/js?key=" type="text/javascript"></script>
 
@@ -88,7 +95,7 @@
     
         var markers = [];
         var image = new google.maps.MarkerImage(
-          'img/map-marker.png',
+          '<?=base_url('resources/theme/kadhub_prime/img/map-marker.png')?>',
           new google.maps.Size(84, 70),
           new google.maps.Point(0, 0),
           new google.maps.Point(60, 60)
@@ -190,3 +197,19 @@
         }
         google.maps.event.addDomListener(window, 'load', initialize);
     </script> 
+
+<?php if (my_config('tawk_id')): ?>
+    <!--Start of Tawk.to Script-->
+    <script type="text/javascript">
+        var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+        (function(){
+            var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+            s1.async=true;
+            s1.src='https://embed.tawk.to/<?=my_config('tawk_id')?>/default';
+            s1.charset='UTF-8';
+            s1.setAttribute('crossorigin','*');
+            s0.parentNode.insertBefore(s1,s0);
+        })();
+    </script>
+    <!--End of Tawk.to Script-->
+<?php endif ?>

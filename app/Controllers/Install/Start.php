@@ -126,8 +126,7 @@ class Start extends Controller {
                         $data = array(
                             'username' => $this->email2username($this->request->getPost('admin_email')),
                             'email'    => $this->request->getPost('admin_email'),
-                            'fullname' => 'Super Admin',     
-                            'admin_name' => 'Super',	 
+                            'fullname' => 'Super Admin',    	 
                             'password' => $password,  
                             'admin'    => 4,
                             'status'   => 2

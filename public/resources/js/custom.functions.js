@@ -147,7 +147,7 @@ jQuery.fn.alert_notice = function (message = 'A network error occurred!', type =
     let general_notice = $("<div />", {class: "my-1 alert alert-dismissible alert-"+type, id: "create-alert-notice"})
         .append(
             dismiss === true ? 
-            $("<button />", {class: "close", type: "button", "data-dismiss": "alert", "aria-hidden": "true", text: "&times;"}) : ""
+            $("<button />", {class: "close", type: "button", "data-dismiss": "alert", "aria-hidden": "true", html: "&times;"}) : ""
         )
         .append(message);
   

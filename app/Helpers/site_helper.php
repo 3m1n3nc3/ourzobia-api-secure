@@ -418,7 +418,7 @@ if ( ! function_usable('phone_number'))
                 $number = substr($number, 1);
             } 
 
-            $number = ($code == '234' ? '0' : '+' . $code) . $number;
+            $number = '+' . $code . $number;
         } 
       
         return $number;
@@ -1282,3 +1282,96 @@ if ( ! function_usable('array_string_blast') )
         return $data;
     } 
 }
+
+if ( ! function_usable('welcomeEmail') ) 
+{
+    /**
+     * A convenience method to generate and send specified email messages
+     *
+     * @param string        $username
+     * @param string        $type
+     * @param bool          $echo 
+     *
+     * @return string
+     */
+    function welcomeEmail($username, $type = 'activation', $echo = true) 
+    {    
+        $request = \Config\Services::request();
+        $util    = new \App\Libraries\Util;
+        $users_m = model('App\Models\UsersModel', false);
+
+        $data['message'] = $link = $link_t = '';
+        $data['success'] = false;
+        $data['status']  = 'error';  
+ 
+        $receiver = $users_m->user_by_username($username);
+
+        if ($type === 'welcome')
+        {
+            $link_t  = 'Explore';
+            $subject = _lang('welcome_to_oursite', [my_config('site_name')]); 
+
+            if (my_config('send_welcome')) 
+            {
+                $message = my_config('email_welcome'); 
+            }
+
+            if (!$receiver['verified']) 
+            {
+                $users_m->save_user(['uid' => $receiver['uid'], 'verified' => 1]); 
+            }
+
+            $data['success'] = true;
+            $data['status']  = 'success';   
+            $data['message'] = _lang('your_account_is_now_verified');    
+        }
+        elseif ($type === 'activation' && my_config('send_activation')) 
+        {
+            $token   = sha1(date('Y-m-d H:i:s', time()).rand());
+            $link    = 'user/account/?token=' . $token;
+            $link_t  = _lang('verify_account');
+            $subject = _lang('verify_your_account', [my_config('site_name')]);
+            $message = my_config('email_activation');
+            $data['message'] = _lang('activation_token_sent');
+        }
+        elseif ($type === 'test') 
+        { 
+            $subject = 'Test Mail From ' . my_config('site_name'); 
+            $message = 'This is just a test mail!';
+        } 
+
+        if (!empty($message)) 
+        { 
+            // Send the mail now 
+            $data = $util::sendMail([
+                'subject'  => $subject,
+                'message'  => $message,
+                'link'     => $link,
+                'link_t'   => $link_t,
+                'receiver' => $receiver,
+                'success'  => $data['message'],
+            ]);
+
+            if ($data['success'] === true && $type === 'activation' && my_config('send_activation')) 
+            { 
+                $users_m->save_user(['uid' => $receiver['uid'], 'token' => $token, 'last_update' => time()]);
+            }
+        }
+
+        if ($echo === true) 
+        { 
+            if ($request->isAJAX()) 
+            {
+                header('Content-Type: application/json');
+                echo json_encode($data, JSON_FORCE_OBJECT);
+            }
+            else
+            {
+                echo $data['message'];
+            }
+            return;
+        }
+
+        return $data;
+    } 
+}  

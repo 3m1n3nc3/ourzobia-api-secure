@@ -8,7 +8,7 @@
                         <?=form_open('admin/content/create');?>
                         <input type="hidden" name="parent" value="<?=$content['safelink'];?>">
                         <input type="hidden" name="link_parent" value="true">
-                        <button type="submit" class="btn btn-primary text-white mr-1">Link with New Content</button>
+                        <button type="submit" class="btn btn-sm btn-primary text-white mr-1">Link with New Content</button>
                         <?=form_close() ?>
                     <?php endif ?>
                     </div>
@@ -17,7 +17,11 @@
                         <?php
                             $parent = $parent ?? set_value('parent');
                             $pager  = $content_md->get_content(['safelink' => $parent]);?>
-                        <?=$parent ? 'Create Content for '.$pager['title'] : 'Create Page';?>
+                            <?php if ($parent): ?>
+                            Create Content for <a href="<?=site_url("admin/content/create/{$pager['id']}");?>"><?=$pager['title'];?></a> 
+                            <?php else: ?>
+                            Create Page
+                            <?php endif ?>
                     </h5>
                 </div>
                 <?=form_open(uri_string(), ['id' => 'sett_form', 'class' => 'needs-validation', 'novalidate' => null]);?>
@@ -38,15 +42,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-row mb-2">
-                        <div class="col-md-4 pr-1">
-                            <label for="icon">Icon</label>
-                            <div class="form-group"> 
-                                <?=icon_selector(4, set_value('icon', ($hub['icon']??'')), "form-control", "regular")?>
-                            </div>
-                            <?=$errors->showError('icon', 'my_single_error');?> 
-                        </div>
-                        
+                    <div class="form-row mb-2">                        
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="align">Align Items</label>
@@ -56,7 +52,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-4 pl-1">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label for="priority">Priority</label>
                                 <select class="form-control" id="priority" name="priority">
@@ -68,6 +64,13 @@
                                 </select>
                                 <?=$errors->showError('priority', 'my_single_error');?>
                             </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="icon">Icon</label>
+                            <div class="form-group"> 
+                                <?=icon_selector(4, set_value('icon', ($hub['icon']??'')), "form-control", "regular")?>
+                            </div>
+                            <?=$errors->showError('icon', 'my_single_error');?> 
                         </div>
                         <div class="col-md-6 px-1">
                             <div class="form-group">
@@ -104,7 +107,7 @@
                             </div> 
 
                             <label>Button Link Example: </label> <br>
-                            <code>[link=https://example.com class=primary-btn howit-btn] Example[/link]</code>
+                            <code>[link=https://example.com class=btn btn-primary]Example Button[/link]</code>
                             <hr class="border-danger">
                         </div>
 
@@ -122,75 +125,59 @@
 
                         <div class="form-group col-12 m-0 p-0 <?=($content['parent']??'') || set_value('parent') ? 'd-none' : '';?>"> 
                             <div class="form-check">
+                                <?php if (module_active('footer_links', my_config('frontend_theme'))): ?>
                                 <label class="form-check-label mr-5" for="in_footer">
+                                    <input name="in_footer" type="hidden" value="0">
                                     <input name="in_footer" class="form-check-input text-primary" type="checkbox" value="1" <?=set_checkbox('in_footer', '1', int_bool((int)($content['in_footer']??''))) ?> id="in_footer">
-                                    Show in Footer
-                                    <span class="form-check-sign">
-                                        <span class="check"></span>
-                                    </span>
+                                    Show in Footer 
                                 </label>  
+                                <?php endif ?>
                                 <label class="form-check-label mr-5" for="in_header">
+                                    <input name="in_header" type="hidden" value="0">
                                     <input name="in_header" class="form-check-input text-primary" type="checkbox" value="1"<?=set_checkbox('in_header', '1', int_bool((int)($content['in_header']??''))) ?> id="in_header">
-                                    Show in Header
-                                    <span class="form-check-sign">
-                                        <span class="check"></span>
-                                    </span>
+                                    Show in Header 
                                 </label> 
                                 <label class="form-check-label mr-5" for="services">
+                                    <input name="services" type="hidden" value="0">
                                     <input name="services" class="form-check-input text-primary" type="checkbox" value="1"<?=set_checkbox('services', '1', int_bool((int)($content['services']??''))) ?> id="services">
-                                    Show Services
-                                    <span class="form-check-sign">
-                                        <span class="check"></span>
-                                    </span>
+                                    Show Services 
                                 </label>
                                 <label class="form-check-label mr-5" for="features">
+                                    <input name="features" type="hidden" value="0">
                                     <input name="features" class="form-check-input text-primary" type="checkbox" value="1"<?=set_checkbox('features', '1', int_bool((int)($content['features']??''))) ?> id="features">
-                                    Show Features
-                                    <span class="form-check-sign">
-                                        <span class="check"></span>
-                                    </span>
+                                    Show Features 
                                 </label>
                                 <label class="form-check-label mr-5" for="contact">
+                                    <input name="contact" type="hidden" value="0">
                                     <input name="contact" class="form-check-input text-primary" type="checkbox" value="1"<?=set_checkbox('contact', '1', int_bool((int)($content['contact']??''))) ?> id="contact">
-                                    Show Contact
-                                    <span class="form-check-sign">
-                                        <span class="check"></span>
-                                    </span>
+                                    Show Contact 
                                 </label>
+                                <?php if (my_config('mailjet_api_key') && my_config('mailjet_secret_key')): ?>
                                 <label class="form-check-label mr-5" for="subscription">
+                                    <input name="subscription" type="hidden" value="0">
                                     <input name="subscription" class="form-check-input text-primary" type="checkbox" value="1"<?=set_checkbox('subscription', '1', int_bool((int)($content['subscription']??''))) ?> id="subscription">
-                                    Show Subscription
-                                    <span class="form-check-sign">
-                                        <span class="check"></span>
-                                    </span>
+                                    Show Subscription 
                                 </label>
+                                <?php endif ?>
                                 <label class="form-check-label mr-5" for="slider">
+                                    <input name="slider" type="hidden" value="0">
                                     <input name="slider" class="form-check-input text-primary" type="checkbox" value="1"<?=set_checkbox('slider', '1', int_bool((int)($content['slider']??''))) ?> id="slider">
-                                    Show Slider
-                                    <span class="form-check-sign">
-                                        <span class="check"></span>
-                                    </span>
+                                    Show Slider 
                                 </label>
                                 <label class="form-check-label mr-5" for="gallery">
+                                    <input name="gallery" type="hidden" value="0">
                                     <input name="gallery" class="form-check-input text-primary" type="checkbox" value="1"<?=set_checkbox('gallery', '1', int_bool((int)($content['gallery']??''))) ?> id="gallery">
-                                    Show Gallery
-                                    <span class="form-check-sign">
-                                        <span class="check"></span>
-                                    </span>
+                                    Show Gallery 
                                 </label>
                                 <label class="form-check-label mr-5" for="pricing">
+                                    <input name="pricing" type="hidden" value="0">
                                     <input name="pricing" class="form-check-input text-primary" type="checkbox" value="1"<?=set_checkbox('pricing', '1', int_bool((int)($content['pricing']??''))) ?> id="pricing">
-                                    Show Pricing
-                                    <span class="form-check-sign">
-                                        <span class="check"></span>
-                                    </span>
+                                    Show Pricing 
                                 </label>
                                 <label class="form-check-label mr-5" for="breadcrumb">
+                                    <input name="breadcrumb" type="hidden" value="0">
                                     <input name="breadcrumb" class="form-check-input text-primary" type="checkbox" value="1"<?=set_checkbox('breadcrumb', '1', int_bool((int)($content['breadcrumb']??''))) ?> id="breadcrumb">
-                                    Breadcrumb Section
-                                    <span class="form-check-sign">
-                                        <span class="check"></span>
-                                    </span>
+                                    Breadcrumb Section 
                                 </label>
                             </div>
                         </div>
@@ -240,17 +227,18 @@
                 <div class="card-body box-profile">
                     <div class="text-center mb-3">
                         <a href="javascript:void(0)" onclick="modalImageViewer('.profile-user-img')">
-                            <img class="profile-user-img img-fluid border-gray page" src="<?=$creative->fetch_image(($content['banner']??''), 'banner');?>" alt="...">
+                            <img class="profile-user-img img-fluid border-gray content" src="<?=$creative->fetch_image(($content['banner']??''), 'banner');?>" alt="...">
                         </a>
                     </div>
                     
                     <?php if ($content): ?>
                     <div id="upload_resize_image"
                         data-vwwidth="425"
-                        data-vwheight="290"
+                        data-vwheight="225"
                         data-bwwidth="430"
-                        data-bwheight="295"
+                        data-bwheight="230"
                         data-endpoint="content" 
+                        data-data="{width:1500, height:700, crop:[1500,700]}" 
                         data-endpoint_id="<?= $content['id']; ?>" 
                         class="d-none" 
                         style="display:none;">
@@ -260,7 +248,7 @@
                         id="resize_image_button"  
                         data-modal-title = "Upload Banner" 
                         data-type="wide" 
-                        data-endpoint="content" 
+                        data-endpoint="content"  
                         data-endpoint_id="<?=$content['id']?>" 
                         data-toggle="modal" 
                         data-target="#uploadModal">

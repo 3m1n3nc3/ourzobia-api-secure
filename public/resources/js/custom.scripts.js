@@ -254,7 +254,11 @@ function handleError(xhr, status, error, mid) {
     }
 } 
 
-function confirmAction(data, inline, action, message) { 
+function confirmAction(data, inline, action, message, self) {
+    if (self) {
+        $(self).attr("type", "button"); 
+    }
+
     action  = action ? action : 'delete';
     var btn = (action === 'delete' || action === 'cancel') ? 'danger' : 'success';
     var button_ajax   = '<a href="javascript:void(0)" class="p-0 mx-1 text-white btn btn-md btn-block btn-'+btn+'" data-'+action+'="true" onclick="'+data+'" id="'+action+'_confirm"> YES '+action.toUpperCase()+' </a>';
@@ -267,6 +271,17 @@ function confirmAction(data, inline, action, message) {
             '<button type="submit" class="confirm_submit p-0 mx-1 text-white btn btn-md btn-block btn-'+btn+'">'+action.toUpperCase()+'</button>'+
             '<button type="button" class="p-0 mx-1 text-white btn btn-md btn-block btn-info" data-dismiss="modal">No</button>'+
         '</div>';
+    } else if (data === 'click') { 
+        var button_content = $("<span />", {html: $(self.outerHTML).addClass(action + " click_action p-0 mx-1 text-white btn-md btn-block").removeAttr("onclick")});
+        var button_list = 
+        '<div class="font-weight-bold">' +
+            button_content.html() +
+            '<button type="button" class="p-0 mx-1 text-white btn btn-md btn-block btn-info" data-dismiss="modal">No</button>'+
+        '</div>';
+
+        $(document).on("btn_loaded", function(e) { 
+            $("#actionModal").modal('hide'); 
+        }); 
     } else {
         var button_list = 
         '<div class="font-weight-bold">'+ (inline ? button_inline : button_ajax) +
@@ -282,9 +297,10 @@ function confirmAction(data, inline, action, message) {
     $(".confirm_submit").click(function(e) {
         var form = $("form"+inline);
         if (typeof form !== 'undefined') {
+            $("#actionModal").modal('hide');
             form.submit();
         }
-    });
+    }); 
 }
 
 function safeLinker(e) { 

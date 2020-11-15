@@ -93,7 +93,7 @@ function eventProgress(evt, e_id) {
 
 
 // Use croppie here
-let resizes = $('#upload_resize_image');
+var resizes = $('#upload_resize_image');
 
 /**
  * Handles square operations for croppie
@@ -157,10 +157,11 @@ $('.image-selection').on('change', function () {
   var endpoint_id = $('#' + _identifier).data('endpoint_id');
   var endpoint    = $('#' + _identifier).data('endpoint');
   var preset_type = $('#' + _identifier).data('set_type');
+  var extra_data  = $('#' + _identifier).data('data');
   var set_type    = (typeof preset_type !== 'undefined') ? preset_type : '1';
 
-  var new_attr = 'upload_action('+set_type+(endpoint_id ? ', \''+endpoint_id+'\'' : '') + (endpoint ? ', \''+endpoint+'\'' : '')+')'; 
- 
+  var new_attr = 'upload_action('+set_type+(endpoint_id ? ', \''+endpoint_id+'\'' : '') + (endpoint ? ', \''+endpoint+'\'' : '') + (extra_data ? ',' + extra_data : '') + ')'; 
+
   var upload_type = $(this).attr('id');
   if (upload_type == 'image-input') {
     var resized = resize;
@@ -197,7 +198,7 @@ $('.image-selection').on('change', function () {
  * @param  {[String]} endpoint [var endpoint [the endpoint receiving the upload could either be a user or a contest]]
  * @return {[string]}   [null]
  */
-function upload_action(type, id, endpoint) { 
+function upload_action(type, id, endpoint, extra) { 
   
   // $('.btn-upload-image').html(spinner(1, 4, 2, 1));
   var m_id = '#uploaded-image-preview'; 
@@ -230,9 +231,9 @@ function upload_action(type, id, endpoint) {
     if (endpoint == 'pop') {
       var channel = $("#action-buttons").find('#channel').val();
       var bank    = $("#action-buttons").find('#bank_code').val();
-      var set_data = {"ajax_image":img, "set_type":set_type, "channel":channel, "bank_code":bank};
+      var set_data = {ajax_image:img, set_type:set_type, channel:channel, bank_code:bank, data:extra};
     } else {
-      var set_data = {"ajax_image":img, "set_type":set_type};
+      var set_data = {ajax_image:img, set_type:set_type, data:extra};
     }
  
     $.ajax({

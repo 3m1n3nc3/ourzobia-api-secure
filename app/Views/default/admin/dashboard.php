@@ -6,7 +6,7 @@
 						<div class="info-box-content">
 							<span class="info-box-text">All Products</span>
 							<span class="info-box-number">
-								 <?=$statistics['all_products']?>
+								 <?=$statistics['all_products']??0?>
 							</span>
 						</div>
 						<!-- /.info-box-content -->
@@ -20,7 +20,7 @@
 						<div class="info-box-content">
 							<span class="info-box-text">Active Products</span>
 							<span class="info-box-number">
-								 <?=$statistics['active_products']?>
+								 <?=$statistics['active_products']??0?>
 							</span>
 						</div>
 						<!-- /.info-box-content -->
@@ -34,7 +34,7 @@
 						<div class="info-box-content">
 							<span class="info-box-text">All Users</span>
 							<span class="info-box-number">
-								 <?=$statistics['all_users']?>
+								 <?=$statistics['all_users']??0?>
 							</span>
 						</div>
 						<!-- /.info-box-content -->

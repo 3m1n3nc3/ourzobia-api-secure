@@ -1,5 +1,7 @@
 <?php namespace App\Controllers;  
 
+use \Mailjet\Resources;
+
 class Admin extends BaseController
 {
 	public function index()
@@ -208,7 +210,7 @@ class Admin extends BaseController
         $data = array(
 			'session' 	 	=> $this->session,
 			'user' 	     	=> $userdata,
-			'page_title' 	=> 'Configuration',
+			'page_title' 	=> ucwords($step) . ' Configuration',
 			'page_name'  	=> 'configuration',
 			'pagination'	=> $pagination ?? 1,
 			'set_folder'    => 'admin/',
@@ -218,6 +220,26 @@ class Admin extends BaseController
             'step'          => $this->request->getPost('step') ? $this->request->getPost('step') : $step, 
             'enable_steps'  => 1
         ); 
+
+        if ($step === 'email') 
+        { 
+	        if ($action === 'testmail') 
+	        { 
+	        	$test_status = welcomeEmail(logged_user('username'),'test', false);
+	        	$test_status = $test_status['message'] ?? "Sending Failed...";
+		        $this->session->setFlashdata('notice', alert_notice($test_status, 'info', false, 'TRUE'));  
+		        _redirect(base_url('admin/configuration/' . $step), 'location'); 
+	        }
+	        elseif ($action === 'testsms') 
+	        { 
+                $test_status = \Config\Services::mailjet_sms(my_config('mailjet_bearer_token'), [
+                	"This is a test SMS", my_config('contact_phone'), my_config('site_name')
+                ], true);
+	        	$test_status = $test_status ?? "Sending Failed...";
+		        $this->session->setFlashdata('notice', alert_notice($test_status, 'info', false, 'TRUE'));  
+		        _redirect(base_url('admin/configuration/' . $step), 'location'); 
+	        }
+        }
 
         // Update the .env file
         if (!empty($this->request->getPost('env')))  
@@ -280,6 +302,18 @@ class Admin extends BaseController
 				    'value.mailpath'    => ['label' => 'Mail Path', 'rules' => 'trim' . $require_sendmail]
 				]);
 	        }
+	 		
+	 		// Validation for design configuration
+	        if (!$data['enable_steps'] || $data['step'] == 'email') 
+	        {  
+		        $this->validate([
+				    'value.email_welcome'    => ['label' => 'Welcome Email', 'rules' => 'trim'],
+				    'value.email_activation' => ['label' => 'Activation Email', 'rules' => 'trim'],
+				    'value.email_token'      => ['label' => 'Token Access Email', 'rules' => 'trim'],
+				    'value.email_incognito' => ['label' => 'Incognito Access Email', 'rules' => 'trim'],
+				    'value.email_recovery'  => ['label' => 'Recovery Email', 'rules' => 'trim'] 
+				]);
+	        } 
 
 	        // validation for contact configuration
 	        if (!$data['enable_steps'] || $data['step'] == 'contact') 
@@ -457,7 +491,7 @@ class Admin extends BaseController
 	        	$require_img = '';
 	        	if ($this->request->getPost('type') === 'slider') 
 	        	{
-	        		$banner_size = ['width'   => 1650, 'height' => 650];
+	        		$banner_size = ['crop' => [1500, 700]];
 	        		if (!$image) $require_img = '|uploaded[image]|is_image[image]'; 
 	        	}
 	        	else
@@ -928,18 +962,7 @@ class Admin extends BaseController
 		        	// Check for image upload errors
 		            if ($this->creative->upload_errors() === FALSE)
 		            {
-		                $save = $this->request->getPost(); 
-
-		                $save['in_footer']    = $save['in_footer'] ?? 0;
-		                $save['in_header']    = $save['in_header'] ?? 0;
-		                $save['services']     = $save['services'] ?? 0;
-		                $save['features']     = $save['features'] ?? 0;
-		                $save['contact']      = $save['contact'] ?? 0;
-		                $save['subscription'] = $save['subscription'] ?? 0;
-		                $save['slider']       = $save['slider'] ?? 0;
-		                $save['gallery']      = $save['gallery'] ?? 0;
-		                $save['subscription'] = $save['pricing'] ?? 0; 
-		                $save['breadcrumb']   = $save['breadcrumb'] ?? 0;
+		                $save = $this->request->getPost();  
 		                
 		                // Merge image and post data
 		            	($id) ? $save['id'] = $id : null; 		            

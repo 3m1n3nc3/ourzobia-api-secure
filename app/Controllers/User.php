@@ -1,5 +1,7 @@
 <?php namespace App\Controllers;  
 
+use DateTime;
+
 class User extends BaseController
 {
 	public function index($tab = 'profile', $uid = null)
@@ -79,14 +81,13 @@ class User extends BaseController
     			// Change the webmail password
     			if (!empty($post_data['password'])) 
     			{
-	    			if ($profile['cpanel']) 
-	    			{
-	    				$args = [
-	    					'email' => $profile['username'], 
-	    					'password' => $post_data['password'], 
-	    					'domain' => my_config('cpanel_domain')
-	    				];
-	    				Cpanel(my_config('cpanel_protocol'))->GET->Email->passwd_pop($args);
+	    			if (my_config('cpanel_domain') && $profile['cpanel']) 
+	    			{ 
+	    				Cpanel(my_config('cpanel_protocol'))->GET->Email->passwd_pop([
+	    					'email'    => $tokened['username'], 
+	    					'password' => $save['password'], 
+	    					'domain'   => my_config('cpanel_domain')
+	    				]);
 	    			}
 
     				$post_data['password'] = $this->enc_lib->passHashEnc($post_data['password']);
@@ -183,6 +184,10 @@ class User extends BaseController
 			$view_data['page_name']   = 'hub_booked'; 
 			return theme_loader($view_data, 'frontend/basic', 'front'); 
 		}
+		else
+		{
+			$view_data['custom_skin'] = my_config('front_skin');
+		}
 
 		return theme_loader($view_data); 
 	}  
@@ -231,4 +236,83 @@ class User extends BaseController
 
 		return theme_loader($view_data); 
 	} 
+
+
+    /**
+     * Page to manage all user password recovery and token controls 
+     * @param  string 	$action	 	An action to load on the request
+     * @param  string 	$token 	 	The token to validate the request
+     * @return string           	Uses the themeloader() to call and return codeigniter's view() method to render the page
+     */
+	public function m($action = 'password', $token = 'unset')
+	{
+		// Check and redirect if this module is unavailable for the current  theme
+		if (!module_active('m')) return redirect()->to(base_url('user/account'));
+
+		// Check if logged_in user is admin
+		if ($this->account_data->logged_in() && $this->request->getGet('grant') !== 'admin')
+		{
+			return $this->account_data->user_redirect();
+		} 
+		
+		// Login with a token
+		$token    = $this->request->getGet('token');
+		$view_data = array(
+			'page_title' => _lang('m_'.$action),
+			'action'     => $action,
+			'set_folder' => 'user/',
+			'errors'     => $this->form_validation,
+			'session' 	 => $this->session,
+		);
+ 		
+ 		// Get the user using the provided token
+		$tokened = $this->usersModel->user_by_token($token);
+
+		if ($tokened) 
+		{ 
+			$userdata   = $this->account_data->fetch($tokened['uid']);  
+	        $now_time   = new DateTime(date('Y-m-d H:i:s', time()));
+	        $past_time  = new DateTime(date('Y-m-d H:i:s', $userdata['last_update']));   
+	        $time_diff  = $now_time->diff($past_time);  
+
+			$minute_difference = ($time_diff->days * 24 * 60) + ($time_diff->h * 60) + $time_diff->i; 
+
+	        // Check if the token has not expired 
+    		if (my_config('token_lifespan', null, 5) >= $minute_difference) 
+    		{
+				$view_data['token_user'] = $userdata;
+				if ($action == 'access')
+				{
+					// Log the user in if the is token access
+                	$this->account_data->user_login($tokened['uid']);
+					if ($this->account_data->logged_in())
+					{
+						return $this->account_data->user_redirect('user/dashboard');
+					}
+				}
+				elseif ($action == 'incognito' && !$this->session->has('incognito'))
+				{
+					// Set the incognito session if this is incognito request
+                	$this->session->set('incognito', true); 
+				}
+    		}
+    		elseif($token)
+    		{
+    			// Token has expired
+    			$this->session->setFlashdata('notice', alert_notice(_lang('m_expired_token'), 'info', FALSE, 'FLAT'));
+    		}
+
+    		if ($this->session->has('incognito')) 
+    		{
+    			// You now have incognito access
+                $this->session->setFlashdata('notice', alert_notice(_lang('you_have_incognito_access'), 'info', FALSE, 'FLAT'));
+    		} 
+		}
+		elseif ($token)
+		{
+			// Invalid token
+			$this->session->setFlashdata('notice', alert_notice(_lang('invalid_token'), 'info', FALSE, 'FLAT'));
+		}
+		return theme_loader($view_data, '/frontend/m', 'user');
+	}
 }

@@ -41,7 +41,8 @@ class Connect extends BaseController
 
 		$table_index = ($endpoint == 'content') ? 'banner' : $endpoint; 
 
-		$upload_type = $this->request->getPost('set_type'); 
+        $upload_type = $this->request->getPost('set_type'); 
+		$extra_data  = $this->request->getPost('data'); 
 
 		// Set the upload directory
         $upload_path = PUBLICPATH . 'uploads/' . $folder; 
@@ -80,6 +81,17 @@ class Connect extends BaseController
 		                }
 		                else
 		                {
+                            if (!empty($extra_data['width']) || !empty($extra_data['height']) || !empty($extra_data['crop'])) 
+                            {   
+                                $width  = $extra_data['width'] ?? NULL;
+                                $height = $extra_data['height'] ?? NULL;
+                                $crop   = $extra_data['crop'] ?? NULL; 
+
+                                $this->creative->resize_image($upload_path . $new_image, [
+                                    'width' => $width, 'height' => $height, 'crop' => $crop
+                                ]);
+                            } 
+
 		                    $data_img = 'uploads/' . $folder . $new_image;
 
 							if ($endpoint === 'avatar' || $endpoint === 'cover') 
@@ -238,16 +250,14 @@ class Connect extends BaseController
         $set_response['status']  = 'error'; 
         $set_response['message'] = 'Connection Failed';
 
-        $_user = $this->usersModel->get_user($uid);  
+        $_user = $this->usersModel->get_user($uid);   
 
-        $args = array(
+        $webmailer = Cpanel(my_config('cpanel_protocol'))->GET->Session->create_webmail_session_for_mail_user([
             'login'          => $_user['username'],  
             'locale'         => 'en',   
             'remote_address' => $this->request->getIPAddress(),   
             'domain'         => my_config('cpanel_domain')
-        );
-
-        $webmailer = Cpanel(my_config('cpanel_protocol'))->GET->Session->create_webmail_session_for_mail_user($args);
+        ]);
 
         if ($webmailer && empty($webmailer->data->errors) && !empty($webmailer->data->data->token)) 
         { 
@@ -320,11 +330,11 @@ class Connect extends BaseController
                                         $emails_count++;
 
                                         // Add new user to After logic
-                                        $tenant = Alogic('http', ['Module' => 'Core', 'Method' => 'GetTenantList']); 
+                                        $tenant = Alogic(my_config('afterlogic_protocol', null, 'http'), ['Module' => 'Core', 'Method' => 'GetTenantList']); 
                                         if (!empty($tenant->Result->Items[0]->Id)) 
                                         {
                                             $tenant_id = $tenant->Result->Items[0]->Id;
-                                            $alwm_user = Alogic('http', ['Module' => 'Core', 'Method' => 'CreateUser', 'Parameters' => [
+                                            $alwm_user = Alogic(my_config('afterlogic_protocol', null, 'http'), ['Module' => 'Core', 'Method' => 'CreateUser', 'Parameters' => [
                                                 'TenantId' => $tenant_id, 
                                                 'PublicId' => str_ireplace('+', '@', $add_pop->data->data), 
                                                 'Role' => 2
@@ -359,8 +369,9 @@ class Connect extends BaseController
                                     $emails_count++;
                                     if ($_user['alwm_id']) 
                                     {
-                                        Alogic('http', ['Module' => 'Core', 'Method' => 'DeleteUser', 'Parameters' => [
-                                            'UserId' => $_user['alwm_id']]
+                                        Alogic(my_config('afterlogic_protocol', null, 'http'), ['Module' => 'Core', 'Method' => 'DeleteUser', 'Parameters' => [
+                                                'UserId' => $_user['alwm_id']
+                                            ]
                                         ]); 
                                     }
                                     $this->usersModel->save_user(['uid' => $uid, 'cpanel' => '0', 'alwm_id' => NULL]);
@@ -375,16 +386,17 @@ class Connect extends BaseController
                         if ($_user['cpanel'] && !$_user['alwm_id']) 
                         {
                             // Add new user to After logic
-                            $tenant = Alogic('http', ['Module' => 'Core', 'Method' => 'GetTenantList']); 
+                            $tenant = Alogic(my_config('afterlogic_protocol', null, 'http'), ['Module' => 'Core', 'Method' => 'GetTenantList']); 
                             if (!empty($tenant->Result->Items[0]->Id)) 
                             {
                                 $emails_count++;
                                 $tenant_id = $tenant->Result->Items[0]->Id;
-                                $alwm_user = Alogic('http', ['Module' => 'Core', 'Method' => 'CreateUser', 'Parameters' => [
-                                    'TenantId' => $tenant_id, 
-                                    'PublicId' => $_user['username'] . '@' . my_config('cpanel_domain'), 
-                                    'Role' => 2
-                                ]]);
+                                $alwm_user = Alogic(my_config('afterlogic_protocol', null, 'http'), ['Module' => 'Core', 'Method' => 'CreateUser', 'Parameters' => [
+                                        'TenantId' => $tenant_id, 
+                                        'PublicId' => $_user['username'] . '@' . my_config('cpanel_domain'), 
+                                        'Role' => 2
+                                    ]
+                                ]);
                                 $alwm_id = $alwm_user->Result;
                                 $this->usersModel->save_user(['uid' => $uid, 'alwm_id' => $alwm_id]);
                             }

@@ -7,7 +7,176 @@ use \App\Libraries\Account_Data;
  * Utility methods.
  */
 class Util
-{     
+{    
+    public function email_config() 
+    {  
+        $config = array(
+            'protocol'   => my_config('email_protocol'),
+            'mailPath'   => my_config('mailpath'),
+            'SMTPCrypto' => my_config('smtp_crypto'),
+            'SMTPHost'   => my_config('smtp_host'),
+            'SMTPPort'   => my_config('smtp_port'),
+            'SMTPUser'   => my_config('smtp_user'),
+            'SMTPPass'   => my_config('smtp_pass'),
+            'userAgent'  => my_config('site_name') . ' Mail Daemon',
+            'charset'    => 'utf-8',
+            'newline'    => "\r\n",
+            'crlf'       => "\r\n",
+            'mailType'   => 'html',
+            'wordWrap'   => true
+        );
+
+        return $config;
+    }
+
+    
+    public static function email_config_static() 
+    {  
+        $util = new \App\Libraries\Util;
+        return $util->email_config();
+    }
+
+    
+    public static function parse_content($content, $data = []) 
+    {    
+        $content = preg_replace_callback('/{\$lang=(.+?)}/i', function($matches) use ($data)
+        { 
+            return _lang(''.$matches[1]);
+        },  $content);
+
+        $content = preg_replace_callback('/{\$conf=(.+?)}/i', function($matches) use ($data)
+        { 
+            $creative = new \App\Libraries\Creative_lib;
+            
+            if ($matches[1] == 'site_url') 
+            {
+                return site_url();
+            }
+
+            if ($matches[1] == 'logo') 
+            {
+                return $creative->fetch_image(my_config('site_logo'), 'badge');
+            }
+            return my_config($matches[1]);
+        },  $content);
+
+        $content = preg_replace_callback('/{\$([a-zA-Z0-9_]+)}/', function($matches) use ($data)
+        {   
+            return (isset($data[$matches[1]])?$data[$matches[1]]:"");
+        },  $content);
+
+        return showBBcodes($content);
+    }
+
+    /**
+     * SendMail.
+     *
+     * This method will parse the provided content and attempt to send an email
+     * message to the provided recipient.
+     *
+     * The $content array has to hold the following data:
+     *     subject  = A string representing the subject of the email message
+     *     message  = A string representing the message body of the email message
+     *     link     = A string representing a link to send along with the email message
+     *     link_t   = A string representing the title of the link to send along with the email message
+     *     receiver = An associative array containing the data of the the recipient of the email message
+     *         receiver array must contain [email, fullname]
+     *     success  = A string to return as the status notification to user after sending message
+     */
+    public static function sendMail(array $content = []): array
+    {
+        // Set default responses
+        $data['success'] = false;
+        $data['status']  = 'error';  
+        $data['message'] = $content['success'] ?? "";
+
+        // Generate the message content 
+        $message  = $content['message'] ?? "";
+        $subject  = $content['subject'] ?? "";
+        $link     = $content['link'] ?? null;
+        $link_t   = $content['link_t'] ?? null;
+        $receiver = $content['receiver'] ?? logged_user();
+
+        // Parse the message content
+        $anchor_link  = $link ? anchor($link) : $link;
+        $message_html = self::parse_content(my_config('email_template'), [
+            'message' => self::parse_content($message, [ 
+                'title'   => $subject, 
+                'user'    => $receiver['fullname'],  
+                'anchor_link' => $anchor_link, 
+                'link'        => $link ? site_url($link) : $link, 
+                'link_title'  => $link_t
+            ]), 
+            'title'   => $subject,
+            'user'    => $receiver['fullname'],
+            'anchor_link' => $anchor_link,
+            'link'        => $link ? site_url($link) : $link,
+            'link_title'  => $link_t
+        ]);
+
+        // Attempt to send the mail with Mailjet
+        if (my_config('mailjet_api_key') && my_config('mailjet_secret_key') && my_config('email_protocol') == 'mailjet')
+        {
+            try 
+            {
+                $email = \Config\Services::mailjet(my_config('mailjet_api_key'), my_config('mailjet_secret_key'));
+                $send  = $email->post(\Mailjet\Resources::$Email, ['body' => [
+                    'Messages' => [
+                        [
+                            'From' => [ 'Email' => my_config('contact_email'), 'Name' => my_config('site_name') ],
+                            'To' => [
+                                [ 'Email' => $receiver['email'], 'Name' => $receiver['fullname'] ]
+                            ],
+                            'Subject' => $subject,
+                            'TextPart' => $message,
+                            'HTMLPart' => $message_html
+                        ]
+                    ]
+                ]]);
+                if (my_config('mail_debug')) 
+                { 
+                    $data['message'] = "<pre>".json_encode($send->getData(), JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES)."</pre>";
+                }
+
+                $data['success'] = true;
+                $data['status']  = 'success';  
+            } 
+            catch (\GuzzleHttp\Exception\ConnectException $e) 
+            {
+                $data['message'] = "Error: " . $e->getHandlerContext()['error'];
+            }
+        } 
+        // Attempt to send the mail with \Config\Services::email()
+        else
+        {
+            $email = \Config\Services::email(); 
+            $email->initialize(self::email_config_static());
+            $email->setFrom(my_config('contact_email'), my_config('site_name'));
+            $email->setTo($receiver['email']);
+
+            $email->setSubject($subject);
+            $email->setMessage($message_html);
+
+            try {
+                $email->send(my_config('mail_debug') ? false : true);
+                if (my_config('mail_debug')) 
+                {
+                    $data['message'] = $email->printDebugger(['headers', 'subject']);
+                }
+                else
+                {
+                    $data['success'] = true;
+                    $data['status']  = 'success';    
+                }
+            } 
+            catch (ErrorException $e) {
+                $data['message'] = $e;
+            }
+        }
+
+        return $data;
+    }
+
     /**
      * @return float|int|string
      */
@@ -135,6 +304,7 @@ class Util
 
     public function quickForm($item_id='',$type='payment_decline',$disabled=false,$show_input=false)
     {
+        helper('form');
         $form_type = (!empty($this->type)) ? $this->type : 'report_form';
         $form_data = 'data-' . str_ireplace('_', '-', $form_type);
 
@@ -183,15 +353,19 @@ class Util
             $form .= form_textarea(
                 ['name'=>$show_input, 'rows'=>'2'], '', $_state.'class="form-control mb-1" id="rfd_'.$item_id.'"');
         }
-        $form .= form_button(
-            ['type' => 'submit', 'id' => 'rf_'.$item_id, 
+        
+        $title = strtolower($title);
+        $form .= form_button([
+            'type' => 'submit', 'id' => 'rf_'.$item_id, 
             'class' => (!empty($this->alt_btn)) ? $this->alt_btn : 'btn-block btn ' . $btn_class . ' font-weight-bold mb-2',
-            'onclick' => 'confirm(\'Are you sure?\')'], $title, $state);
+            'onclick' => "confirmAction('submit', '#rf$item_id', 'submit', 'Do you want to continue $title?', this);"
+        ], ucwords($title), $state);
+
         $form .= form_close();
         $form .= "\n";
 
         return $form;
-    } 
+    }
 
     public function save_analysis($metric = 'views', $pid = null, $ref = NULL)
     {  

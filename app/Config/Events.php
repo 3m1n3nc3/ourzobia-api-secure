@@ -64,7 +64,7 @@ Events::on('redirect', function($to)
  	return _redirect(base_url($to)); 
 });
 
-Events::on('login_redirect', function($uid, $to = null)
+Events::on('login_redirect', function($uid, $to = null, $rverify = false)
 {
 	$ad = new Account_Data; 
 	$ad->user_login($uid);
@@ -80,6 +80,18 @@ Events::on('login_redirect', function($uid, $to = null)
             $user  = $users_m->user_by_username($_user); 
             if (!empty($user)) 
             { 
+            	if ($rverify === true) 
+            	{
+			        if (!my_config('send_activation') && my_config('send_welcome'))
+			        {  
+						welcomeEmail(logged_user('username'), 'welcome');
+			        }
+			        elseif (my_config('send_activation')) 
+			        {  
+						welcomeEmail(logged_user('username'));
+			        } 
+            	}
+            	
                 if (!empty($to)) 
                 {
                     return _redirect(base_url($to)); 

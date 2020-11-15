@@ -3,7 +3,7 @@
             <div class="card-header"> 
                 <h5 class="card-title"><i class="fa fa-file fa-fw text-gray"></i>Manage Content</h5>
                 <div class="float-right">
-                    <a href="<?= site_url('admin/content/create')?>" class="btn btn-success text-white mr-1">Create New Page</a>
+                    <a href="<?= site_url('admin/content/create')?>" class="btn btn-sm btn-success text-white mr-1">Create New Page</a>
                 </div> 
             </div>
             <div class="card-body">  
@@ -31,26 +31,27 @@
                                 </td>
                                 <?php if(!$content['parent']): ?> 
                                 <td class="text-info font-weight-bold">
+                                    <i class="<?=$content['icon']?> fa-fw"></i> 
                                     <a href="<?= site_url('page/'.$content['safelink']) ?>"><?= $content['title'] ?></a>
                                 </td>
                                 <?php else: ?> 
                                 <td>
-                                    <?= $content['title'] ?> 
+                                    <i class="<?=$content['icon']?> fa-fw"></i> <?= $content['title'] ?> 
                                 </td>
                                 <?php endif; ?> 
                                 <td>
                                     <?=nl2br(word_wrap(strip_tags(word_limiter(decode_html($content['content']), 30)), 55));?>  
                                 </td>   
                                 <td class="td-actions text-right" style="min-width: 120px;">
-                                    <a href="<?= site_url('admin/content/create/'.$content['id']);?>" class="btn btn-info btn-sm text-white">
-                                        <i class="fa fa-edit fa-fw"></i>
+                                    <a href="<?= site_url('admin/content/create/'.$content['id']);?>">
+                                        <i class="text-info fa fa-edit fa-fw"></i>
                                     </a> 
                                     <?php if(!in_array($content['safelink'], ['homepage', 'footer', 'welcome', 'about', 'contact'])): ?> 
-                                    <button 
-                                        class="btn btn-danger text-white btn-sm deleter" 
+                                    <a href="javascript:void(0)"
+                                        class="deleter" 
                                         onclick="confirmAction('<?=site_url('admin/content/delete/'.$content['id']);?>', true)">
-                                        <i class="fa fa-trash fa-fw"></i>
-                                    </button>
+                                        <i class="text-danger fa fa-trash fa-fw"></i>
+                                    </a>
                                     <?php endif; ?> 
                                 </td>
                             </tr>  

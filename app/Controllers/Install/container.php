@@ -8,7 +8,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <title>Ourzobia PHP Installer</title>
+        <title>HubBoxx <?=env('installation.version')?> Installer</title>
         <link rel="icon" href="<?=$creative->fetch_image('logo', 'logo')?>"> 
         <!-- Font Awesome Icons -->
         <link rel="stylesheet" href="<?=create_url('resources/plugins/fontawesome-free/css/all.min.css')?>">
@@ -23,9 +23,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <aside class="main-sidebar sidebar-light-success elevation-4">
                 <!-- Brand Logo -->
                 <a href="<?=create_url()?>" class="brand-link text-sm">
-                    <img src="<?=$creative->fetch_image('logo', 'logo')?>" alt="Ourzobia Logo" class="brand-image img-circle elevation-3"
+                    <img src="<?=$creative->fetch_image('logo', 'logo')?>" alt="HubBoxx Logo" class="brand-image img-circle elevation-3"
                     style="opacity: .8">
-                    <span class="brand-text font-weight-light">Installer</span>
+                    <span class="brand-text font-weight-light">HubBoxx <?=env('installation.version')?> Installer</span>
                 </a>
                 <!-- Sidebar -->
                 <div class="sidebar"> 
@@ -77,20 +77,22 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <div class="container-fluid">
                         <div class="row mb-2">
                             <div class="col-sm-6">
-                                <h1 class="m-0 text-dark">Ourzobia PHP Installer</h1>
+                                <h1 class="m-0 text-dark">HubBoxx <?=env('installation.version')?> Installer</h1>
                             </div><!-- /.col -->
                             <div class="col-sm-6">
                                 <ol class="breadcrumb float-sm-right">
-                                    <li class="breadcrumb-item"><a href="<?=create_url('install/start')?>">Installer</a></li>
-                                    <?php if ($progress == 1): ?>
-                                        <li class="breadcrumb-item active">Requirements</li>
-                                    <?php elseif ($progress == 2): ?>
-                                        <li class="breadcrumb-item active">Database</li> 
-                                    <?php elseif ($progress == 3): ?>
-                                        <li class="breadcrumb-item active">Install</li>
-                                    <?php elseif ($progress == 4): ?>
-                                        <li class="breadcrumb-item active">Finalize</li>
-                                    <?php endif ?>
+                                    <li class="breadcrumb-item">
+                                        <a href="<?=create_url('install/start')?>">Installer</a>
+                                    </li>
+                                <?php if ($progress == 1): ?>
+                                    <li class="breadcrumb-item active">Requirements</li>
+                                <?php elseif ($progress == 2): ?>
+                                    <li class="breadcrumb-item active">Database</li> 
+                                <?php elseif ($progress == 3): ?>
+                                    <li class="breadcrumb-item active">Install</li>
+                                <?php elseif ($progress == 4): ?>
+                                    <li class="breadcrumb-item active">Finalize</li>
+                                <?php endif ?>
                                 </ol>
                             </div><!-- /.col -->
                         </div><!-- /.row -->
@@ -172,7 +174,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                                 <?=anchor(create_url('user/dashboard'), 'Goto User Dashboard', ['class'=>'btn btn-success']); ?> 
                                             </div> 
                                             <p>
-                                                <b>Please note that Ourzobia PHP has two dashboards - </b>
+                                                <b>Please note that HubBoxx has two dashboards - </b>
                                             </p>
                                             <ul style="list-style: disc; margin-left: 15px;">
                                                 <li>
@@ -203,7 +205,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     v<?=env('installation.version')?>
                 </div>
                 <!-- Default to the left -->
-                <strong>Copyright &copy; 2020 <a href="http://ourzobiaphp.cf">Ourzobia PHP</a>.</strong> All rights reserved.
+                <strong>Copyright &copy; <?=date("Y")?> <a href="http://toneflixcode.cf">ToneFlix Code</a>.</strong> All rights reserved.
             </footer>
         </div>
         <!-- ./wrapper -->

@@ -11,23 +11,24 @@ class Filters extends BaseConfig
 		'toolbar'  => \CodeIgniter\Filters\DebugToolbar::class, 
 		'accesscontrol' => \App\Filters\AccessFilter::class,
 		'admincontrol'  => \App\Filters\AdminFilter::class, 
+		'provide_info'  => \App\Filters\ProvideinfoFilter::class
 	];
 
 	// Always applied before every request
 	public $globals = [
 		'before' => [ 
-			'admincontrol' => [
-				'except' => [
-					'login', 'signup', 'logout', 'home/*', '/', 'connect/*', 'api', 'api/*', 'ajax/*', 'user/*', 'cli/*', 'error', 
-					'error/*', 'install/*', 'curl', 'curl/*', 'home', 'home/*', 'api', 'api/*', 'requests', 'requests/*', 'resource', 
-					'src', 'src/*']
-			], 
-			'accesscontrol' => [
-				'except' => [
-					'login', 'signup', 'logout', 'home/*', '/', 'connect/*', 'api', 'api/*', 'ajax/*', 'cli/*', 'error', 'error/*', 
-					'user/m', 'install/*', 'curl', 'curl/*', 'home', 'home/*', 'api', 'api/*', 'requests', 'requests/*', 'resource', 
-					'src', 'src/*']
-			],  
+			// 'provide_info' => [
+			// 	'except' => [
+			// 		'login', 'signup', 'logout', 'home/*', '/', 'connect/*', 'api', 'api/*', 'ajax/*', 'cli/*', 'error', 
+			// 		'error/*', 'user/m', 'user/m/*', 'install/*', 'curl', 'curl/*', 'home', 'home/*', 'api', 'api/*', 'requests', 
+			// 		'requests/*', 'resource', 'src', 'src/*']
+			// ], 
+			// 'accesscontrol' => [
+			// 	'except' => [
+			// 		'login', 'signup', 'logout', 'home/*', '/', 'connect/*', 'api', 'api/*', 'ajax/*', 'cli/*', 'error', 
+			// 		'error/*', 'user/m', 'user/m/*', 'install/*', 'curl', 'curl/*', 'home', 'home/*', 'api', 'api/*', 'requests', 
+			// 		'requests/*', 'resource', 'src', 'src/*']
+			// ],
 			//'honeypot'
 			// 'csrf',
 		],
@@ -45,7 +46,15 @@ class Filters extends BaseConfig
 	// List filter aliases and any before/after uri patterns
 	// that they should run on, like:
 	//    'isLoggedIn' => ['before' => ['account/*', 'profiles/*']],
-	public $filters = [
+	public $filters = [ 
+			'admincontrol' => ['before' => ['admin', 'admin/*', 'dashboard']],
+			'provide_info' => ['after' => [
+				'user', 'user/products', 'user/hubs', 'user/hubs/*', 'user/payments', 'user/payments/*', 'user/dashboard'
+			]],
+			'accesscontrol' => ['before' =>  [
+				'user', 'user/account', 'user/account/*', 'user/products', 'user/hubs', 'user/hubs/*', 'user/payments', 
+				'user/payments/*', 'user/dashboard'
+			]],
 		// 'admincontrosl' => ['before' => ['admin', 'admin/*']],
 	];
 }

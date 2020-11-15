@@ -71,11 +71,11 @@ $routes->get('dashboard', 'Admin::index');
 $routes->get('dashboard/(:any)', 'Admin::$1'); 
 $routes->get('admin/dashboard', 'Admin::index'); 
 
-$routes->get('user/dashboard', 'User::index');  
-
+$routes->get('logout', 'Home::logout');  
 $routes->get('logout/(:any)', 'Home::logout/$1');  
 $routes->match(['get', 'post'], 'login', 'Home::login');
-$routes->match(['get', 'post'], 'signup', 'Home::login/signup'); 
+$routes->match(['get', 'post'], 'signup', 'Home::login/signup');  
+$routes->match(['get', 'post'], 'user/dashboard', 'User::index');  
 
 
 /**

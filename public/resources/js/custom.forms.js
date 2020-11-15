@@ -55,7 +55,7 @@
             show_toastr(data.message, data.status);      
             token_management.find('button[type=submit]').buttonLoader('stop');
             var message = $("</div>").text(data.message);
-            token_management.find('.form_message').html(data.message).addClass('alert mb-3 alert-' + (data.status == 'error' ? 'danger' : data.status)).fadeIn();
+            token_management.find('.form_message').alert_notice(data.message, data.status, true); 
             if (data.redirect) {
                 redirect(data.redirect);
             }
@@ -95,5 +95,21 @@
                 redirect(data.redirect);
             }
         }
-    });  
+    });
+
+    $("form.marketing-form").each(function(e) {
+        var marketing_form = $(this);
+        marketing_form.ajaxForm({
+            url: link('ajax/main/marketing_form'),
+            type: 'POST',
+            dataType: 'json',
+            beforeSend: function(arr,form) {
+                marketing_form.find('.sub_btn').buttonLoader('start');  
+            },
+            success: function(data, status, xhr, form) {
+                marketing_form.find(".message").alert_notice(data.message, data.status, true); 
+                marketing_form.find('.sub_btn').buttonLoader('stop');   
+            }
+        }); 
+    });
 });  

@@ -396,12 +396,27 @@ if (! function_usable('save_lang'))
 
 if (! function_usable('module_active'))
 {
-    function module_active($module = '')
+    /**
+     * A convenience method to check if a module is active or available 
+     *  
+     * @param string    $module
+     * @param string    $x_theme
+     *
+     * @return boolean
+     */
+    function module_active($module = '', $x_theme = null)
     {
-        $theme      = (substr($module, 0, 1)==='_') ? my_config('admin_theme') : my_config('site_theme');
+        if ($x_theme === null)
+            $theme  = (substr($module, 0, 1)==='_') ? my_config('admin_theme') : my_config('site_theme');
+        else
+            $theme = $x_theme;
+
         $active_mod = explode(',', (substr($module, 0, 1)==='_') ? my_config('admin_active_modules', null, implode(',', theme_info($theme,'modules'))) : my_config('site_active_modules'));
  
-        return in_array($module, theme_info($theme,'modules')) && (in_array($module, $active_mod) OR empty($active_mod)); 
+        if ($x_theme === null)
+            return in_array($module, theme_info($theme,'modules')) && (in_array($module, $active_mod) OR empty($active_mod)); 
+        else
+            return in_array($module, theme_info($theme,'modules')); 
     }
 }
 
@@ -415,19 +430,33 @@ if (! function_usable('check_requirements'))
 
         foreach($array AS $key => $value)
         {
-            if (stripos($value,'dir.',) !== false) 
+            if (stripos($value,'v.') !== false) 
+            {  
+                $version = str_ireplace('v.','',$value);
+                $version_compare = version_compare(env('installation.version', '1.1.0'), $version, "<");
+                $req .= (!$version_compare)?"<span class=\"text-success\">System v$version required</span> | ":"<span class=\"text-danger\">Upgrade system to v$version or higher to install</span> | ";
+                if ($version_compare) $err = true;
+            }
+            elseif (stripos($value,'product.') !== false) 
+            {
+                $product = str_ireplace('product.','',$value);
+                $product_compare = env('installation.product', 'hubboxx') === $product;
+                $req .= (!$product_compare)?"<span class=\"text-danger\">Invalid Product for update</span> | ":"";
+                if (!$product_compare) $err = true;
+            }
+            elseif (stripos($value,'dir.') !== false) 
             {
                 $dir = str_ireplace('dir.','',$value);
                 $req .= (is_really_writable(ROOTPATH.$dir))?"<span class=\"text-success\">$dir is writable</span> | ":"<span class=\"text-danger\">Make $dir writable</span> | ";
                 if (!is_really_writable(ROOTPATH.$dir)) $err = true;
             }
-            elseif (stripos($value,'ext.',) !== false) 
+            elseif (stripos($value,'ext.') !== false) 
             { 
                 $ext = str_ireplace('ext.','',$value);
                 $req .= (extension_loaded($ext))?"<span class=\"text-success\">$ext extension enabled</span> | ":"<span class=\"text-danger\">Enable $ext extension</span> | ";
                 if (!extension_loaded($ext)) $err = true;
             }
-            elseif (stripos($value,'ini.',) !== false) 
+            elseif (stripos($value,'ini.') !== false) 
             { 
                 $ini = explode('.', str_ireplace('ini.','',$value)); 
                 $ini_k = $ini[0];

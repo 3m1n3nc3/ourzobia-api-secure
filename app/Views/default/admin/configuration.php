@@ -49,6 +49,12 @@
                         </a>
                         <?php endif; ?>
 
+                        <?php if ($step !== 'email'): ?>
+                        <a href="<?= site_url('admin/configuration/email')?>" class="btn btn-danger btn-round btn-md rounded-0 text-white">
+                            <i class="fas fa-envelope"></i> Email
+                        </a>
+                        <?php endif; ?>  
+
                         <?php if ($step !== 'system'): ?>
                         <a href="<?= site_url('admin/configuration/system')?>" class="btn btn-danger btn-round btn-md rounded-0 text-white">
                             <i class="fas fa-desktop"></i> System
@@ -218,6 +224,32 @@
                         </div>
 
                         <div class="mb-3 pb-0 border-info border-bottom container-fluid">
+                            <label class="font-weight-bold pb-0 mb-0" for="basic_block">Mailjet Configuration</label>
+                            <div class="text-muted small">Mailjet is an easy-to-use all-in-one e-mail and SMS platform. get your keys from <a href="https://app.mailjet.com/account/api_keys">https://app.mailjet.com/account/api_keys</a></div>
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label class="text-info" for="mailjet_api_key">Mailjet Api Key</label>
+                            <input type="text" name="value[mailjet_api_key]" value="<?= set_value('value[mailjet_api_key]', my_config('mailjet_api_key')) ?>" class="form-control" >
+                            <small class="text-muted">Public Mailjet API key. get your keys from <a href="https://app.mailjet.com/account/api_keys">https://app.mailjet.com/account/api_keys</a></small>
+                            <?= $errors->showError('value.mailjet_api_key', 'my_single_error'); ?>
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label class="text-info" for="mailjet_secret_key">Mailjet Secret Key</label>
+                            <input type="text" name="value[mailjet_secret_key]" value="<?= set_value('value[mailjet_secret_key]', my_config('mailjet_secret_key')) ?>" class="form-control" >
+                            <small class="text-muted">Private Mailjet API key. get your keys from <a href="https://app.mailjet.com/account/api_keys">https://app.mailjet.com/account/api_keys</a></small>
+                            <?= $errors->showError('value.mailjet_secret_key', 'my_single_error'); ?>
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label class="text-info" for="mailjet_bearer_token">Mailjet Bearer Token</label>
+                            <input type="text" name="value[mailjet_bearer_token]" value="<?= set_value('value[mailjet_bearer_token]', my_config('mailjet_bearer_token')) ?>" class="form-control" >
+                            <small class="text-muted">Authentication for the SMS API endpoints is done using a bearer token. Generate bearer token <a href="https://app.mailjet.com/sms">Here</a>. </small>
+                            <?= $errors->showError('value.mailjet_bearer_token', 'my_single_error'); ?>
+                        </div>
+
+                        <div class="mb-3 pb-0 border-info border-bottom container-fluid">
                             <label class="font-weight-bold pb-0 mb-0" for="basic_block">Cpanel Configuration</label>
                         </div>
 
@@ -280,7 +312,7 @@
 
                         <div class="mb-3 pb-0 border-info border-bottom container-fluid">
                             <label class="font-weight-bold pb-0 mb-0" for="basic_block">AfterLogic Webmail Configuration</label>
-                            <small class="text-muted">Use, if you have installed AfterLogic Webmail on your server. <a href="https://afterlogic.org/webmail-lite" class="text-info">Install AfterLogic Webmail Lite</a></small>
+                            <div class="text-muted small">Use, if you have installed AfterLogic Webmail on your server. <a href="https://afterlogic.org/webmail-lite" class="text-info">Install AfterLogic Webmail Lite</a></div>
                         </div>
 
                         <div class="form-group form-row col-md-12">
@@ -295,9 +327,9 @@
                                 <div class="form-group">
                                     <label class="text-info" for="afterlogic_protocol">Protocol</label>
                                     <select id="afterlogic_protocol" name="value[afterlogic_protocol]" class="form-control" required>
-                                        <option value="http" <?= set_select('value[afterlogic_protocol]', 'http', my_config('afterlogic_protocol') == 'http')?>>Insecure (HTTP)
+                                        <option value="http" <?= set_select('value[afterlogic_protocol]', 'http', my_config('afterlogic_protocol', null, 'http') == 'http')?>>Insecure (HTTP)
                                         </option>
-                                        <option value="https" <?= set_select('value[afterlogic_protocol]', 'https', my_config('afterlogic_protocol') == 'https')?>>Secure (HTTPS)
+                                        <option value="https" <?= set_select('value[afterlogic_protocol]', 'https', my_config('afterlogic_protocol', null, 'http') == 'https')?>>Secure (HTTPS)
                                         </option>
                                     </select> 
                                     <?= $errors->showError('value.afterlogic_protocol', 'my_single_error'); ?>
@@ -629,17 +661,7 @@
                             <label class="text-info" for="site_description">Description</label>
                             <textarea name="value[site_description]" class="form-control" ><?= set_value('value[site_description]', character_limiter(my_config('site_description'), 200,'')) ?></textarea><small class="text-muted">The site description might be used for SEO and other sections (Less than 200 characters)</small>
                             <?= $errors->showError('value.site_description', 'my_single_error'); ?>
-                        </div>  
-<!-- 
-                        <div class="form-group col-md-12">
-                            <label class="text-info" for="email_template">Email Template</label>
-                            <textarea name="value[email_template]" class="form-control textarea" ><?= set_value('value[email_template]', my_config('email_template')) ?></textarea>
-                            <small class="text-muted">
-                                Design the view sent with email messages 
-                                <div class="text-info">Variables: {$conf=site_name}, {$user}, {$title}, {$message}, {$link}, {$link_title}</div>
-                            </small>
-                            <?= $errors->showError('value.email_template', 'my_single_error'); ?>
-                        </div> -->
+                        </div>   
                     </div>
                     <?php endif; ?>
 
@@ -660,6 +682,10 @@
                                     </option> 
                                     <option value="<?=$smtp_c?>"<?=set_select('value[email_protocol]', $smtp_c, (my_config('email_protocol') == $smtp_c))?>>SMTP
                                     </option> 
+                                    <?php if (my_config('mailjet_api_key') && my_config('mailjet_secret_key')): ?>
+                                    <option value="mailjet"<?=set_select('value[email_protocol]', 'mail',( my_config('email_protocol') == 'mailjet'))?>>Mailjet
+                                    </option>
+                                    <?php endif ?>
                                 </select>
                                 <small class="text-muted">
                                 Sets protocol for sending email.
@@ -719,13 +745,13 @@
                     <hr class="my-0"> 
                              
                     <div class="row p-3 mb-3"> 
-                        <div class="form-group col-md-6">
+                        <div class="form-group col-md-4">
                             <label class="text-info" for="timmezone">System Timezone</label>
                             <?=timezone_select('form-control custom-select', config('App')->appTimezone); ?>
                             <small class="text-muted">System Timezone for your location</small>
                             <?= $errors->showError('timezone', 'my_single_error'); ?>
                         </div>
-                        <div class="col-md-6 row">
+                        <div class="col-md-8 row d-flex">
                             <div class="form-group col">
                                 <label class="text-info" for="env[CI_ENVIRONMENT]">Developer Mode</label>
                                 <div class="form-group">
@@ -734,12 +760,146 @@
                                 </div>
                             </div>
                             <div class="form-group col">
-                                <label class="text-info" for="env[CI_ENVIRONMENT]">Crone Jobs</label>
+                                <label class="text-info" for="mail_debug">Mail Debug</label>
+                                <div class="form-group">
+                                    <input type="hidden" name="value[mail_debug]" value="0">
+                                    <input type="checkbox" name="value[mail_debug]" value="1" id="mail_debug" data-bootstrap-switch data-off-color="danger" data-on-color="success"<?=set_checkbox('value[mail_debug]', '1',(my_config('mail_debug') == '1'))?>>
+                                </div>
+                            </div> 
+                            <div class="form-group col">
+                                <label class="text-info" for="cron_jobs">Crone Jobs</label>
                                 <div class="form-group">
                                     <input type="hidden" name="value[cron_jobs]" value="0">
-                                    <input type="checkbox" name="value[cron_jobs]" value="1" id="value[cron_jobs]" data-bootstrap-switch data-off-color="danger" data-on-color="success"<?=set_checkbox('value[cron_jobs]', '1',(my_config('cron_jobs') == '1'))?>>
+                                    <input type="checkbox" name="value[cron_jobs]" value="1" id="cron_jobs" data-bootstrap-switch data-off-color="danger" data-on-color="success"<?=set_checkbox('value[cron_jobs]', '1',(my_config('cron_jobs') == '1'))?>>
                                 </div>
                             </div>
+                            <div class="form-group col">
+                                <label class="text-info" for="sms_notify">SMS Notify</label>
+                                <div class="form-group">
+                                    <input type="hidden" name="value[sms_notify]" value="0">
+                                    <input type="checkbox" name="value[sms_notify]" value="1" id="sms_notify" data-bootstrap-switch data-off-color="danger" data-on-color="success"<?=set_checkbox('value[sms_notify]', '1',(my_config('sms_notify') == '1'))?>>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+
+                    <?php if ($enable_steps &&  $step === 'email'): ?>
+                    <input type="hidden" name="step" value="email">
+                    <label class="font-weight-bold" for="email_block">Email Settings</label> 
+
+                    <div class="row p-3 mb-3" id="email_block">    
+ 
+                        <div class="col-md-12">
+                            <label class="font-weight-bold" for="design_block">Messages to send</label>
+                            <hr class="my-0"> 
+
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label class="text-info" for="send_welcome">Welcome</label>
+                                    <select id="send_welcome" name="value[send_welcome]" class="form-control">
+                                        <option value="0"<?=set_select('value[send_welcome]', '0',(my_config('send_welcome') == '0'))?>>Dont Send
+                                        </option>
+                                        <option value="1"<?=set_select('value[send_welcome]', '1', (my_config('send_welcome') == '1'))?>>Send
+                                        </option>    
+                                    </select> 
+                                    <?= $errors->showError('value.send_welcome', 'my_single_error'); ?> 
+                                </div>
+
+                                <div class="form-group col-md-4">
+                                    <label class="text-info" for="send_activation">Activation</label>
+                                    <select id="send_activation" name="value[send_activation]" class="form-control">
+                                        <option value="0"<?=set_select('value[send_activation]', '0',(my_config('send_activation') == '0'))?>>Dont Send
+                                        </option>
+                                        <option value="1"<?=set_select('value[send_activation]', '1', (my_config('send_activation') == '1'))?>>Send
+                                        </option>    
+                                    </select> 
+                                    <?= $errors->showError('value.send_activation', 'my_single_error'); ?> 
+                                </div>
+
+                                <div class="form-group col-md-4">
+                                    <label class="text-info" for="token_lifespan">Token Lifespan (Mins.)</label>
+                                    <input type="number" name="value[token_lifespan]" value="<?= set_value('value[token_lifespan]', my_config('token_lifespan', null, 5)) ?>" class="form-control" min="1">
+                                    <?=$errors->showError('value.token_lifespan', 'my_single_error'); ?>
+                                    <small class="text-muted">
+                                        How long a token will live before it expires. (Default is 5)
+                                    </small>
+                                </div>
+                            </div> 
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="font-weight-bold" for="design_block">Messages Templates</label>
+                            <hr class="my-0"> 
+                            <div class="text-danger">
+                                Available Variables: {$conf=site_name}, {$user}, {$title}, {$anchor_link}, {$link}, {$link_title}
+                            </div>
+                        </div>
+
+                        <div class="form-group col-md-12">
+                            <label class="text-info" for="email_welcome">Welcome Email</label>
+                            <textarea name="value[email_welcome]" class="form-control" ><?= set_value('value[email_welcome]', my_config('email_welcome')) ?></textarea>
+                            <small class="text-muted">
+                                Welcome email to send every user after registration 
+                            </small>
+                            <?= $errors->showError('value.email_welcome', 'my_single_error'); ?>
+                        </div>
+
+                        <div class="form-group col-md-12">
+                            <label class="text-info" for="email_activation">Account Activation Email</label>
+                            <textarea name="value[email_activation]" class="form-control" ><?= set_value('value[email_activation]', my_config('email_activation')) ?></textarea>
+                            <small class="text-muted">
+                                Email to send for account activation 
+                            </small>
+                            <?= $errors->showError('value.email_activation', 'my_single_error'); ?>
+                        </div>
+
+                        <div class="form-group col-md-12">
+                            <label class="text-info" for="email_token">Token Access Email</label>
+                            <textarea name="value[email_token]" class="form-control" ><?= set_value('value[email_token]', my_config('email_token')) ?></textarea>
+                            <small class="text-muted">
+                                Email to send for token request 
+                            </small>
+                            <?= $errors->showError('value.email_token', 'my_single_error'); ?>
+                        </div>
+
+                        <div class="form-group col-md-12">
+                            <label class="text-info" for="email_incognito">Incognito Access Email</label>
+                            <textarea name="value[email_incognito]" class="form-control" ><?= set_value('value[email_incognito]', my_config('email_incognito')) ?></textarea>
+                            <small class="text-muted">
+                                Email to send for incognito access request
+                            </small>
+                            <?= $errors->showError('value.email_incognito', 'my_single_error'); ?>
+                        </div>
+
+                        <div class="form-group col-md-12">
+                            <label class="text-info" for="email_recovery">Password Recovery Email</label>
+                            <textarea name="value[email_recovery]" class="form-control" ><?= set_value('value[email_recovery]', my_config('email_recovery')) ?></textarea>
+                            <small class="text-muted">
+                                Email to send for password recovery requests 
+                            </small>
+                            <?= $errors->showError('value.email_recovery', 'my_single_error'); ?>
+                        </div>
+ 
+                        <div class="form-group col-md-12">
+                            <label class="text-info" for="email_template">Email Template</label>
+                            <textarea name="value[email_template]" class="form-control textarea" ><?= set_value('value[email_template]', my_config('email_template')) ?></textarea>
+                            <small class="text-muted">
+                                Design the view sent with email messages, the {$message} variable is compulsory.
+                                <div class="text-info">Variables: {$conf=site_name}, {$user}, {$title}, {$message}, {$link}, {$link_title}</div>
+                            </small>
+                            <?= $errors->showError('value.email_template', 'my_single_error'); ?>
+                        </div>
+
+                        <div class="form-group col-sm-4 d-flex flex-row mx-auto">
+                            <a href="<?= site_url('admin/configuration/email/testmail')?>" class="btn btn-warning btn-md mx-1">
+                                <i class="fa fa-paper-plane"></i> Test Mail
+                            </a>
+                            <?php if (my_config('contact_phone')): ?>
+                            <a href="<?= site_url('admin/configuration/email/testsms')?>" class="btn btn-warning btn-md mx-1">
+                                <i class="fa fa-sms"></i> Test SMS
+                            </a>
+                            <?php endif ?>
                         </div>
                     </div>
                     <?php endif; ?>

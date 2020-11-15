@@ -8,7 +8,7 @@ return array(
     'attribution' => "designed by Colorlib and licensed under CC BY 3.0",
     'stable'      => ['user', 'admin','frontend'], //['admin', 'user','frontend']
     'modules'     => [
-    	/*User Modules*/'error_page','dashboard','products','account','profile','m','hubs','hub_type', 'payments',
+    	/*User Modules*/'error_page','dashboard','products','account','profile','m','hubs','hub_type', 'payments', 'footer_links',
     	/*Admin Modules*/'_dashboard','_users','_products','_config','_features','_content','_gallery','_hubs','_hub_type', '_payments', '_analytics', '_updates'], 
 	'modes'		  => ['light']
 );

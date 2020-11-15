@@ -133,6 +133,10 @@ class Home extends BaseController
 				    ] 
 				]))
 		        {
+		        	if (my_config('send_activation')) 
+			        {  
+						$post_data['verified'] = 0;
+			        }
 		        	$post_data['password'] = $this->enc_lib->passHashEnc($post_data['password']);
 		        	$post_data['username'] = $this->account_data->email2username($post_data['email']);  
 
@@ -150,7 +154,7 @@ class Home extends BaseController
      * Triggers the logout event and redirects to the homepage
      * @return \CodeIgniter\HTTP\RedirectResponse
      */
-	public function logout($redirect)
+	public function logout($redirect = '')
 	{
 		\CodeIgniter\Events\Events::trigger('logout', $redirect);
 		// return redirect()->to(base_url('home'));

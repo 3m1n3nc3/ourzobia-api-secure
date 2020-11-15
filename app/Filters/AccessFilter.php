@@ -30,6 +30,10 @@ class AccessFilter implements FilterInterface
         {
             return $account_data->is_logged_in();
         }
+        elseif ($request->uri->getSegment(2) === 'account' && $request->getGet('token')) 
+        {
+            return $account_data->no_info_verify();
+        }
     }
 
     //--------------------------------------------------------------------

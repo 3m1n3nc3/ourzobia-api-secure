@@ -155,6 +155,9 @@ section.white_section {
 .contactSec .container .contactForm .formBox .inputBox.w50 {
     width: 47%;
 }
+.contactSec .container .contactForm .formBox .inputBox.w-md-50 {
+    width: 47%;
+}
 .contactSec .container .contactForm .formBox .inputBox.w100 {
     width: 100%;
 }
@@ -254,6 +257,9 @@ section.white_section {
     }
     .contactSec .container .contactinfo {
         display: none !important;
+    }
+    .contactSec .container .contactForm .formBox .inputBox.w-md-50 {
+        width: 100%;
     }
     .contactSec .container .contactForm {
         position: relative;

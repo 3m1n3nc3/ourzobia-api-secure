@@ -171,6 +171,14 @@ class Payments extends BaseController
 				    $data['status']   = 'success';
 		    		$data['redirect'] = site_url("user/payments/success/?type=$type&id=$book");
 	    			$data['message']  = _lang('hub_reserved_successfully'); 
+	                if (my_config('sms_notify')) 
+	                {
+						\Config\Services::mailjet_sms(my_config('mailjet_bearer_token'), [
+		                	"{$data['message']}\n$data['redirect']",
+		                	phone_number(logged_user('phone_number'), logged_user('phone_code')),
+		                	my_config('site_name')
+		                ]);
+	                }
 				}
 			}
 			else

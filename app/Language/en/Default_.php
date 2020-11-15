@@ -115,9 +115,12 @@ return [
 
    // Homepage Text  
    'focus_on_productivity'                          => 'Focus on your productivity, We\'ll handle the rest.',
+   'message_sent'                                   => 'Thanks, Your message has been sent!',
+   'contact_form_email_template'                    => '<div><strong>New Message on {0} from:</strong></div><label for="oRsFullname">Fullname: </label> <span id="oRsFullname">{1}</span><br/><label for="oRsEmail">Email: </label><span id="oRsEmail">{2}</span><br/><label for="oRsPhone">Phone: </label><span id="oRsPhone">{3}</span><br/><div id="oRsMessage" style="border: 1px solid #6c757d; margin: 10px 0px 10px 0px; padding: 10px; border-radius: 10px">{4}</div>',
    'our_office_spaces_are_purposefully_designed'    => 'Our office spaces are purposefully designed with intent for utmost convenience.',
    'our_offices_are_well_suited'                    => 'Our offices are well suited for all kinds of innovative work and trainings.',
    'subscribe_to_get_all_latest_news_from_us'       => 'Subscribe to get all latest news from us.',
+   'subscription_was_successful'                    => 'Thanks, You will now be updated with the latest developments from here!',
    'we_seek_to_provide_a_user_friendly_environment' => 'We seek to provide a user friendly environment for organizations and individuals like you to thrive.',
 
 	// Dashboard 

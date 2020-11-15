@@ -15,7 +15,7 @@ $push_bg = ''; ;
                 <div class="row">
                     <div class="col-lg-12">
                         <nav class="navbar navbar-expand-lg mainmenu-area<?=my_config('des_nav_variant')?>">
-                            <a class="navbar-brand" href="index.html"><img src="<?=base_url('resources/img/logo.png')?>" alt="" style="max-height: 35px;"></a>
+                            <a class="navbar-brand" href="<?=site_url()?>"><img src="<?=$creative->fetch_image(my_config('site_logo'), 'logo')?>" alt="" style="max-height: 35px;"></a>
                             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                             <span class="toggler-icon"></span>
                             <span class="toggler-icon"></span>
@@ -124,7 +124,7 @@ $push_bg = ''; ;
             <div id="carousel-slider" class="carousel slide" data-ride="carousel"> 
                 <div class="carousel-inner" role="listbox">
                     <div class="carousel-item active">
-                        <img src="<?=base_url('resources/theme/kadhub_prime/img')?>/slider/bg-1.jpg" alt="">
+                        <img src="<?=$creative->fetch_image($content['banner'], my_config('default_banner')); ?>" alt="">
                         <div class="carousel-caption">
                             <h1><?=nl2br(word_wrap(strip_tags(decode_html($content['title'])), 26));?></h1> 
                             <p><?=$content['intro']?></p>
@@ -299,7 +299,9 @@ $push_bg = ''; ;
             </div>
         </div>
     </section>
-    <?php endif;?>
+    <?php
+        $push_bg = ($push_bg==='white_section') ? 'light_section' : 'white_section';
+         endif;?>
 
     <?php if ($content['video']): ?>
     <section class="video-promo section" data-stellar-background-ratio="0.5">
@@ -429,7 +431,7 @@ $push_bg = ''; ;
                             <ul class="info">
                                 <?php if (my_config('contact_address')): ?>
                                 <li>
-                                    <span><img src="<?=base_url('resources/theme/kadhub_prime/img')?>/extra/email.png"></span>
+                                    <span><i class="fa fa-map fa-lg text-white"></i></span>
                                     <span>
                                         <?=my_config('contact_address')?>
                                     </span>
@@ -437,7 +439,7 @@ $push_bg = ''; ;
                                 <?php endif ?>
                                 <?php if (my_config('contact_email')): ?>
                                 <li>
-                                    <span><img src="<?=base_url('resources/theme/kadhub_prime/img')?>/extra/placeholder.png"></span>
+                                    <span><i class="fa fa-at fa-lg text-white"></i></span>
                                     <span>
                                         <?=my_config('contact_email')?>
                                     </span>
@@ -445,7 +447,7 @@ $push_bg = ''; ;
                                 <?php endif ?>
                                 <?php if (my_config('contact_phone')): ?>
                                 <li>
-                                    <span><img src="<?=base_url('resources/theme/kadhub_prime/img')?>/extra/phone-call.png"></span>
+                                    <span><i class="fa fa-phone fa-lg text-white"></i></span>
                                     <span>
                                         <?=my_config('contact_phone')?>
                                     </span>
@@ -453,32 +455,32 @@ $push_bg = ''; ;
                                 <?php endif ?>
                             </ul>
                         </div>
-                        <ul class="sci"> 
+                        <ul class="sci d-flex justify-content-center"> 
                             <?php if (my_config('contact_facebook')): ?>
                             <li>
                                 <a href="<?=my_config('contact_facebook')?>">
-                                    <img src="<?=base_url('resources/theme/kadhub_prime/img')?>/extra/facebook-f.png">
+                                    <span><i class="fab fa-facebook fa-lg text-white"></i></span>
                                 </a>
                             </li>
                             <?php endif ?>
                             <?php if (my_config('contact_twitter')): ?>
                             <li>
                                 <a href="<?=my_config('contact_twitter')?>">
-                                    <img src="<?=base_url('resources/theme/kadhub_prime/img')?>/extra/twitter.png">
+                                    <span><i class="fab fa-twitter fa-lg text-white"></i></span>
                                 </a>
                             </li>
                             <?php endif ?>
                             <?php if (my_config('contact_instagram')): ?>
                             <li>
                                 <a href="<?=my_config('contact_instagram')?>">
-                                    <img src="<?=base_url('resources/theme/kadhub_prime/img')?>/extra/instagram-new.png">
+                                    <span><i class="fab fa-instagram fa-lg text-white"></i></span>
                                 </a>
                             </li>
                             <?php endif ?>
                             <?php if (my_config('contact_telegram')): ?>
                             <li>
                                 <a href="<?=my_config('contact_telegram')?>">
-                                    <img src="<?=base_url('resources/theme/kadhub_prime/img')?>/extra/linkedin-2.png">
+                                    <span><i class="fab fa-telegram fa-lg text-white"></i></span>
                                 </a>
                             </li>
                             <?php endif ?> 
@@ -488,38 +490,39 @@ $push_bg = ''; ;
                         <h2>
                             <?=_lang('send_a_message')?>
                         </h2>
-                        <div class="formBox">
-                            <div class="inputBox w50">
-                                <input type="text" name="" required>
+                        <?=form_open('#contact', ["class" => "formBox marketing-form row", "id" => "open_contact_form"])?> 
+                            <input type="hidden" name="type" value="message">
+                            <div class="inputBox w-md-50">
+                                <input type="text" name="first_name" value="<?=set_value('first_name')?>" required>
                                 <span><?=_lang('first_name')?></span>
                             </div>
-                            <div class="inputBox w50">
-                                <input type="text" name="" required>
+                            <div class="inputBox w-md-50">
+                                <input type="text" name="last_name" value="<?=set_value('last_name')?>" required>
                                 <span><?=_lang('last_name')?></span>
                             </div>
-                            <div class="inputBox w50">
-                                <input type="email" name="" required>
+                            <div class="inputBox w-md-50">
+                                <input type="email" name="email" value="<?=set_value('email')?>" required>
                                 <span><?=_lang('email_address')?></span>
                             </div>
-                            <div class="inputBox w50">
-                                <input type="number" name="" required>
+                            <div class="inputBox w-md-50">
+                                <input type="number" name="phone" value="<?=set_value('phone')?>" required>
                                 <span><?=_lang('phone_number')?></span>
                             </div>
                             <div class="inputBox w100">
-                                <textarea name="" required></textarea>
+                                <textarea name="message" required><?=set_value('message')?></textarea>
                                 <span><?=_lang('write_your_message_here')?></span>
-                            </div>
-                            <div class="inputBox w100">
-                                <input class="btn-common" type="submit" value="<?=_lang('send')?>">
-                            </div>
-                        </div>
+                            </div> 
+                            
+                            <button type="submit" class="btn btn-block sub_btn btn-common"><?=_lang('send')?></button> 
+                            <div class="col-12 message"></div>
+                        <?=form_close()?> 
                     </div>
                 </div>
             </div>
         </div>
         <div class="toggle-map">
             <a href="#" class="map-icon wow pulse" data-wow-iteration="infinite" data-wow-duration="500ms">
-                <i class="lnr lnr-map"></i>
+                <img src="<?=base_url('resources/theme/kadhub_prime/img/map-marker.png')?>" width="40px">
             </a>
         </div>
         <div id="google-map">
@@ -530,7 +533,7 @@ $push_bg = ''; ;
           endif;?>  
 
 
-    <?php if ($content['subscription']): ?>
+    <?php if ($content['subscription'] && my_config('mailjet_api_key') && my_config('mailjet_secret_key')): ?>
     <section id="subscribe" class="section <?=$push_bg?>">
         <div class="container">
             <div class="section-header">
@@ -540,10 +543,12 @@ $push_bg = ''; ;
             </div>
             <div class="row justify-content-md-center">
                 <div class="col-md-8">
-                    <form class="text-center form-inline position-relative">
-                        <input class="mb-20 form-control" name="email" placeholder="Your Email Address">
-                        <button class="sub_btn btn-common"><?=_lang('subscribe')?></button>
-                    </form>
+                    <?=form_open('#subscribe', ["class"=>"text-center form-inline position-relative marketing-form row", "id"=>"subscribe_form"])?>
+                        <input type="hidden" name="type" value="subscribe">
+                        <input type="text" class="mb-20 form-control" name="email" placeholder="Your Email Address" value="<?=set_value('email')?>" required>
+                        <button type="submit" class="sub_btn btn-common"><?=_lang('subscribe')?></button>
+                        <div class="col-12 message"></div>
+                    <?=form_close()?> 
                 </div>
             </div>
         </div>
