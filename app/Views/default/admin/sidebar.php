@@ -62,10 +62,7 @@
 								</a>
 							</li>
 							<?php endif ?>  
-							<?php if (logged_user('admin')>=3 && (
-								module_active('_hub_type') ||
-								module_active('_hubs') 
-							)):?>
+							<?php if (module_active('_hub_type') || module_active('_hubs')):?>
 							<li class="nav-item has-treeview<?=active_page(['hub_type','hub_create','hub_list', 'hub_booked'], $_page_name??$page_name, false, 'menu-open')?>">
 								<a href="#" class="nav-link<?=active_page(['hub_type','hub_create','hub_list', 'hub_booked'], $_page_name??$page_name)?>">
 									<i class="nav-icon fas fa-building"></i>
@@ -107,12 +104,12 @@
 								</ul>
 							</li>
 							<?php endif?>
-							<?php if (logged_user('admin')>=3 && (
+							<?php if (
 								module_active('_config') ||
 								module_active('_features') ||
 								module_active('_content') ||
 								module_active('_gallery')
-							)):?>
+							):?>
 							<li class="nav-item has-treeview<?=active_page(['configuration','features','content','gallery', 'posts'], $_page_name??$page_name, false, 'menu-open')?>">
 								<a href="#" class="nav-link<?=active_page(['configuration','features','content','gallery', 'posts'], $_page_name??$page_name)?>">
 									<i class="nav-icon fa fa-suitcase"></i>
@@ -121,7 +118,7 @@
 									</p>
 								</a>
             					<ul class="nav nav-treeview"> 
-									<?php if (module_active('_config')): ?>
+									<?php if (module_active('_config') && logged_user('admin')>=3): ?>
 									<li class="nav-item">
 										<a href="<?=site_url('admin/configuration')?>" class="nav-link<?=active_page('configuration', $_page_name??$page_name)?>">
 											<i class="nav-icon fas fa-cog"></i>
@@ -131,7 +128,7 @@
 										</a>
 									</li>
 									<?php endif ?> 
-									<?php if (module_active('_features')): ?>
+									<?php if (module_active('_features') && logged_user('admin')>=3): ?>
 									<li class="nav-item">
 										<a href="<?=site_url('admin/features')?>" class="nav-link<?=active_page('features', $_page_name??$page_name)?>">
 											<i class="nav-icon fas fa-image"></i>
@@ -195,7 +192,7 @@
 							</li> 
 							<?php endif ?> 
   
-							<div class="mt-2 border-top d-flex justify-content-left"> 
+							<div class="mt-2 border-top d-flex justify-content-left text-light"> 
 								<div class="h7 mt-2">
 									GET STARTED
 								</div>

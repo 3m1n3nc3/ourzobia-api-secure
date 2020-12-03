@@ -78,12 +78,22 @@
     <script src="<?=base_url('resources/theme/kadhub_prime/js/main.js')?>" type="text/javascript"></script>    
      
     <!-- Custom Functions -->
+    <script src="<?=base_url('resources/js/custom.components.js')?>"></script> 
     <script src="<?=base_url('resources/js/custom.functions.js')?>"></script>
     <script src="<?=base_url('resources/js/button.loader.js')?>"></script>
 
     <script src="<?=base_url('resources/plugins/plyr/plyr.js')?>"></script>
     <script src="<?=base_url('resources/js/custom.scripts.js')?>"></script>  
     <script src="<?=base_url('resources/js/custom.forms.js')?>"></script> 
+
+    <!-- Tooltips and toggle Initialization -->
+    <script>
+        $(function() {
+            $('[data-toggle="tooltip"]').tooltip(); 
+     
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
 
 <?php if (!empty($content['contact']) && my_config('google_api_key') && (my_config('contact_address') || my_config('contact_email') || my_config('contact_phone'))): 
     $latLang = explode(',', my_config('google_maps_latlang', null, '44.2072183, -101.3681486'));

@@ -32,7 +32,8 @@ class UsersModel extends Model
     {
         if (isset($data['uid'])) 
         {
-            return $this->update($data['uid'], $data);
+            if ($this->update($data['uid'], $data))
+                return $data['uid'];
         }
     	else 
     	{

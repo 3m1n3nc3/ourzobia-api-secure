@@ -93,6 +93,7 @@ class Datatables extends BaseController
             }                 
         }
 
+        $set_table->where('admin <=', logged_user('admin'));
         $set_table->limit($length,$start);   
         $content = $set_table->select('*')->get();
         $data = array();
@@ -108,7 +109,7 @@ class Datatables extends BaseController
                     <input type="checkbox" id="check'.$key.'" class="checkboxes" data-uid="'.$rows->uid.'">
                     <label for="check'.$key.'"></label>
                 </div>',
-                $user['uid'],
+                $user['uid'] . anchor('admin/users/create/'.$user['uid'], '<i class="fa fa-edit msession_listvar(name)                      -1"></i>'),
                 anchor($user['profile_link'], $user['fullname'],
                     ['id' => 'name'.$user['uid'], 'data-img' => $user['avatar_link'], 'data-uid' => $user['uid']]), 
                 $user['username'],  
@@ -158,7 +159,7 @@ class Datatables extends BaseController
     private function total_users($id = null)
     {      
         $set_table = $this->db->table('users');
-        $query  = $set_table->select("COUNT(uid) as num")->get();
+        $query  = $set_table->select("COUNT(uid) as num")->where('admin <=', logged_user('admin'))->get();
         $result = $query->getRow(); 
         if(isset($result)) return $result->num;
         return 0;

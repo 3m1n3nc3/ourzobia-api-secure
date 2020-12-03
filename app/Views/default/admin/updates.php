@@ -83,11 +83,12 @@
 			  		$('#upload_form').submit(); 
 			  	});
 
-			  	$('.upload_update_form').submit(function(e) { 
-			  		upload_update_form = $("#"+$(e.target).attr('id'));  
-			  		upload_update_action = upload_update_form.attr('action'); 
+			  	$('.upload_update_form').submit(function(e) {
+			  		upload_update_form = $("#"+$(e.target).attr('id'));
+			  		upload_update_action = upload_update_form.attr('action');
+        			upload_update_form.find('button[type="submit"]').buttonLoader('start'); 
 			  	});
- 
+
 			  	upload_update_form.ajaxForm({
 		            url: upload_update_action,
 		            type: 'POST',
@@ -99,6 +100,7 @@
 		            	show_toastr(data.message, data.status);
 		            	data.status = data.status == 'error' ? 'danger' : data.status;
 		            	$(".general_notice").alert_notice(data.message, data.status);
+        				upload_update_form.find('button[type="submit"]').buttonLoader('stop'); 
 		            	upload_update_form.parent('.install-container').remove();
 		            	upload_update_form.resetForm();
 		            	if (data.notice) {

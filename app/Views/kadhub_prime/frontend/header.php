@@ -11,6 +11,8 @@
  
     <link rel="stylesheet" href="<?=base_url('resources/css/bootstrap.min.css')?>">
     <link rel="stylesheet" href="<?=base_url('resources/plugins/fontawesome-free/css/all.min.css')?>"> 
+    <link rel="stylesheet" href="<?=base_url('resources/plugins/toastr/toastr.min.css')?>"> 
+    <link rel="stylesheet" href="<?=base_url('resources/css/ourzobia.style.css')?>">
     <link rel="stylesheet" href="<?=base_url('resources/theme/kadhub_prime/css/menu_sideslide.css')?>">
     <link rel="stylesheet" href="<?=base_url('resources/theme/kadhub_prime/css/line-icons.css')?>">
     <link rel="stylesheet" href="<?=base_url('resources/theme/kadhub_prime/css/owl.carousel.css')?>">

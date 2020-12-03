@@ -174,6 +174,11 @@
                                     <input name="pricing" class="form-check-input text-primary" type="checkbox" value="1"<?=set_checkbox('pricing', '1', int_bool((int)($content['pricing']??''))) ?> id="pricing">
                                     Show Pricing 
                                 </label>
+                                <label class="form-check-label mr-5" for="partners">
+                                    <input name="partners" type="hidden" value="0">
+                                    <input name="partners" class="form-check-input text-primary" type="checkbox" value="1"<?=set_checkbox('partners', '1', int_bool((int)($content['partners']??''))) ?> id="partners">
+                                    Show Partners 
+                                </label>
                                 <label class="form-check-label mr-5" for="breadcrumb">
                                     <input name="breadcrumb" type="hidden" value="0">
                                     <input name="breadcrumb" class="form-check-input text-primary" type="checkbox" value="1"<?=set_checkbox('breadcrumb', '1', int_bool((int)($content['breadcrumb']??''))) ?> id="breadcrumb">

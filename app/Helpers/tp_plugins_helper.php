@@ -254,19 +254,36 @@ if (! function_usable('qr_generator'))
 }
 
 
-if (! function_usable('dec_increment'))
-{
-    /* 
-    * get amount of decimals
-    */
-    function dec_increment($number) { 
-$decimal = strlen(strrchr($number, '.')) -1; 
+if (! function_usable('super_strip_tags'))
+{ 
+    function super_strip_tags(string $text, $tag = 'style') 
+    { 
+        $text = strip_tags($text, '<' . $tag . '>');
+        $start = strpos($text, '<' . $tag);
+        // All of occurrences of <' . $tag . '>.
+        while ($start !== false) {
+            $end = strpos($text, '</' . $tag . '>');
+            if (!$text) {
+                break;
+            }
+            $diff = $end - $start + strlen('</' . $tag . '>');
+            $substring = substr($text, $start, $diff);
+            $text = str_replace($substring, '', $text);
+            $start = strpos($text, '<' . $tag);
+        }
 
-// Get amount to add
-$increment = '.' . str_repeat('0', $decimal-1) . '1';
+        // Remaining <' . $tag . '> if any.
+        $text = strip_tags($text);
 
-$number += $increment;
+        // Remove all new lines and tabs and use a space instead.
+        $text = str_replace(["\n", "\r", "\t"], ' ', $text);
 
-return $number;
+        // Trim left and right.
+        $text = trim($text);
+
+        // Remove all spaces that have more than one occurrence.
+        $text = preg_replace('!\s+!', ' ', $text);
+
+        return $text;
     }
 }

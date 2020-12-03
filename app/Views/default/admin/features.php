@@ -18,12 +18,12 @@
 									<th style="width: 200px">Actions</th>
 								</tr>
 							</thead>
-							<tbody>
+							<tbody class="todo-list" data-widget="todo-list" data-data='{"table":"features"}'>
 							<?php if ($features): 
 								$i = 0?>
 								<?php foreach ($features as $key => $feature): 
 									$i++;?>
-								<tr>
+								<tr id="item-<?=$feature['id']?>">
 									<td><?=$i?>.</td>
 									<td data-toggle="tooltip" title="<?=$feature['details']?>"><?=$feature['title']?></td> 
 									<td><?=strtoupper($feature['type'])?></td> 
@@ -37,12 +37,18 @@
 			                            <?php endif ?>
 									</td> 
 									<td>
-										<a href="<?=site_url('admin/features/create/'.$feature['id'])?>" class="btn btn-info">Edit</a>
+										<a href="<?=site_url('admin/features/create/'.$feature['id'])?>" class="btn m-0 p-0">
+	                                        <i class="fa fa-edit fa-fw text-info"></i>
+	                                    </a>
 	                                    <button 
-	                                        class="btn btn-danger text-white m-1 deleter" 
+	                                        class="btn text-white m-0 p-0 deleter" 
 	                                        onclick="confirmAction('<?=site_url('admin/features/delete/'.$feature['id']);?>', true)">
-	                                        <i class="fa fa-trash fa-fw"></i>
+	                                        <i class="fa fa-trash fa-fw text-danger"></i>
 	                                    </button>  
+			                            <span class="handle p-0 m-0">
+			                                <i class="fas fa-ellipsis-v"></i>
+			                                <i class="fas fa-ellipsis-v"></i>
+			                            </span>
 									</td>
 								</tr> 
 								<?php endforeach ?> 

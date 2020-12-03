@@ -16,19 +16,7 @@ class Filters extends BaseConfig
 
 	// Always applied before every request
 	public $globals = [
-		'before' => [ 
-			// 'provide_info' => [
-			// 	'except' => [
-			// 		'login', 'signup', 'logout', 'home/*', '/', 'connect/*', 'api', 'api/*', 'ajax/*', 'cli/*', 'error', 
-			// 		'error/*', 'user/m', 'user/m/*', 'install/*', 'curl', 'curl/*', 'home', 'home/*', 'api', 'api/*', 'requests', 
-			// 		'requests/*', 'resource', 'src', 'src/*']
-			// ], 
-			// 'accesscontrol' => [
-			// 	'except' => [
-			// 		'login', 'signup', 'logout', 'home/*', '/', 'connect/*', 'api', 'api/*', 'ajax/*', 'cli/*', 'error', 
-			// 		'error/*', 'user/m', 'user/m/*', 'install/*', 'curl', 'curl/*', 'home', 'home/*', 'api', 'api/*', 'requests', 
-			// 		'requests/*', 'resource', 'src', 'src/*']
-			// ],
+		'before' => [  
 			//'honeypot'
 			// 'csrf',
 		],
@@ -47,7 +35,9 @@ class Filters extends BaseConfig
 	// that they should run on, like:
 	//    'isLoggedIn' => ['before' => ['account/*', 'profiles/*']],
 	public $filters = [ 
-			'admincontrol' => ['before' => ['admin', 'admin/*', 'dashboard']],
+			'admincontrol' => ['before' => [
+				'admin', 'admin/*', 'dashboard', 'user/posts'
+			]],
 			'provide_info' => ['after' => [
 				'user', 'user/products', 'user/hubs', 'user/hubs/*', 'user/payments', 'user/payments/*', 'user/dashboard'
 			]],

@@ -29,7 +29,7 @@ class Payments extends BaseController
 	{ 
     	Stripe::setApiKey(my_config('stripe_secret'));
 
-	    $data['success']  = false;
+	    $data['success']  = false; 
 	    $data['status']   = 'error';
 	    $data['message']  = _lang('an_error_occurred'); 
 	    $data['currency'] = my_config('stripe_currency', NULL, "USD"); 
@@ -41,14 +41,15 @@ class Payments extends BaseController
 	    	try 
 	    	{
 			  	$data = \Stripe\PaymentIntent::create([
-			    	"amount" => $this->calculateOrderAmount($post_data["items"], 'stripe'),
+			    	"amount"   => round($this->calculateOrderAmount($post_data["items"], 'stripe')*100),
 			    	"currency" => $data['currency'],
-			  	]);   
+			  	]);  
+	    		$data['success'] = true; 
 	    	} 
-	    	catch (\Stripe\Exception\AuthenticationException $e) 
+	    	catch (\Stripe\Exception\InvalidRequestException | \Stripe\Exception\AuthenticationException | \ErrorException $e) 
 	    	{
-	    		$data['message'] = toArray($e->getMessage()); 
-	    	}
+	    		$data['message'] = $e->getMessage();  
+	    	} 
 	    }
 	    elseif ($action === "public-key") 
 	    {

@@ -47,7 +47,16 @@
 
 	           // Jodit
 	            $('.textarea').each(function () { 
-	                var editor = new Jodit(this);
+	                var editor = new Jodit(this, {
+					    uploader: {
+					        url: link('ajax/jodit?action=fileUpload')
+					    },
+					    filebrowser: {
+					        ajax: {
+					            url: link('ajax/jodit')
+					        }
+					    }
+					});
 	            });
 
 	            $("#get-notifications").click(function(event) {

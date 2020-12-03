@@ -21,12 +21,12 @@
 									<th style="width: 200px">Actions</i></th>
 								</tr>
 							</thead>
-							<tbody>
+							<tbody class="todo-list" data-widget="todo-list" data-data='{"table":"hub_types"}'>
 							<?php if ($hubs): 
 								$i = 0?>
 								<?php foreach ($hubs as $key => $hub): 
 									$i++;?>
-								<tr>
+								<tr id="item-<?=$hub['id']?>">
 									<td><?=$i?>.</td>
 									<td><?=$hub['name']?></td> 
 									<td><?=strtoupper($hub['price'])?></td> 
@@ -49,6 +49,10 @@
 	                                        onclick="confirmAction('<?=site_url('admin/hubs/delete/'.$hub['id'].'/hub_types');?>', true)">
 	                                        <i class="fa fa-trash fa-fw"></i>
 	                                    </button>  
+			                            <span class="handle p-0 m-0">
+			                                <i class="fas fa-ellipsis-v"></i>
+			                                <i class="fas fa-ellipsis-v"></i>
+			                            </span>
 									</td>
 								</tr> 
 								<?php endforeach ?> 

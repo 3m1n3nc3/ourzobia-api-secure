@@ -201,15 +201,25 @@ class Connect extends BaseController
 
     /**
      * Receives a request from ajax and saves the current order of the items 
-     * @return null     Does not return anything but echoes a JSON Object with a response
+     * @return CodeIgniter\HTTP
      */
     public function sortable()
     {   
-        $items = $this->request->getPost();
+        $data = $this->request->getPost();
+        parse_str($data['sort_order'], $order);
+
         $i = 1;
-        foreach ($items['item'] AS $item) 
+        foreach ($order['item'] AS $item) 
         {
-            $this->contentModel->save_content(['id' => $item, 'priority' => $i]);
+            if (isset($data['data']['table'])) 
+            {
+                $table = $this->contentModel->db->table($data['data']['table']); 
+                $table->where('id', $item)->update(['priority' => $i]); 
+            }
+            else
+            {
+                $this->contentModel->save_content(['id' => $item, 'priority' => $i]);
+            }
             $i++;
         }
         return $this->response->setJSON(array('response' => TRUE));    

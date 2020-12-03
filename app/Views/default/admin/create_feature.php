@@ -19,6 +19,7 @@
 										<option value="feature"<?=set_select('type', 'feature', ($feature['type']??'') == 'feature')?>>Feature</option>
 										<option value="service"<?=set_select('type', 'service', ($feature['type']??'') == 'service')?>>Service</option>
 										<option value="slider"<?=set_select('type', 'slider', ($feature['type']??'') == 'slider')?>>Slider Item</option>
+										<option value="partner"<?=set_select('type', 'partner', ($feature['type']??'') == 'partner')?>>Partner</option>
 									</select> 
 								</div>
 								<div class="col-lg-4"> 
@@ -78,22 +79,28 @@
 						<h3 class="card-title">Features</h3>
 						<a href="<?=site_url('admin/features/create')?>" class="btn btn-sm btn-success ml-2">Add New</a> 
 					</div>
-					<div class="card-body">
+					<div class="card-body px-0">
 						<table class="table table-hover">
 							<thead>
 								<tr> 
 									<th>Title</th>
 									<th>Icon</th>  
-									<th>Actions</th>
+									<th><i class="fa fa-wrench fa-fw"></i></th>
 								</tr>
 							</thead>
-							<tbody>
+							<tbody class="todo-list" data-widget="todo-list" data-data='{"table":"features"}'>
 							<?php if ($features): 
 								$i = 0?>
 								<?php foreach ($features as $key => $featureX): 
 									$i++;?>
-								<tr<?=$id===$featureX['id'] ? ' class="shadow border border-info"' : '';?>> 
-									<td><?=$featureX['title']?></td> 
+								<tr id="item-<?=$featureX['id']?>"<?=$id===$featureX['id'] ? ' class="shadow border border-info"' : '';?>> 
+									<td>
+			                            <span class="handle p-0 m-0">
+			                                <i class="fas fa-ellipsis-v"></i>
+			                                <i class="fas fa-ellipsis-v"></i>
+			                            </span>
+			                            <?=$featureX['title']?>
+			                        </td> 
 									<td>
 			                            <?php if ($featureX['image']): ?> 
 			                               <img src="<?= $creative->fetch_image($featureX['image']??'', my_config('default_banner')); ?>" style="max-height: 15px;" id="image_preview"> 

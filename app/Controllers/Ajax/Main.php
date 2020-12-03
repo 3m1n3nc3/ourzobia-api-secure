@@ -382,7 +382,7 @@ class Main extends BaseController
      * @return null     Does not return anything but echoes a JSON Object with the response
      */
 	public function just_load_modal($modal = 'payment_processor')
-	{ 		
+	{
 		$post_data = $this->request->getGetPost(); 
 
 		$data['success'] = true;
@@ -392,7 +392,7 @@ class Main extends BaseController
 		$data['body']['id']   = '#payment-processor-widget';
 
 		return $this->response->setJSON($data);  
-	} 
+	}
 
 	/**
 	 * Send Emails and subscribe to marketing

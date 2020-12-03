@@ -550,7 +550,7 @@ if ( ! function_usable('fetch_user'))
     {     
         $account_data = new \App\Libraries\Account_Data; 
         
-        $user = $account_data->fetch(user_id($uid));
+        $user = $account_data->fetch($uid);
         if ($user) 
         {   
             if ($row && empty($user[$row])) 

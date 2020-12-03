@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS `analytics` (
 -- Table structure for table `cities`
 --
 
-CREATE TABLE `cities` (
+CREATE TABLE IF NOT EXISTS `cities` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(30) NOT NULL,
   `state_id` int(11) NOT NULL,
@@ -85,6 +85,30 @@ CREATE TABLE `cities` (
 
 
 -- --------------------------------------------------------
+
+--
+-- Table structure for table `comments`
+--
+
+CREATE TABLE IF NOT EXISTS `comments` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `uid` int NOT NULL,
+  `post_id` int NOT NULL,
+  `reply_id` int DEFAULT NULL,
+  `type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `comment` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `meta` text COLLATE utf8mb4_unicode_ci,
+  `time` int DEFAULT NULL,
+  `updated` int DEFAULT NULL,
+  `deleted` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `uid` (`uid`),
+  KEY `post_id` (`post_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- --------------------------------------------------------
+
 
 --
 -- Table structure for table `content`
@@ -114,12 +138,13 @@ CREATE TABLE IF NOT EXISTS `content` (
   `slider` int NOT NULL DEFAULT '0',
   `gallery` int NOT NULL DEFAULT '0',
   `pricing` int NOT NULL DEFAULT '0',
+  `partners` int NOT NULL DEFAULT '0',
   `breadcrumb` int NOT NULL DEFAULT '0',
   `parent` varchar(128) DEFAULT NULL,
   PRIMARY KEY (`id`,`safelink`) USING BTREE,
   UNIQUE KEY `safelink_1` (`safelink`),
   KEY `safelink` (`safelink`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `content`
@@ -145,7 +170,7 @@ INSERT INTO `content` (`id`, `title`, `subtitle`, `intro`, `content`, `banner`, 
 -- Table structure for table `countries`
 --
 
-CREATE TABLE `countries` (
+CREATE TABLE IF NOT EXISTS `countries` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `sortname` varchar(3) NOT NULL,
   `name` varchar(150) NOT NULL,
@@ -167,6 +192,7 @@ CREATE TABLE IF NOT EXISTS `features` (
   `type` varchar(128) DEFAULT NULL,
   `icon` varchar(128) DEFAULT NULL,
   `image` varchar(255) DEFAULT NULL,
+  `priority` int NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -260,6 +286,7 @@ CREATE TABLE IF NOT EXISTS `hub_types` (
   `icon` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `banner` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` int NOT NULL DEFAULT '1',
+  `priority` int NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -305,6 +332,38 @@ CREATE TABLE IF NOT EXISTS `payments` (
  
 
 -- --------------------------------------------------------
+
+
+--
+-- Table structure for table `posts`
+--
+
+CREATE TABLE IF NOT EXISTS `posts` (
+  `post_id` int NOT NULL AUTO_INCREMENT,
+  `token` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `uid` int NOT NULL DEFAULT '0',
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `tags` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `link` varchar(3000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `file` varchar(3000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `thumbnail` varchar(3000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `youtube` varchar(150) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `meta` text COLLATE utf8mb4_unicode_ci,
+  `event_time` int DEFAULT NULL,
+  `event_venue` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `time` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
+  `type` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `featured` int NOT NULL DEFAULT '0',
+  `updated` int DEFAULT NULL,
+  `deleted` int DEFAULT NULL,
+  PRIMARY KEY (`post_id`),
+  KEY `user_id` (`uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+ 
+
+-- --------------------------------------------------------
+
 
 --
 -- Table structure for table `settings`

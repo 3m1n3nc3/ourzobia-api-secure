@@ -74,22 +74,24 @@
                                     </li>
                                     <?php endforeach ?> 
                                 <?php endif ?> 
-                                    <?php if (module_active('posts', my_config('frontend_theme', null, 'default'))):?>
+                                    <?php if (module_active('posts', my_config('frontend_theme', null, 'default')) && my_config('navbar_blog', null,  '1')):?>
                                     <li class="nav-item<?=active_page(['blog', 'posts'], $content['safelink'])?>">
                                         <a class="nav-link" href="<?=site_url('posts')?>"><?=_lang('blog')?></a>
                                     </li>
                                     <?php endif;?>
-                                    <?php if (module_active('events', my_config('frontend_theme', null, 'default'))):?>
+                                    <?php if (module_active('events', my_config('frontend_theme', null, 'default')) && my_config('navbar_events', null,  '1')):?>
                                     <li class="nav-item<?=active_page('events', $content['safelink'])?>">
                                         <a class="nav-link" href="<?=site_url('events')?>"><?=_lang('events')?></a>
                                     </li>
                                     <?php endif;?>
 
+                                    <?php if (my_config('navbar_actions', null,  '1')):?>
                                     <?=(logged_user('admin') >= 3) ? '<li class="nav-item">'.anchor('admin/configuration', 'Configuration', ['class'=>'nav-link']).'</li>' : ''?>
 
                                     <li class="nav-item">
                                     <?=anchor(user_id() ? 'user/account' : 'login', user_id() ? logged_user('username') : 'Login', ['class'=>'nav-link'])?>
                                     </li> 
+                                    <?php endif;?>
                                 </ul>
                             </div>
                         </nav>

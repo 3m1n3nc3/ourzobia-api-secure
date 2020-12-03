@@ -1,7 +1,7 @@
 		<div class="row"> 
 			<div class="col-md-12 table-responsive"> 
 				<div class="mb-3">
-					<?=anchor('admin/users/create', "Create User", ['class'=>'btn btn-primary'])?>
+					<?=anchor('admin/users/create', "Create New User", ['class'=>'btn btn-primary'])?>
 				</div>
 				<div class="card"> 
 					<div class="card-header border-0"> 
@@ -32,10 +32,28 @@
 							<tbody> 
 							</tbody> 
 						</table> 
-						<div class="my-1">
-							<button class="btn btn-warning shadow generate_email disabled" disabled data-action="generate">Generate Cpanel Webmail Accounts</button>
-							<button class="btn btn-success shadow generate_email disabled" disabled data-action="alwm">Augment AL Webmail Accounts</button>
-							<button class="btn btn-danger shadow generate_email disabled" disabled data-action="delete">Delete Cpanel Webmail Accounts</button>
+						<div class="my-1 row">
+						<?php if (!my_config('cpanel_url') && my_config('cpanel_username') && my_config('cpanel_password')): ?>
+							<button class="btn btn-warning shadow generate_email disabled" disabled data-action="generate">
+								Generate Cpanel Webmail Accounts
+							</button>
+							<button class="btn btn-danger shadow generate_email disabled" disabled data-action="delete">
+								Delete Cpanel Webmail Accounts
+							</button>
+						<?php else: ?>
+							<div class="col-md-6">
+								<?=alert_notice("Invalid Cpanel Config, Can't generate Webmail Accounts!", "error", false, "FLAT")?>
+							</div>
+						<?php endif ?>
+						<?php if (!my_config('afterlogic_domain') && my_config('afterlogic_username') && my_config('afterlogic_password')): ?>
+							<button class="btn btn-success shadow generate_email disabled" disabled data-action="alwm">
+								Augment AfterLogic Accounts
+							</button>
+						<?php else: ?>
+							<div class="col-md-6">
+								<?=alert_notice("Invalid AfterLogic Config, Can't Augment AfterLogic Accounts!", "error", false, "FLAT")?>
+							</div>
+						<?php endif ?>
 						</div>
 					</div> 
 				</div> 

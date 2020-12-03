@@ -85,14 +85,14 @@ if (! function_usable('load_widget'))
      */
     function load_widget($widget, $data = array(), $segment = 'user'): string
     { 
-        $uid = (!empty($data['uid'])) ? $data['uid'] : null; 
+        $uid = (!empty($data['uid'])) ? $data['uid'] : user_id(); 
 
         $acc_dt = new Account_Data;
         $widget = str_ireplace(['_widget'], '', $widget);
         $_data['acc_data'] = $acc_dt;  
-        if (user_id($uid)) 
+        if ($uid) 
         {
-            $_data['user'] = $acc_dt->fetch(user_id($uid));
+            $_data['user'] = $acc_dt->fetch($uid);
         }
          
         $data    = array_merge($_data, $data);

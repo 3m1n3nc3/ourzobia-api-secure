@@ -625,37 +625,85 @@
                             <?= $errors->showError('value.site_active_modules', 'my_single_error'); ?>
                         </div>
 
-                        <div class="form-group col-md-6">
-                            <div class="form-group">
-                                <label class="text-info" for="front_skin">Front Page Skin</label>
-                                <select id="front_skin" name="value[front_skin]" class="form-control">
-                                    <option value="0"<?=set_select('value[front_skin]', '0',( my_config('front_skin') == '0'))?>>Unset
-                                    </option>
-                                    <option value="1"<?=set_select('value[front_skin]', '1', (my_config('front_skin') == '1'))?>>Default Theme Skin
-                                    </option>  
-                                </select>
-                                <small class="text-muted">
-                                Use the default theme skin on front page when available.
-                                </small>
-                                <?= $errors->showError('value.front_skin', 'my_single_error'); ?>
-                            </div>
+                        <div class="form-group col-md-6"> 
+                            <label class="text-info" for="front_skin">Front Page Skin</label>
+                            <select id="front_skin" name="value[front_skin]" class="form-control">
+                                <option value="0"<?=set_select('value[front_skin]', '0',( my_config('front_skin') == '0'))?>>Unset
+                                </option>
+                                <option value="1"<?=set_select('value[front_skin]', '1', (my_config('front_skin') == '1'))?>>Default Theme Skin
+                                </option>  
+                            </select>
+                            <small class="text-muted">
+                            Use the default theme skin on front page when available.
+                            </small>
+                            <?= $errors->showError('value.front_skin', 'my_single_error'); ?> 
                         </div> 
 
-                        <div class="form-group col-md-6">
-                            <div class="form-group">
-                                <label class="text-info" for="scrollspy_nav">Front Page Navigation</label>
-                                <select id="scrollspy_nav" name="value[scrollspy_nav]" class="form-control">
-                                    <option value="1"<?=set_select('value[scrollspy_nav]', '1', (my_config('scrollspy_nav') == '1'))?>>Scrollspy
-                                    </option> 
-                                    <option value="0"<?=set_select('value[scrollspy_nav]', '0',(my_config('scrollspy_nav') == '0'))?>>Site Pages
-                                    </option> 
-                                </select>
-                                <small class="text-muted">
-                                Choose to use a scrollspy navigation bar or show site pages on navigation when available.
-                                </small>
-                                <?= $errors->showError('value.scrollspy_nav', 'my_single_error'); ?>
-                            </div>
+                        <div class="form-group col-md-6"> 
+                            <label class="text-info" for="scrollspy_nav">Front Page Navigation</label>
+                            <select id="scrollspy_nav" name="value[scrollspy_nav]" class="form-control">
+                                <option value="1"<?=set_select('value[scrollspy_nav]', '1', (my_config('scrollspy_nav') == '1'))?>>Scrollspy
+                                </option> 
+                                <option value="0"<?=set_select('value[scrollspy_nav]', '0',(my_config('scrollspy_nav') == '0'))?>>Site Pages
+                                </option> 
+                            </select>
+                            <small class="text-muted">
+                            Choose to use a scrollspy navigation bar or show site pages on navigation when available.
+                            </small>
+                            <?= $errors->showError('value.scrollspy_nav', 'my_single_error'); ?> 
                         </div> 
+                    </div> 
+
+                    <label class="font-weight-bold" for="quick_block">
+                        Quick Settings
+                        <div><small class="text-muted">Hover on title for more info!</small></div>
+                    </label>
+                    <hr class="my-0"> 
+                             
+                    <div class="row p-3 mb-3" id="quick_block">  
+                        <div class="col-md-12 row d-flex"> 
+                            <?php if (module_active('posts', my_config('frontend_theme', null, 'default'))):?>
+                            <div class="form-group col">
+                                <label class="text-info" for="navbar_blog" title="Show link to <?=_lang('blog')?> in site navigation bar" data-toggle="tooltip">Blog in Navbar</label>
+                                <div class="form-group">
+                                    <input type="hidden" name="value[navbar_blog]" value="0">
+                                    <input type="checkbox" name="value[navbar_blog]" value="1" id="navbar_blog" data-bootstrap-switch data-off-color="danger" data-on-color="success"<?=set_checkbox('value[navbar_blog]', '1',(my_config('navbar_blog', null,  '1') == '1'))?>>
+                                </div>
+                            </div> 
+                            <?php endif;?> 
+                            
+                            <?php if (module_active('events', my_config('frontend_theme', null, 'default'))):?>
+                            <div class="form-group col">
+                                <label class="text-info" for="navbar_events" title="Show link to <?=_lang('events')?> in site navigation bar" data-toggle="tooltip">Events in Navbar</label>
+                                <div class="form-group">
+                                    <input type="hidden" name="value[navbar_events]" value="0">
+                                    <input type="checkbox" name="value[navbar_events]" value="1" id="navbar_events" data-bootstrap-switch data-off-color="danger" data-on-color="success"<?=set_checkbox('value[navbar_events]', '1',(my_config('navbar_events', null,  '1') == '1'))?>>
+                                </div>
+                            </div> 
+                            <?php endif;?>
+
+                            <div class="form-group col">
+                                <label class="text-info" for="navbar_actions" title="Show link to Login, User profile and Site Configuration in site navigation bar" data-toggle="tooltip">User Actions in Navbar</label>
+                                <div class="form-group">
+                                    <input type="hidden" name="value[navbar_actions]" value="0">
+                                    <input type="checkbox" name="value[navbar_actions]" value="1" id="navbar_actions" data-bootstrap-switch data-off-color="danger" data-on-color="success"<?=set_checkbox('value[navbar_actions]', '1',(my_config('navbar_actions', null,  '1') == '1'))?>>
+                                </div>
+                            </div> 
+
+                            <div class="form-group col">
+                                <label class="text-info" for="first_home_section" title="Start with a ligth section on homepage content" data-toggle="tooltip">Home Light Section First</label>
+                                <div class="form-group">
+                                    <input type="hidden" name="value[first_home_section]" value="white_section">
+                                    <input type="checkbox" name="value[first_home_section]" value="light_section" id="first_home_section" data-bootstrap-switch data-off-color="danger" data-on-color="success"<?=set_checkbox('value[first_home_section]', 'light_section', (my_config('first_home_section', null, 'light_section') == 'light_section'))?>>
+                                </div>
+                            </div> 
+                        </div>
+                    </div>
+
+                    <label class="font-weight-bold" for="seo_block">SEO Settings</label>
+                    <hr class="my-0"> 
+                             
+                    <div class="row p-3 mb-3" id="seo_block"> 
 
                         <div class="form-group col-md-12">
                             <label class="text-info" for="site_slogan">Slogan</label>
@@ -686,42 +734,38 @@
                             
                     <?php $smtp_c = localhosted() ? 'smtp' : 'SMTP';?>
                     <div class="row p-3 mb-3" id="email_block">
-                        <div class="form-group col-md-4">
-                            <div class="form-group">
-                                <label class="text-info" for="email_protocol">Email Protocol</label>
-                                <select id="email_protocol" name="value[email_protocol]" class="form-control">
-                                    <option value="mail"<?=set_select('value[email_protocol]', 'mail',( my_config('email_protocol') == 'mail'))?>>Mail
-                                    </option>
-                                    <option value="sendmail"<?=set_select('value[email_protocol]', 'sendmail', (my_config('email_protocol') == 'sendmail'))?>>Sendmail
-                                    </option> 
-                                    <option value="<?=$smtp_c?>"<?=set_select('value[email_protocol]', $smtp_c, (my_config('email_protocol') == $smtp_c))?>>SMTP
-                                    </option> 
-                                    <?php if (my_config('mailjet_api_key') && my_config('mailjet_secret_key')): ?>
-                                    <option value="mailjet"<?=set_select('value[email_protocol]', 'mail',( my_config('email_protocol') == 'mailjet'))?>>Mailjet
-                                    </option>
-                                    <?php endif ?>
-                                </select>
-                                <small class="text-muted">
-                                Sets protocol for sending email.
-                                </small>
-                                <?= $errors->showError('value.email_protocol', 'my_single_error'); ?>
-                            </div>
+                        <div class="form-group col-md-4"> 
+                            <label class="text-info" for="email_protocol">Email Protocol</label>
+                            <select id="email_protocol" name="value[email_protocol]" class="form-control">
+                                <option value="mail"<?=set_select('value[email_protocol]', 'mail',( my_config('email_protocol') == 'mail'))?>>Mail
+                                </option>
+                                <option value="sendmail"<?=set_select('value[email_protocol]', 'sendmail', (my_config('email_protocol') == 'sendmail'))?>>Sendmail
+                                </option> 
+                                <option value="<?=$smtp_c?>"<?=set_select('value[email_protocol]', $smtp_c, (my_config('email_protocol') == $smtp_c))?>>SMTP
+                                </option> 
+                                <?php if (my_config('mailjet_api_key') && my_config('mailjet_secret_key')): ?>
+                                <option value="mailjet"<?=set_select('value[email_protocol]', 'mail',( my_config('email_protocol') == 'mailjet'))?>>Mailjet
+                                </option>
+                                <?php endif ?>
+                            </select>
+                            <small class="text-muted">
+                            Sets protocol for sending email.
+                            </small>
+                            <?= $errors->showError('value.email_protocol', 'my_single_error'); ?> 
                         </div>
 
-                        <div class="form-group col-md-4">
-                            <div class="form-group">
-                                <label class="text-info" for="smtp_crypto">SMTP Encryption</label>
-                                <select id="smtp_crypto" name="value[smtp_crypto]" class="form-control">
-                                    <option value="tls"<?=set_select('value[smtp_crypto]', 'tls',( my_config('smtp_crypto') == 'tls'))?>>TLS
-                                    </option>
-                                    <option value="ssl"<?=set_select('value[smtp_crypto]', 'ssl', (my_config('smtp_crypto') == 'ssl'))?>>SSL
-                                    </option>  
-                                </select>
-                                <small class="text-muted">
-                                Sets the SMTP Encryption for sending emails.
-                                </small>
-                                <?= $errors->showError('value.smtp_crypto', 'my_single_error'); ?>
-                            </div>
+                        <div class="form-group col-md-4"> 
+                            <label class="text-info" for="smtp_crypto">SMTP Encryption</label>
+                            <select id="smtp_crypto" name="value[smtp_crypto]" class="form-control">
+                                <option value="tls"<?=set_select('value[smtp_crypto]', 'tls',( my_config('smtp_crypto') == 'tls'))?>>TLS
+                                </option>
+                                <option value="ssl"<?=set_select('value[smtp_crypto]', 'ssl', (my_config('smtp_crypto') == 'ssl'))?>>SSL
+                                </option>  
+                            </select>
+                            <small class="text-muted">
+                            Sets the SMTP Encryption for sending emails.
+                            </small>
+                            <?= $errors->showError('value.smtp_crypto', 'my_single_error'); ?> 
                         </div> 
                         <div class="form-group col-md-4">
                             <label class="text-info" for="mailpath">Mail Path</label>

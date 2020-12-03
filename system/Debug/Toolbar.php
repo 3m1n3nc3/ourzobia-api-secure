@@ -404,7 +404,10 @@ class Toolbar
 			$response->appendBody($script);
 		}
 		elseif (!is_cli())
-		{echo "string";
+		{
+			$response = $response ?? Services::response();
+			$format = $response->getHeaderLine('content-type');
+
 			if (!$request->isAJAX() && strpos($format, 'html') !== false)
 			{  
 				if (strpos($response->getBody(), '<head>') !== false)

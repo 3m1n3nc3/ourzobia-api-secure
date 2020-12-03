@@ -92,7 +92,7 @@
 								</tr> 
 								<?php endforeach ?> 
 							<?php else:?> 
-								<tr><td colspan="4"><?php alert_notice("No Posts Available!", 'info', true, 'FLAT') ?></td></tr> 
+								<tr><td colspan="6"><?php alert_notice("No Posts Available!", 'info', true, 'FLAT') ?></td></tr> 
 							<?php endif ?>
 							</tbody>
 						</table> 

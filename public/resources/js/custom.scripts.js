@@ -80,11 +80,12 @@ jQuery(document).ready(function($) {
         zIndex               : 999999,
         update: function (event, ui) {
             var sort_order = $(this).sortable('serialize');
+            var extra_data = $(this).data('data');
             $.ajax({
                 async: true,
                 type: 'POST',
                 url: link('connect/sortable'),
-                data: sort_order,  
+                data: {sort_order:sort_order, data:extra_data},  
                 dataType: 'JSON',
                 success: function(resps) { 
                     console.log(resps);

@@ -42,11 +42,13 @@ class Admin extends BaseController
 		$view_data = array(
 			'session' 	 => $this->session,
 			'user' 	     => $userdata,
+			'uid' 	     => $uid,
 			'page_title' => 'Users',
 			'page_name'  => 'users', 
 			'has_table'  => true,
 			'set_folder' => 'admin/',
 			'table_method' => 'users',
+			'errors'     => $this->form_validation,
 			'acc_data'   => $this->account_data,
 			'creative'   => $this->creative,
 			'users'      => $this->usersModel->get() 
@@ -68,18 +70,18 @@ class Admin extends BaseController
 	        {
 		        if ($this->validate([
 				    'email' => [
-				    	'label'  => 'Email Address', 'rules' => "is_unique[users.email]",
+				    	'label'  => 'Email Address', 'rules' => "is_unique[users.email,uid,{$uid}]",
 				    	'errors' => [
 				    		'valid_email' => 'Validation_.email.valid_email',
 				    		'is_unique'   => 'Validation_.email.is_unique'
 				    	]
 				    ],
 				    'username' => [
-				    	'label'  => 'Username', 'rules' => "required|alpha_numeric_punct|is_unique[users.username]|min_length[6]",
+				    	'label'  => 'Username', 'rules' => "required|alpha_numeric_punct|min_length[6]|is_unique[users.username,uid,{$uid}]",
 				    	'errors' => ['is_unique' => 'Validation_.username.is_unique']
 				    ], 
 				    'phone_number' => [
-				    	'label'  => 'Phone Number', 'rules' => 'is_unique[users.phone_number]',
+				    	'label'  => 'Phone Number', 'rules' => "is_unique[users.phone_number,uid,{$uid}]",
 				    	'errors' => ['is_unique' => 'Validation_.phone_number.is_unique']
 					],
 				    'fullname' => ['label' => 'Fullname', 'rules' => 'alpha_space|min_length[6]'], 
@@ -89,10 +91,25 @@ class Admin extends BaseController
 	    			$post_data = $this->request->getPost();
 	    			if (!empty($uid)) 
 	    				$post_data['uid']  = $uid;
-	    			$post_data['password'] = $this->enc_lib->passHashEnc($post_data['password']);
 
-		        	$this->usersModel->save_user($post_data);
+	    			// Change the webmail password
+	    			if (!empty($post_data['password']) && fetch_user('uid', $uid))
+	    			{
+		    			if (my_config('cpanel_domain') && fetch_user('cpanel', $uid))
+		    			{
+		    				Cpanel(my_config('cpanel_protocol'))->GET->Email->passwd_pop([
+		    					'email'    => fetch_user('username', $uid),
+		    					'password' => $post_data['password'],
+		    					'domain'   => my_config('cpanel_domain')
+		    				]);
+		    			}
+
+	    				$post_data['password'] = $this->enc_lib->passHashEnc($post_data['password']);
+	    			}
+
+		        	$uid = $this->usersModel->save_user($post_data);
 	        		$this->session->setFlashdata('notice', alert_notice('Profile Saved!', 'success', FALSE, 'FLAT'));
+		        	_redirect(base_url('admin/users/create/' . $uid), 'location'); 
 		        }
 		        else
 		        {
@@ -197,7 +214,7 @@ class Admin extends BaseController
 	public function posts()
 	{
 		// Check and redirect if this module is unavailable for the current  theme
-		if (!module_active('products')) return redirect()->to(base_url('user/account'));
+		if (!module_active('posts', my_config('frontend_theme', null, 'default'))) return redirect()->to(base_url('admin/dashboard'));
 
 		$userdata  = $this->account_data->fetch(user_id());
 		$view_data = array(
@@ -228,6 +245,7 @@ class Admin extends BaseController
     {
 		// Check and redirect if this module is unavailable for the current  theme
 		if (!module_active('_config')) return redirect()->to(base_url('admin/dashboard'));
+		if (logged_user('admin') < 3) return redirect()->to(base_url('admin/dashboard'));
 
         // Check if the user has permission to access this module and redirect to 401 if not   
 		$userdata          = $this->account_data->fetch(user_id()); 
@@ -452,6 +470,7 @@ class Admin extends BaseController
 	{
 		// Check and redirect if this module is unavailable for the current  theme
 		if (!module_active('_features')) return redirect()->to(base_url('admin/dashboard'));
+		if (logged_user('admin') < 3) return redirect()->to(base_url('admin/dashboard'));
 
 		$userdata  = $this->account_data->fetch(user_id());
 		$feature   = $this->contentModel->get_features(['id' => $id]);

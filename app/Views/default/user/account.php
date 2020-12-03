@@ -77,31 +77,50 @@
                                 <label for="fullname" class="col-sm-2 col-form-label">Fullname</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" name="fullname" id="fullname" placeholder="Fullname" value="<?=set_value('fullname', fetch_user('fullname', $uid)) ?>">
+                                    <?= $errors->showError('value.fullname', 'my_single_error'); ?> 
                                 </div>
                             </div> 
                             <div class="form-group row">
                                 <label for="email" class="col-sm-2 col-form-label">Email</label>
                                 <div class="col-sm-10">
                                     <input type="email" class="form-control" name="email" id="email" placeholder="Enter Email" value="<?=set_value('email', fetch_user('email', $uid)) ?>">
+                                    <?= $errors->showError('value.email', 'my_single_error'); ?> 
                                 </div>
                             </div>
                             <div class="form-group row">
                                 <label for="phone_number" class="col-sm-2 col-form-label">Phone Number</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" name="phone_number" id="phone_number" placeholder="Phone Number" value="<?=set_value('phone_number', fetch_user('phone_number', $uid)) ?>">
+                                    <?= $errors->showError('value.phone_number', 'my_single_error'); ?> 
                                 </div>
                             </div> 
-                            <?php if (logged_user('admin')): ?>  
+
+                            <?php if (logged_user('admin') >= 2): ?>
+                            <div class="form-group row"> 
+                                <label for="admin" class="col-sm-2 col-form-label">Admin Level</label>
+                                <div class="col-sm-10">
+                                    <select class="form-control" name="admin" id="admin">
+                                    <?php for ($i=0; $i < 5; $i++):
+                                            if (fetch_user('uid', $uid) == logged_user('uid') && fetch_user('admin', $uid) > $i) continue; 
+                                            if ($i > logged_user('admin')) continue; 
+                                    ?> 
+                                        <option value="<?=$i?>"<?=set_select('admin', $i, ($i == fetch_user('admin', $uid)))?>><?=$i?></option>  
+                                    <?php endfor; ?>
+                                    </select> 
+                                    <?= $errors->showError('value.admin', 'my_single_error'); ?> 
+                                    <small class="text-muted"> Some levels are only available here for experimentation. </small>
+                                </div>
+                            </div> 
+
                             <div class="form-group row">
                                 <label for="password" class="col-sm-2 col-form-label">Password</label>
                                 <div class="col-sm-10"> 
                                     <input type="password" class="form-control" name="password" id="password" placeholder="Password" value="<?=set_value('password') ?>" onkeyup="this.type==='text'?this.type='password':''"> 
+                                    <?= $errors->showError('value.password', 'my_single_error'); ?> 
                                     <small class="text-muted">
                                         <div class="d-none get_random_password" style="display: none;"><?=$enc_lib->get_random_password(10,12,TRUE,TRUE,TRUE,TRUE)?></div>
                                         <span class="text-info">Default:</span> 
-                                        <a href="javascript:void(0)" class="text-danger dps" onclick="const pp = document.getElementById('password'); pp.type='text'; pp.value=this.innerHTML">
-                                            <?=my_config('default_password')?> 
-                                        </a> 
+                                        <a href="javascript:void(0)" class="text-danger dps" onclick="const pp = document.getElementById('password'); pp.type='text'; pp.value=this.innerHTML"><?=my_config('default_password')?></a> 
                                         |-----|
                                         <span class="text-info">Random:</span> 
                                         <a href="javascript:void(0)" class="text-danger xps" onclick="const pp = document.getElementById('password'); pp.type='text'; pp.value=this.innerHTML"> 

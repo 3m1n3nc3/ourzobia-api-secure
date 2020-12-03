@@ -12,8 +12,10 @@ $push_bg = ''; ;
     <!-- Load Header -->
     <?=load_widget('frontend_header_widget', [], 'front')?>
 
-    <?php if ($content['safelink'] === 'homepage' || (empty($infochildren) && !empty($content['content']))): ?>
-    <section id="team" class="section">
+    <?php $push_bg = my_config('first_home_section', null, 'white_section');
+          if ($content['safelink'] === 'homepage' || (empty($infochildren) && !empty($content['content']))): 
+          $push_bg = ($push_bg==='light_section') ? 'white_section' : 'light_section';?>
+    <section id="team" class="section <?=$push_bg?>">
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title wow fadeIn" data-wow-duration="1000ms" data-wow-delay="0.3s">
@@ -28,7 +30,7 @@ $push_bg = ''; ;
             </p>
         </div>
     </section>
-    <?php endif; ?>    
+    <?php endif; ?>
 
     <?=load_widget('blog', [], 'front')?>
 
@@ -36,9 +38,9 @@ $push_bg = ''; ;
         $i = 0;
     if (!empty($infochildren)): 
         foreach ($infochildren as $key => $info): 
-            $i++?>  
-    <?php $push_bg = ($i % 2 === 0) ? 'light_section' : 'white_section';?>
-    <section id="infochild<?=$i?>" class="section <?=($i % 2 !== 0)?'light_section':'white_section'?>">
+            $i++;
+            $push_bg = ($push_bg==='light_section') ? 'white_section' : 'light_section'; ?>  
+    <section id="infochild<?=$i?>" class="section <?=$push_bg?>">
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title wow fadeIn" data-wow-duration="1000ms" data-wow-delay="0.3s"> 
@@ -67,7 +69,7 @@ $push_bg = ''; ;
     </section>
     <?php endforeach; 
     endif;
-    $push_bg = ($push_bg==='light_section') ? 'light_section' : 'white_section';?>
+    $push_bg = ($push_bg==='light_section') ? 'white_section' : 'light_section'; ?>
 
     <?php if (!empty($content['services']) && !empty($services)): 
         $i = 0.0;
@@ -135,10 +137,10 @@ $push_bg = ''; ;
                             </span>
                             <div class="text">
                                 <h4>
-                                    <?=$feature['title']?>       
+                                    <?=$feature['title']?>     
                                 </h4>
                                 <p> 
-                                    <?=$feature['details']?> 
+                                    <?=nl2br($feature['details'])?> 
                                     <?=(!empty($user['uid']) && $user['admin'] >= 3) ? anchor('admin/features/create/'.$feature['id'], 'Edit', ['class'=>'text-danger font-weight-bold']) : ''?>
                                 </p>
                             </div>
@@ -163,7 +165,7 @@ $push_bg = ''; ;
                                     <?=$feature['title']?>       
                                 </h4>
                                 <p> 
-                                    <?=$feature['details']?> 
+                                    <?=nl2br($feature['details'])?> 
                                     <?=(!empty($user['uid']) && $user['admin'] >= 3) ? anchor('admin/features/create/'.$feature['id'], 'Edit', ['class'=>'text-danger font-weight-bold']) : ''?>
                                 </p>
                             </div>
@@ -262,7 +264,7 @@ $push_bg = ''; ;
         </div> 
     </section>
     <?php
-        $push_bg = ($push_bg==='white_section') ? 'light_section' : 'white_section'; 
+          $push_bg = ($push_bg==='white_section') ? 'light_section' : 'white_section'; 
           endif;?>
 
     <?php if (!empty($content['pricing']) && !empty($hubs)):?>
@@ -281,7 +283,26 @@ $push_bg = ''; ;
         </div>
     </section>    
     <?php
-        $push_bg = ($push_bg==='white_section') ? 'light_section' : 'white_section'; 
+          $push_bg = ($push_bg==='white_section') ? 'light_section' : 'white_section'; 
+          endif;?>  
+
+
+    <?php if (!empty($content['partners']) && !empty($partners)):?>
+    <section id="clients" class="section <?=$push_bg?>">
+        <div class="container"> 
+            <div class="row" id="clients-scroller">
+                <?php foreach ($partners as $key => $partner): ?> 
+                <div class="client-item-wrapper">
+                    <a href="<?=prep_url($partner['button'])?>" title="<?=$partner['details']?>" data-toggle="tooltip">
+                        <img src="<?=$creative->fetch_image($partner['image'], my_config('default_banner')); ?>" alt="" style="max-width: 200px;">
+                    </a>
+                </div> 
+                <?php endforeach ?>  
+            </div>
+        </div>
+    </section>
+    <?php
+          $push_bg = ($push_bg==='white_section') ? 'light_section' : 'white_section'; 
           endif;?>  
 
     <?php if (!empty($content['contact']) && (my_config('contact_address') || my_config('contact_email') || my_config('contact_phone'))): ?>
@@ -408,7 +429,7 @@ $push_bg = ''; ;
         </div>
     </section>
     <?php
-        $push_bg = ($push_bg==='white_section') ? 'light_section' : 'white_section'; 
+          $push_bg = ($push_bg==='white_section') ? 'light_section' : 'white_section'; 
           endif;?>  
 
 

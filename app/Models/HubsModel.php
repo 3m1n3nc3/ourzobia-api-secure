@@ -32,6 +32,8 @@ class HubsModel extends Model
         {
             return $hubs->where($table . '.id', $data['id'])->get()->getRowArray();
         }
+         
+        $hubs->orderBy('priority ASC');
 
         return $hubs->get()->getResultArray();
     }  

@@ -40,7 +40,7 @@
                                 </td>
                                 <?php endif; ?> 
                                 <td>
-                                    <?=nl2br(word_wrap(strip_tags(word_limiter(decode_html($content['content']), 30)), 55));?>  
+                                    <?=nl2br(word_wrap(word_limiter(super_strip_tags(decode_html($content['content'])), 30), 55));?>  
                                 </td>   
                                 <td class="td-actions text-right" style="min-width: 120px;">
                                     <a href="<?= site_url('admin/content/create/'.$content['id']);?>">

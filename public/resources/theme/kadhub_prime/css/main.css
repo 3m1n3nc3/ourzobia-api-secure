@@ -134,8 +134,7 @@ a:not([href]):not([tabindex]):focus,a:not([href]):not([tabindex]):hover {
   font-size: 14px;
   padding: 10px 30px;
   border-radius: 0;
-  font-weight: 400;
-  color: #fff;
+  font-weight: 400; 
   text-transform: uppercase;
   -webkit-transition: all .2s linear;
   -moz-transition: all .2s linear;
@@ -143,6 +142,10 @@ a:not([href]):not([tabindex]):focus,a:not([href]):not([tabindex]):hover {
   transition: all .2s linear;
   display: inline-block;
   font-family: lato,sans-serif;
+}
+
+.btn:not(.payment-method) { 
+  color: #fff; 
 }
 
 .btn:focus,.btn:active {

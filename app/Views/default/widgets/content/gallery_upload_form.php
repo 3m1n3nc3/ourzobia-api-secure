@@ -104,7 +104,16 @@
             
             <?php if (in_array(($media_type??''), ['event','blog','post'])): ?>
             $('.textarea').each(function () { 
-                var editor = new Jodit(this);
+                var editor = new Jodit(this, {
+                    uploader: {
+                        url: link('ajax/jodit?action=fileUpload&privacy=user')
+                    },
+                    filebrowser: {
+                        ajax: {
+                            url: link('ajax/jodit?privacy=user')
+                        }
+                    }
+                });
             });
             <?php endif ?>
         </script> 

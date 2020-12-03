@@ -31,7 +31,8 @@ class Home extends BaseController
 			'galleries'	 => $this->contentModel->get_features([], 'gallery'),
         	'sliders'    => $this->contentModel->get_features(['type' => 'slider']),
         	'services'   => $this->contentModel->get_features(['type' => 'service']),
-        	'features'   => $this->contentModel->get_features(['type' => 'feature']) 
+        	'features'   => $this->contentModel->get_features(['type' => 'feature']),
+        	'partners'   => $this->contentModel->get_features(['type' => 'partner']) 
 		); 
  
         $view_data['metatags']  = setOpenGraph([

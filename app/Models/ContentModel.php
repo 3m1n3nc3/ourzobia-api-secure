@@ -29,6 +29,12 @@ class ContentModel extends Model
             return $features->where('id', $data['id'])->get()->getRowArray();
         }
 
+        if ($table === 'features') 
+        {
+            $features->orderBy('type ASC');
+            $features->orderBy('priority ASC');
+        }
+
         return $features->get()->getResultArray();
     } 
 

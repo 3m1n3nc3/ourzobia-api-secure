@@ -33,7 +33,7 @@ class User extends BaseController
 		// Check and redirect if this module is unavailable for the current  theme
 		if (!module_active('account')) return redirect()->to(base_url('/'));
 
-		$profile  = $this->account_data->fetch(user_id($uid));
+		$profile  = $this->account_data->fetch($uid??user_id());
 
 		// Check and redirect if this user does not exist
 		if (!account_access($profile['uid'], true)) return account_access($profile['uid']); 
@@ -42,12 +42,13 @@ class User extends BaseController
 		$view_data = array(
 			'session' 	 => $this->session,
 			'user' 	     => $userdata, 
-			'uid' 	     => $uid,
+			'uid' 	     => $uid??user_id(),
 			'page_title' => 'Account ' . ucwords($tab),
 			'page_name'  => 'account',  
 			'tab'  		 => $tab,  
 			'_page_name' => $tab,
 			'set_folder' => 'user/',
+			'errors'     => $this->form_validation,
 			'statistics' => $this->statsModel->get(['uid' => user_id($uid)]),
 			'acc_data'   => $this->account_data,
 			'util'       => $this->util,
@@ -84,8 +85,8 @@ class User extends BaseController
 	    			if (my_config('cpanel_domain') && $profile['cpanel']) 
 	    			{ 
 	    				Cpanel(my_config('cpanel_protocol'))->GET->Email->passwd_pop([
-	    					'email'    => $tokened['username'], 
-	    					'password' => $save['password'], 
+	    					'email'    => $profile['username'], 
+	    					'password' => $post_data['password'], 
 	    					'domain'   => my_config('cpanel_domain')
 	    				]);
 	    			}
@@ -143,7 +144,7 @@ class User extends BaseController
 	public function posts()
 	{
 		// Check and redirect if this module is unavailable for the current  theme
-		if (!module_active('products')) return redirect()->to(base_url('user/account'));
+		if (!module_active('posts', my_config('frontend_theme', null, 'default'))) return redirect()->to(base_url('user/account')); 
 
 		$userdata  = $this->account_data->fetch(user_id());
 		$view_data = array(
