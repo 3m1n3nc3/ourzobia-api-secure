@@ -28,18 +28,14 @@ class Account_Data {
      */
     public function user_id($default = null)
     {    
-        if (isset($default)) 
-        {
-            return $default;
-        }
-
         if ($this->logged_in()) 
         {
             $_user = ($this->session->get('username') ?? get_cookie('username'));
             $user  = $this->usersModel->user_by_username($_user); 
             return $user['uid'];
-        }
-        return NULL;
+        } 
+
+        return $default;
     }  
 
 
@@ -150,7 +146,6 @@ class Account_Data {
         }
     }
  
-
     public function logged_in()
     {     
         $username = $this->session->get('username') ?? get_cookie('username');

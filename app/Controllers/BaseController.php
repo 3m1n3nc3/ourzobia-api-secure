@@ -67,6 +67,7 @@ class BaseController extends Controller
 	        $this->settingModel   = model('App\Models\SettingsModel', false);
 	        $this->statsModel     = model('App\Models\StatsModel', false);
 	        $this->analyticsModel = model('App\Models\AnalyticsModel', false);
+	        $this->postsModel     = model('App\Models\PostsModel', false);
 
 	        if (!$this->session->has('visitor') && !$this->request->isAJAX() && !$this->request->getGetPost('domain') && stripos($this->request->getGetPost('origin'), 'alimon') === false)
 	        {

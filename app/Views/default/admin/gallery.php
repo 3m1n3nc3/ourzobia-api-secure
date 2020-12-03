@@ -1,7 +1,11 @@
 		<div class="row"> 
 			<div class="col-md-12 table-responsive"> 
-				<div class="my-2"> 
-                    <button class="btn btn-primary upload-media" data-type="gallery" data-modal="#CustomModal">Upload Item</button> 
+				<div class="my-2">  
+                    <button class="btn btn-primary upload-media" 
+                    	data-type="gallery"  
+                    	data-modal-title="Gallery Upload" 
+                    	data-modal="#actionModal">Upload Item
+                    </button>  
 				</div>
 				<div class="card">
 					<div class="card-header">

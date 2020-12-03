@@ -12,6 +12,7 @@
 		"ext-mbstring": "*", 
 		"guzzlehttp/guzzle": "^7.1",
         "yabacon/paystack-php": "2.1.23",
+        "vstelmakh/url-highlight": "^2.0", 
         "endroid/qr-code": "^3.9",
         "nelexa/zip": "^3.3",
 		"mailjet/mailjet-apiv3-php": "^1.5"

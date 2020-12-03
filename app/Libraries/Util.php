@@ -255,18 +255,23 @@ class Util
         $request  = \Config\Services::request();
         $response = \Config\Services::response();
 
-        if (!$request->isAJAX() || !user_id())
-        {      
+        if (!$request->isAJAX() && (!user_id() || empty($admin['guest'])))
+        { 
             $code = 400;
-            $msg  = 'The request was not understood!'; 
+            $msg  = 'The request was not understood!';
 
-            if (!user_id()) 
+            if (!$request->isAJAX())
+            {
+                $msg  = 'Resource not available for this request!';
+            }
+
+            if (!user_id() && empty($admin['guest'])) 
             {
                 $code = 401; 
                 $msg  = 'You are currently not logged in, please login to continue!'; 
             }
 
-            if (is_array($admin) && !empty($data['uid']) && $data['uid'] !== user_id()) 
+            if (is_array($admin) && !empty($admin['uid']) && $admin['uid'] !== user_id()) 
             {
                 $code = 401; 
                 $msg  = 'You do not have permission to access this resource!';
@@ -278,10 +283,7 @@ class Util
                 $msg  = 'You do not have permission to access this resource!'; 
             }
 
-            if (!$request->isAJAX())
-            {
-                $response->setStatusCode($code);
-            }
+            $response->setStatusCode($code);
             return $response->setJSON(['message'=>$msg, 'status' => 'error', 'success' => false]); 
         }
         return true;

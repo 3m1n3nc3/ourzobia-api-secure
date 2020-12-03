@@ -208,8 +208,8 @@ class Start extends Controller {
     private function set_install_status() 
     {  
         return update_env([
-            'installation.status'    => 'true',
-            'CI_ENVIRONMENT.version' => 'production'
+            'installation.status' => 'true',
+            'CI_ENVIRONMENT'      => 'production'
         ]); 
     }
 

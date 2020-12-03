@@ -108,7 +108,7 @@ if (! function_usable('getOpenGraph'))
         // Decode the links  
         $graph = OpenGraph::fetch($url);
 
-        if (stripos($graph->image, "?") !== false) 
+        if ($graph && stripos($graph->image, "?") !== false) 
         {
             $graph->image = substr($graph->image, 0, strpos($graph->image, "?"));
         }
@@ -128,13 +128,13 @@ if (! function_usable('getOpenGraph'))
             $data['file_name'] = $creative->saveRemoteFile($graph->image) ?? '';
         }
 
-        if ($data['image'] && $data['title'] && $data['description'])
+        if ($data['image'] && $data['title'])
         {
             return json_encode($data, JSON_FORCE_OBJECT);
         }
         return NULL;
     }
-} 
+}
 
 
 if (! function_usable('setOpenGraph'))
@@ -229,7 +229,7 @@ if (! function_usable('qr_generator'))
             $qrCode->setLabel($label, 16,realpath(ROOTPATH . 'vendor').'/endroid/qr-code/assets/fonts/noto_sans.otf', LabelAlignment::CENTER());
         }
         $qrCode->setLogoPath($creative->fetch_image(my_config('site_logo'), 'logo'));
-        $qrCode->setLogoSize(25, 25);
+        $qrCode->setLogoSize(20, 20);
         $qrCode->setValidateResult(false);
 
         // Round block sizes to improve readability and make the blocks sharper in pixel based outputs (like png).

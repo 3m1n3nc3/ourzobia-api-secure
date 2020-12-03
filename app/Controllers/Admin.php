@@ -191,6 +191,34 @@ class Admin extends BaseController
 
 
     /**
+     * This methods manages all blog posts  
+     * @return string           	Uses the themeloader() to call and return codeigniter's view() method to render the page
+     */
+	public function posts()
+	{
+		// Check and redirect if this module is unavailable for the current  theme
+		if (!module_active('products')) return redirect()->to(base_url('user/account'));
+
+		$userdata  = $this->account_data->fetch(user_id());
+		$view_data = array(
+			'session'      => $this->session,
+			'user' 	       => $userdata,
+			'page_title'   => _lang('blog_and_events'),
+			'page_name'    => 'posts',
+			'all_post'	   => true,
+			'user_product' => true, 
+			'set_folder'   => 'admin/', 
+			'acc_data'     => $this->account_data,
+			'creative'     => $this->creative,
+			'posts' 	   => $this->postsModel->get_post(), 
+			'pager' 	   => $this->postsModel->pager 
+		);  
+
+		return theme_loader($view_data); 
+	} 
+
+
+    /**
      * This methods handles the global configuration of the the whole system
      * @param  string   $step   The configuration forms are broken down into 
      *                          steps for maintainability, this will set the current step   
@@ -1283,4 +1311,16 @@ class Admin extends BaseController
 
 		return theme_loader($view_data, null, 'admin'); 
 	} 
+
+    private function clean_up_db_query() {
+        $db = \Config\Database::connect();
+        while (mysqli_more_results($db->connID) && mysqli_next_result($db->connID)) 
+        {
+            $dummyResult = mysqli_use_result($db->connID);
+            if ($dummyResult instanceof mysqli_result) 
+            {
+                mysqli_free_result($db->connID);
+            }
+        }
+    } 
 }

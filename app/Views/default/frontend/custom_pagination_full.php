@@ -5,23 +5,7 @@
  */
 
 $pager->setSurroundCount(2);
-?>
-<style type="text/css">
-	li.page-item {
-		height: unset;
-    	padding: unset;
-	}
-	.page-item.active .page-link { 
-	    background-color: #7ba62a;
-	    border-color: #7ba62a;
-	}
-	a.page-link { 
-	    color: #7ba62a; 
-	}
-	.page-link:hover {  
-	    color: #d6a200; 
-	}
-</style>
+?> 
 <div class="container" aria-label="<?= lang('Pager.pageNavigation') ?>">
 	<ul class="pagination pagination-sm justify-content-center">
 		<?php if ($pager->hasPrevious()) : ?>

@@ -343,11 +343,35 @@ class Main extends BaseController
 			return $this->util::loggedInIsAJAX();
 		
 		$post_data = $this->request->getPost();
+		$media_type   = $this->request->getPost('media_type');
 		$content_type = $this->request->getPost('type');
 
 		$data['success'] = true;
 		$data['status']  = 'success';
-		$data['html']    = load_widget('content/gallery_upload_form', ['segment'=>$segment, 'content_type'=>$content_type]); 
+
+		if ($item_id = $this->request->getPost('id'))
+		{
+			$data['item_id'] = $item_id;
+
+			if (in_array($media_type, ['event','blog','post'])) 
+			{
+				$content = $this->postsModel->get_post(['post_id' => $item_id]);
+				$content['details']  = $content['description']; 
+				$content['category'] = $content['tags']; 
+			}
+			elseif ($content_type === 'gallery') 
+			{
+				$content = $this->contentModel->get_features(['id' => $item_id], 'gallery');
+			}
+		}
+
+		$data['html']    = load_widget('content/gallery_upload_form', [
+			'item_id'      => $this->request->getPost('id'), 
+			'segment'      => $segment, 
+			'media_type'   => $media_type,
+			'content'      => $content ?? [],
+			'content_type' => $content_type
+		]); 
 
 		return $this->response->setJSON($data);  
 	} 

@@ -2,12 +2,15 @@
     <div style="max-height: 300px; overflow-y: scroll;">
     <?php foreach ($notifications as $notification):
         $subject  = str_ireplace(['user_', '_user2', 'user_', '_paired'], ['','','','paired'], $notification->type);
-        $userdata = $acc_data->fetch($notification->notifier_id, 1)?>
+        $userdata = $acc_data->fetch($notification->notifier_id, 1);
+        $notifier_name   = ($userdata) ? fetch_user('fullname', $notification->notifier_id) : _lang('guest');
+        $notifier_avatar = ($userdata) ? fetch_user('avatar_link', $notification->notifier_id) : $creative->fetch_image('guest', 'boy');
+        ?>
 
         <a href="<?=$notification->url?>" class="dropdown-item">
             <!-- Notification Start -->
             <div class="media">
-                <img src="<?=$creative->fetch_image($userdata['avatar'], 'boy'); ?>" alt="User Photo" class="img-size-50 mr-3 img-circle">
+                <img src="<?=$notifier_avatar; ?>" alt="<?=$notifier_name?>" class="img-size-50 mr-3 img-circle">
                 <!-- <i class="fas fa-envelope fa-2x mr-2"></i> -->
                 <div class="media-body">
                     <h3 class="dropdown-item-title text-danger">
@@ -17,7 +20,7 @@
                         <?php if ($notification->text): ?>
                         <?=$notification->text?> 
                         <?php else: ?>
-                        <?=_lang(''.$notification->type, [ucfirst($userdata['username'])])?> 
+                        <?=_lang('_'.$notification->type, [ucwords($notifier_name)])?> 
                         <?php endif ?>
                     </p>
                     <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> <?=timeAgo($notification->time)?></p>

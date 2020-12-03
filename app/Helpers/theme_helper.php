@@ -24,7 +24,7 @@ if (! function_usable('theme_loader'))
      */
     function theme_loader($data = array(), $view = '', $segment = 'user'): string
     { 
-        if (my_config('site_theme') || my_config('admin_theme')) 
+        if (my_config('site_theme', null, 'default') || my_config('admin_theme', null, 'default')) 
         {
             $_data['_request']         = \Config\Services::request(); 
             if (empty($account_data)) 
@@ -43,10 +43,12 @@ if (! function_usable('theme_loader'))
                 $_data['analytics_m']  = model('App\Models\AnalyticsModel', false);
             if (empty($contentModel)) 
                 $_data['contentModel'] = model('App\Models\ContentModel', false); 
+            if (empty($data['postsModel'])) 
+                $_data['postsModel']   = model('App\Models\PostsModel', false);
             if (empty($hubs_m)) 
                 $_data['hubs_m']       = model('App\Models\HubsModel', false);
             if (empty($products_m)) 
-                $_data['products_m']       = model('App\Models\ProductsModel', false);
+                $_data['products_m']   = model('App\Models\ProductsModel', false);
             if (empty($bookings_m)) 
                 $_data['bookings_m']   = model('App\Models\BookingsModel', false); 
             if (empty($data['profile'])) 
@@ -81,7 +83,7 @@ if (! function_usable('load_widget'))
      * @param  array  $data
      * @return string
      */
-    function load_widget($widget, $data = array()): string
+    function load_widget($widget, $data = array(), $segment = 'user'): string
     { 
         $uid = (!empty($data['uid'])) ? $data['uid'] : null; 
 
@@ -92,8 +94,7 @@ if (! function_usable('load_widget'))
         {
             $_data['user'] = $acc_dt->fetch(user_id($uid));
         }
-        
-        $segment = 'user';
+         
         $data    = array_merge($_data, $data);
 
         if (!empty($data['segment'])) 
@@ -101,11 +102,15 @@ if (! function_usable('load_widget'))
             $segment = $data['segment'];
         }
 
-        $find     = APPPATH . 'Views/' . set_theme($segment) . 'widgets/' . $widget . '_widget.php';
-        $find_alt = APPPATH . 'Views/' . set_theme($segment) . 'widgets/' . $widget . '.php';
+        $find     = APPPATH . 'Views/' . set_theme($segment) . 'widgets/' . $widget . '_widget.php'; 
 
         $append      = (file_exists($find)) ? '_widget' : '';
         $load_widget = 'widgets/' . $widget . $append;
+
+        if (!file_exists(APPPATH . 'Views/' . set_theme($segment) . $load_widget . '.php')) 
+        {
+            return alert_notice($widget . " widget is not available for " . str_replace('/', '', set_theme($segment)) . " theme", "error");
+        }
 
         return theme_loader($data, $load_widget, $segment);
     }
@@ -120,17 +125,17 @@ if (! function_usable('set_theme'))
      */
     function set_theme($segment = 'user'): string
     {
-        if ($segment == 'admin' && my_config('admin_theme')) 
+        if ($segment == 'admin' && my_config('admin_theme', null, 'default')) 
         {
-            $theme = my_config('admin_theme');
+            $theme = my_config('admin_theme', null, 'default');
         }
-        elseif ($segment == 'user' && my_config('site_theme')) 
+        elseif ($segment == 'user' && my_config('site_theme', null, 'default')) 
         {
-            $theme = my_config('site_theme');
+            $theme = my_config('site_theme', null, 'default');
         }
-        elseif ($segment == 'front' && my_config('frontend_theme')) 
+        elseif ($segment == 'front' && my_config('frontend_theme', null, 'default')) 
         {
-            $theme = my_config('frontend_theme');
+            $theme = my_config('frontend_theme', null, 'default');
         }
         elseif (!empty($segment['theme'])) 
         {
@@ -407,7 +412,7 @@ if (! function_usable('module_active'))
     function module_active($module = '', $x_theme = null)
     {
         if ($x_theme === null)
-            $theme  = (substr($module, 0, 1)==='_') ? my_config('admin_theme') : my_config('site_theme');
+            $theme  = (substr($module, 0, 1)==='_') ? my_config('admin_theme', null, 'default') : my_config('site_theme', null, 'default');
         else
             $theme = $x_theme;
 

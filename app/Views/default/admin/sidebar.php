@@ -113,11 +113,11 @@
 								module_active('_content') ||
 								module_active('_gallery')
 							)):?>
-							<li class="nav-item has-treeview<?=active_page(['configuration','features','content','gallery'], $_page_name??$page_name, false, 'menu-open')?>">
-								<a href="#" class="nav-link<?=active_page(['configuration','features','content','gallery'], $_page_name??$page_name)?>">
-									<i class="nav-icon fas fa-cog"></i>
+							<li class="nav-item has-treeview<?=active_page(['configuration','features','content','gallery', 'posts'], $_page_name??$page_name, false, 'menu-open')?>">
+								<a href="#" class="nav-link<?=active_page(['configuration','features','content','gallery', 'posts'], $_page_name??$page_name)?>">
+									<i class="nav-icon fa fa-suitcase"></i>
 									<p>
-										<?=_lang('config')?>
+										<?=_lang('management')?>
 									</p>
 								</a>
             					<ul class="nav nav-treeview"> 
@@ -141,6 +141,16 @@
 										</a>
 									</li>
 									<?php endif ?>
+									<?php if (module_active('posts', my_config('frontend_theme', null, 'default'))): ?>
+									<li class="nav-item">
+										<a href="<?=site_url('admin/posts')?>" class="nav-link<?=active_page('posts', $_page_name??$page_name)?>">
+											<i class="nav-icon fas fa-podcast	"></i>
+											<p>
+		                    					<?=_lang('blog_and_events')?> 
+											</p>
+										</a>
+									</li>
+									<?php endif ?> 
 									<?php if (module_active('_content')): ?>
 									<li class="nav-item">
 										<a href="<?=site_url('admin/content')?>" class="nav-link<?=active_page('content', $_page_name??$page_name)?>">
@@ -164,16 +174,6 @@
 								</ul>
 							</li>
 							<?php endif?>  
-							<?php if (module_active('dashboard')):?> 
-							<li class="nav-item">
-								<a href="<?=site_url('user')?>" class="nav-link<?=active_page('admin', $_page_name??$page_name)?>">
-									<i class="nav-icon fas fa-user"></i>
-									<p>
-										<?=_lang('dashboard')?>  
-									</p>
-								</a>
-							</li> 
-							<?php endif ?> 
 							<?php if (module_active('_analytics')):?> 
 							<li class="nav-item">
 								<a href="<?=site_url('admin/analytics')?>" class="nav-link<?=active_page('analytics', $_page_name??$page_name)?>">
@@ -184,6 +184,16 @@
 								</a>
 							</li> 
 							<?php endif ?>  
+							<?php if (module_active('dashboard')):?> 
+							<li class="nav-item">
+								<a href="<?=site_url('user')?>" class="nav-link<?=active_page('admin', $_page_name??$page_name)?>">
+									<i class="nav-icon fas fa-user"></i>
+									<p>
+										<?=_lang('dashboard')?>  
+									</p>
+								</a>
+							</li> 
+							<?php endif ?> 
   
 							<div class="mt-2 border-top d-flex justify-content-left"> 
 								<div class="h7 mt-2">

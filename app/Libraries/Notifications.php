@@ -96,8 +96,9 @@ class Notifications {
         }
         else
         {  
-            $this->db->select('notifications.*, u.username, u.avatar');
-            $this->db->join("users u","notifications.notifier_id = u.uid ","INNER"); 
+            $this->db->select('notifications.*');
+            // $this->db->select('notifications.*, u.username, u.avatar');
+            // $this->db->join("users u","notifications.notifier_id = u.uid ","INNER"); 
 
             if (!empty($offset))
             {

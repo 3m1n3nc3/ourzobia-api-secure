@@ -33,9 +33,9 @@
                 <div class="col-md-12">
                     <div class="social-icons">
                         <ul>
-                            <li class="facebook"><a href="#"><i class="fab fa-facebook"></i></a></li>
-                            <li class="twitter"><a href="#"><i class="fab fa-twitter"></i></a></li> 
-                            <li class="dribbble"><a href="#"><i class="fab fa-instagram"></i></a></li>
+                            <li class="facebook"><a href="<?=my_config('contact_facebook')?>"><i class="fab fa-facebook"></i></a></li>
+                            <li class="twitter"><a href="<?=my_config('contact_twitter')?>"><i class="fab fa-twitter"></i></a></li> 
+                            <li class="dribbble"><a href="<?=my_config('contact_instagram')?>"><i class="fab fa-instagram"></i></a></li>
                         </ul>
                     </div>
                     <div class="site-info">
@@ -85,12 +85,19 @@
     <script src="<?=base_url('resources/js/custom.scripts.js')?>"></script>  
     <script src="<?=base_url('resources/js/custom.forms.js')?>"></script> 
 
-    <script src="https://maps.googleapis.com/maps/api/js?key=" type="text/javascript"></script>
+<?php if (!empty($content['contact']) && my_config('google_api_key') && (my_config('contact_address') || my_config('contact_email') || my_config('contact_phone'))): 
+    $latLang = explode(',', my_config('google_maps_latlang', null, '44.2072183, -101.3681486'));
+    $lat = $latLang[0] ?? "44.2072183";
+    $lng = $latLang[1] ?? "-101.3681486";
+    ?>
+    <script src="https://maps.googleapis.com/maps/api/js?key=<?=str_ireplace('demo', '', my_config('google_api_key'))?>" type="text/javascript"></script>
 
     <script type="text/javascript">
         var map;
-        var defult = new google.maps.LatLng(44.2072183, -101.3681486);
-        var mapCoordinates = new google.maps.LatLng(44.2072183, -101.3681486);
+        let lat    = Number(<?=$lat?>);
+        let lng    = Number(<?=$lng?>);
+        var defult = new google.maps.LatLng(lat, lng);
+        var mapCoordinates = new google.maps.LatLng(lat, lng);
     
     
         var markers = [];
@@ -197,6 +204,7 @@
         }
         google.maps.event.addDomListener(window, 'load', initialize);
     </script> 
+<?php endif;?>  
 
 <?php if (my_config('tawk_id')): ?>
     <!--Start of Tawk.to Script-->

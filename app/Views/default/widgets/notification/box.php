@@ -9,10 +9,12 @@
                         <?php foreach ($notif_list as $key => $notification): 
                             $ntfn->setSeen($notification->type);
                             $subject  = str_ireplace(['user_', '_user2', 'user_', '_paired'], ['','','','paired'], $notification->type);
-                            $userdata = $acc_data->fetch($notification->notifier_id, 1)?>
-                            <tr class="unread">
+                            $userdata = $acc_data->fetch($notification->notifier_id, 1);
+                            $notifier_name   = ($userdata) ? fetch_user('fullname', $notification->notifier_id) : _lang('guest');
+                            $notifier_avatar = ($userdata) ? fetch_user('avatar_link', $notification->notifier_id) : $creative->fetch_image('guest', 'boy');?>
+                            <tr class="unread" id="notification-<?=$notification->id?>">
                                 <td>
-                                    <?=load_widget('avatar',['profile'=>$userdata])?> 
+                                    <?=load_widget('avatar', ['profile'=>$userdata, 'link' => '#', 'avatar' => $notifier_avatar])?> 
                                 </td>
                                 <td>
                                     <a href="<?=$notification->url?>">
@@ -21,7 +23,7 @@
                                             <?php if ($notification->text): ?>
                                             <?=nl2br(word_wrap($notification->text, 55));?> 
                                             <?php else: ?>
-                                            <?=nl2br(word_wrap(_lang(''.$notification->type, [ucfirst($userdata['username'])]), 55));?> 
+                                            <?=nl2br(word_wrap(_lang(''.$notification->type, [ucwords($notifier_name)]), 55));?> 
                                             <?php endif ?> 
                                         </p>
                                     </a>
@@ -30,7 +32,19 @@
                                     <h6 class="text-muted"><i class="fas fa-circle <?=$notification->seen?'text-c-red':'text-c-green'?> f-10 m-r-15"></i><?=ucwords(date('d M H:i',$notification->time))?></h6>
                                 </td>
                                 <td> 
-                                    <a href="#!" class="label theme-bg text-white f-12">Delete</a>
+                                    <button class="btn px-0 deleter" 
+                                        type="button" 
+                                        title="Delete"
+                                        data-toggle="tooltip"
+                                        data-target="#notification-<?=$notification->id?>"
+                                        data-extra='{"type":"notification","modal":"#actionModal"}'
+                                        data-label="Delete"
+                                        data-class="btn btn-danger btn-spinner font-weight-bold py-0" 
+                                        data-type="posts" 
+                                        data-id="<?=$notification->id?>"
+                                        onclick="confirmAction('click', false, 'cancel', 'Are you sure you want to delete this comment?', this);">
+                                        <i class="fa fa-trash fa-fw text-danger"></i>
+                                    </button> 
                                 </td>
                             </tr>
                         <?php endforeach ?>  

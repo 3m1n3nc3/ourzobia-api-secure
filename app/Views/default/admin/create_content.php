@@ -234,11 +234,15 @@
                     <?php if ($content): ?>
                     <div id="upload_resize_image"
                         data-vwwidth="425"
-                        data-vwheight="225"
+                        data-vwheight="<?=(empty($content['parent']) && isset($content['safelink'])) ? 225 : 315?>"
                         data-bwwidth="430"
-                        data-bwheight="230"
+                        data-bwheight="<?=(empty($content['parent']) && isset($content['safelink'])) ? 230 : 320?>"
                         data-endpoint="content" 
+                        <?php if (empty($content['parent']) && isset($content['safelink'])): ?>
                         data-data="{width:1500, height:700, crop:[1500,700]}" 
+                        <?php else: ?>
+                        data-data="{width:1200, height:850, crop:[1200,850]}" 
+                        <?php endif ?>
                         data-endpoint_id="<?= $content['id']; ?>" 
                         class="d-none" 
                         style="display:none;">

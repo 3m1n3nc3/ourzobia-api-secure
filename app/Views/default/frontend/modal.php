@@ -5,9 +5,9 @@
 					<div class="modal-content"> 
 						<?php if (!empty($modal_title)):?> 
 						<div class="modal-header"> 
-							<h4 class="modal-title">
+							<h5 class="modal-title">
 								<?=$modal_title?>
-							</h4> 
+							</h5> 
 							<button type="button" class="close" data-dismiss="modal" aria-label="Close"> 
 								<span aria-hidden="true">&times;</span> 
 							</button> 
@@ -19,7 +19,7 @@
 						<?php if (isset($modal_btn) && !isset($hide_footer)):?> 
 						<div class="modal-footer justify-content-between"> 
 							<?php if ($modal_btn !== TRUE):?> 
-								<?=$modal_btn?> 
+								<?=$modal_btn?>
 							<?php else:?> 
 								<span id="modal_btn_block"> 
 									<button type="button" class="btn btn-default" data-dismiss="modal">Close</button> 

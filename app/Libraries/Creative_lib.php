@@ -107,8 +107,16 @@ class Creative_lib {
 			return base_url($image);
 		}
 	}
-   
-    public function saveRemoteFile($file_path, $save = false)
+
+    
+    /**
+     * This method will fetch and save an image or media file
+     * from a remote location, most probably a url
+     * @param  string  $file_path the absolute url to the file to save
+     * @param  boolean $save      true or false whether to save the file or just return it's base name
+     * @return string 
+     */
+    public function saveRemoteFile(string $file_path, $save = false)
     {         
         // Create an instance  of the file
         $file = new \CodeIgniter\Files\File($file_path);
@@ -127,15 +135,94 @@ class Creative_lib {
                     'referrer' => site_url()
             ]];
             $response = $client->request('GET', $file_path, $options);
+            $upload_path = PUBLICPATH . 'uploads/'.$folder; 
 
-            file_put_contents(PUBLICPATH . 'uploads/'.$folder . $file->getBasename(), $response->getBody());
-            $this->resize_image(PUBLICPATH . 'uploads/'.$folder . $file->getBasename(), ['width'=>500, 'height'=>500]);
-            return 'uploads/'.$folder . $file->getBasename();
+            if ($this->create_dir($upload_path))
+            {
+                $rand_name = "meta_" . $file->getRandomName();
+                $file_name = $upload_path . $rand_name;
+                file_put_contents($file_name, $response->getBody());
+                $this->resize_image($file_name, ['width'=>500, 'height'=>500]);
+            } 
+            return 'uploads/'.$folder . $rand_name;
         }
         else
         {
             return $file->getBasename();
         }
+    }
+
+
+    /**
+     * Uploads a media file and thumbnail if supplied by request
+     * @return array
+     */
+    public function uploadWithThumbnail()
+    {
+        $item_file = $thumbnail_file = $error = NULL;
+
+        // Check if this upload has a thumbnail
+        $thumbnail = $this->request->getPost('thumbnail');
+
+        // Get the item thumbnail if available
+        if ($thumbnail) 
+        {
+            $thumb      = explode(';', $thumbnail);
+            $thumbnail_ = isset($thumb[1]) ? $thumb[1] : null; 
+            $file_ext   = isset($thumb[0]) ? str_ireplace('data:image/', '', $thumb[0]) : 'png'; 
+
+            if (isset($thumbnail_))
+            {
+                list($type, $thumbnail) = explode(';', $thumbnail);
+                list(, $thumbnail) = explode(',', $thumbnail);
+                $t_image = base64_decode($thumbnail);
+                $thumbnail_image = 'thumb_'.mt_rand().'_'.mt_rand().'_p.' . $file_ext;
+                $upload_path = PUBLICPATH . 'uploads/thumbs/'; 
+
+                // Save the new image to the upload directory              
+                if ($t_image)
+                {
+                    if ( ! $this->create_dir($upload_path))
+                    {
+                        $error = 'The thumbnail destination folder does not appear to be writable.'; 
+                    }
+                    else
+                    {
+                        // $this->delete_file('./' . $data[$table_index]);
+
+                        if ( ! file_put_contents($upload_path . $thumbnail_image, $t_image) )
+                        {
+                            $error = 'The file could not be written to disk.'; 
+                        }
+                        else {
+                            $thumbnail_file = 'uploads/thumbs/' . $thumbnail_image;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Get the item image or video file
+        if (empty($error) && $this->request->getFile('file')) 
+        {
+            $new_name = 'item_'.rand().'_'.rand();
+
+            $item_files = $this->upload('file', NULL, $new_name,  NULL, [1000,1000]); 
+            if ($this->upload_errors('file') !== FALSE)
+            {
+                $error = $this->upload_errors('file', '','');
+            }
+            else
+            {
+                $item_file = $item_files['new_path'];
+            }
+        }
+
+        return array(
+            "file"      => $item_file,
+            "thumbnail" => $thumbnail_file,
+            "error"     => $error
+        );
     }
    
     public function upload($index, $previous = NULL, $new_name = NULL, $folder = NULL, $resize = array(), $set_post = FALSE)

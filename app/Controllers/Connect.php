@@ -217,6 +217,90 @@ class Connect extends BaseController
 
 
     /**
+     * Allows for writing comments
+     * @return null     Does not return anything but echoes a JSON Object with a response
+     */
+    public function write_comment()
+    {   
+        $notify = new Notifications;
+
+        // Check if user is logged in and the method is accessed via ajax
+        if ($this->util::loggedInIsAJAX(['guest' => my_config('guest_comments', null, 1)]) !== true)
+            return $this->util::loggedInIsAJAX(['guest' => my_config('guest_comments', null, 1)]);
+ 
+        $data['success'] = false;
+        $data['status']  = 'error';
+        $data['message'] = 'An error occurred, unable to post comment.';
+
+        $post_data         = $this->request->getPost();
+        $post_data['uid']  = user_id(0);
+        $post_data['time'] = time();
+
+        // create a guest meta record
+        if (my_config('guest_comments', null, 1) && logged_in(false)) 
+        {
+            if (!$this->session->has('guest_meta'))
+            {
+                $post_data['meta'] = json_encode([
+                    'fullname' => $post_data['fullname'],
+                    'email'    => $post_data['email'],
+                    'uip'      => $this->request->getIPAddress()
+                ]);
+                $this->session->set('guest_meta', $post_data['meta']); 
+            }
+            else
+            {
+                $post_data['meta'] = $this->session->get('guest_meta');
+            }
+            unset($post_data['fullname'], $post_data['email']);
+        }
+        
+        // Filter content for spam
+        $spamfilter = new SpamFilter();
+        $spam       = $spamfilter->check_text($post_data['comment']);
+
+        $comment_id = $this->postsModel->comment($post_data);
+        if ($comment_id && empty($spam)) 
+        {   
+            $comment = $this->postsModel->get_comments(['id' => $comment_id], 'comment');
+            $post    = $this->postsModel->get_post(['post_id' => $comment['post_id']]);
+
+            if (empty($post['id'])) 
+            { 
+                // Send notification
+                $notice = array( 
+                    'notifier_id'  => $post_data['uid'],
+                    'recipient_id' => $post['uid'],
+                    'type' => 'commented_post', 
+                    'url'  => site_url('post/'.$post['post_id']),
+                    'time' => time()
+                );
+
+                $notify->notify($notice);
+            }
+
+            $data['success'] = true;
+            $data['status']  = 'success';
+            $data['message'] = 'Comment Posted';
+            if (!empty($comment['reply_id'])) 
+            {
+                $data['html'] = load_widget('posts/reply', [
+                    'comment' => ['id' => $comment['reply_id']], 
+                    'reply' => $comment, 
+                    'post'  => $post
+                ], 'front');
+            }
+            else
+            {
+                $data['html'] = load_widget('posts/comment', ['comment' => $comment, 'post'  => $post], 'front');
+            }
+        }
+
+        return $this->response->setJSON($data);  
+    }
+
+
+    /**
      * Saves parses and saves analytics data
      * @return null     Does not return anything but echoes a JSON Object with a response
      */
@@ -437,70 +521,20 @@ class Connect extends BaseController
             return $this->util::loggedInIsAJAX();
 
         $item       = $this->request->getPost();
-        $item_type  = isset($item['type']) ? explode('/', $item['type'])[0] : null;
+        $media_type = isset($item['media_type']) ? $item['media_type'] : null;
+        $item_type  = isset($item['type']) ? explode('/', $item['type'])[0] : $media_type;
 
         $data       = [];
         $item_file  = $thumbnail_file = $description = NULL;
 
-        // Check if this upload has a thumbnail
-        $thumbnail = $this->request->getPost('thumbnail');
-
         $data['success'] = false;
         $data['status']  = 'error'; 
 
-        // Get the item thumbnail if available
-        if ($thumbnail && empty($error)) 
-        {
-            $thumb      = explode(';', $thumbnail);
-            $thumbnail_ = isset($thumb[1]) ? $thumb[1] : null; 
-            $file_ext   = isset($thumb[0]) ? str_ireplace('data:image/', '', $thumb[0]) : 'png'; 
-
-            if (isset($thumbnail_))
-            { 
-                list($type, $thumbnail) = explode(';', $thumbnail);
-                list(, $thumbnail) = explode(',', $thumbnail);
-                $t_image = base64_decode($thumbnail);
-                $thumbnail_image = 'thumb_'.mt_rand().'_'.mt_rand().'_p.' . $file_ext;
-                $upload_path = PUBLICPATH . 'uploads/thumbs/'; 
-
-                // Save the new image to the upload directory              
-                if ($t_image)
-                {
-                    if ( ! $this->creative->create_dir($upload_path))
-                    {
-                        $error = 'The thumbnail destination folder does not appear to be writable.'; 
-                    }
-                    else
-                    {
-                        // $this->creative->delete_file('./' . $data[$table_index]);
-
-                        if ( ! file_put_contents($upload_path . $thumbnail_image, $t_image) )
-                        {
-                            $error = 'The file could not be written to disk.'; 
-                        }
-                        else {
-                            $thumbnail_file = 'uploads/thumbs/' . $thumbnail_image;
-                        }
-                    }
-                }
-            }
-        }
-
-        // Get the item image or video file
-        if (empty($error) && $this->request->getFile('file')) 
-        {
-            $new_name = 'item_'.rand().'_'.rand();
-
-            $item_files = $this->creative->upload('file', NULL, $new_name,  NULL, [1000,1000]); 
-            if ($this->creative->upload_errors('file') !== FALSE)
-            {
-                $error = $this->creative->upload_errors('file', '','');
-            }
-            else
-            {
-                $item_file = $item_files['new_path'];
-            }
-        }
+        // Upload media
+        $upload         = $this->creative->uploadWithThumbnail();
+        $thumbnail_file = $upload['thumbnail'];
+        $item_file      = $upload['file'];
+        $error          = $upload['error'];
 
         // Get the item description
         if (!empty($item['description']) || !empty($item['title'])) 
@@ -545,18 +579,36 @@ class Connect extends BaseController
             
             $save_item['uid']   = $uid; 
 
-            $saved_id = $this->contentModel->save_gallery($save_item);
+            if (in_array($media_type, ['blog', 'post', 'event'])) 
+            {
+                !empty($save_item['item_id']) ? $save_item['post_id'] = $save_item['item_id'] : null;
+                $save_item['link']    = getLinkFromText($description);
+                if (!empty($save_item['link']) && !$item_file) 
+                {
+                    $save_item['meta']    = getOpenGraph($save_item['link'], true);
+                }
+                $save_item['description'] = encode_html(linkFromText($description, 'text-info'));
+                $save_item['event_time']  = !empty($item['event_time']) ? strtotime($item['event_time']) : NULL;
+                $save_item['event_venue'] = $item['event_venue'] ?? null;
+                $save_item['tags']        = $item['category'] ?? null;
+
+                $saved_id = $this->postsModel->create($save_item);
+            }
+            else
+            {
+                $saved_id = $this->contentModel->save_gallery($save_item);
+
+                $item_id  = (!empty($item['item_id'])) ? $item['item_id'] : $saved_id;
+
+                if ($saved_id && $item_id !== true)
+                {  
+                    $get_item = $this->contentModel->get_features(['id' => $item_id], 'gallery');
+                    // $data['html'] = load_widget('posts/item', ['post'=>$get_item]);
+                }
+            }
 
             $data['success'] = true;
             $data['status']  = 'success';
-
-            $item_id  = (!empty($item['item_id'])) ? $item['item_id'] : $saved_id;
-
-            if ($saved_id && $item_id !== true)
-            {  
-                $get_item = $this->contentModel->get_features(['id' => $item_id], 'gallery');
-                // $data['html'] = load_widget('posts/item', ['post'=>$get_item]);
-            }
 
             $this->response->setStatusCode(200);
         }

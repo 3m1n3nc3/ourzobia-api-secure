@@ -188,6 +188,13 @@
                         </div>
 
                         <div class="form-group col-md-6">
+                            <label class="text-info" for="google_api_key">Google Api Key</label>
+                            <input type="text" name="value[google_api_key]" value="<?= set_value('value[google_api_key]', my_config('google_api_key')) ?>" class="form-control" >
+                            <small class="text-muted">Enables the Google maps API, leave blank for Iframe fallback when necessary or set to "demo" to test the feature, get your keys from <a href="https://console.developers.google.com">https://console.developers.google.com</a></small> (To test this feature set to "demo")
+                            <?= $errors->showError('value.google_api_key', 'my_single_error'); ?>
+                        </div>
+
+                        <div class="form-group col-md-12">
                             <label class="text-info" for="tawk_id">Tawk.to Property ID</label>
                             <input type="text" name="value[tawk_id]" value="<?= set_value('value[tawk_id]', my_config('tawk_id')) ?>" class="form-control" >
                             <small class="text-muted">Setting this value automatically enables tawk.to on the site, get your IDs from <a href="https://tawk.to">https://tawk.to</a></small>
@@ -498,6 +505,13 @@
                         </div>
 
                         <div class="form-group col-md-12">
+                            <label class="text-info" for="google_maps_latlang">Maps Coordinates </label>
+                            <input type="text" name="value[google_maps_latlang]" value="<?= set_value('value[google_maps_latlang]', my_config('google_maps_latlang', null, '44.2072183, -101.3681486')) ?>" class="form-control">
+                            <small class="text-muted">Provide Google Maps Coordinates comma separated, E.g. "44.2072183, -101.3681486". Alternatively you can also provide Google Map Iframe Embed src url.</small>
+                            <?= $errors->showError('value.google_maps_latlang', 'my_single_error'); ?>
+                        </div>
+
+                        <div class="form-group col-md-12">
                             <label class="text-info" for="contact_address">Contact Address</label>
                             <textarea name="value[contact_address]" class="form-control textarea" ><?= set_value('value[contact_address]', my_config('contact_address')) ?></textarea>
                             <small class="text-muted">The site's contact or office address</small>
@@ -667,11 +681,11 @@
 
                     <?php if ($enable_steps &&  $step === 'system'): ?>
                     <input type="hidden" name="step" value="system">
-                    <label class="font-weight-bold" for="system_block">Email Settings</label>
+                    <label class="font-weight-bold" for="email_block">Email Settings</label>
                     <hr class="my-0"> 
                             
                     <?php $smtp_c = localhosted() ? 'smtp' : 'SMTP';?>
-                    <div class="row p-3 mb-3" id="system_block">
+                    <div class="row p-3 mb-3" id="email_block">
                         <div class="form-group col-md-4">
                             <div class="form-group">
                                 <label class="text-info" for="email_protocol">Email Protocol</label>
@@ -741,10 +755,38 @@
                         </div>
                     </div>    
 
+                    <label class="font-weight-bold" for="blog_events_block"><?=_lang('blog_and_events')?></label>
+                    <hr class="my-0"> 
+
+                    <div class="row p-3 mb-3" id="blog_events_block">
+                        <div class="form-group col-md-6">
+                            <label class="text-info" for="allow_comments">Allow Comments</label>
+                            <select id="allow_comments" name="value[allow_comments]" class="form-control">
+                                <option value="0"<?=set_select('value[allow_comments]', '0',(my_config('allow_comments') == '0'))?>>Off
+                                </option>
+                                <option value="1"<?=set_select('value[allow_comments]', '1', (my_config('allow_comments') == '1'))?>>On
+                                </option>    
+                            </select>  
+                            <small class="text-muted">Whether to allow comments on <?=_lang('blog_and_events_posts')?></small>
+                            <?= $errors->showError('value.allow_comments', 'my_single_error'); ?>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="text-info" for="guest_comments">Allow Guest Comments</label>
+                            <select id="guest_comments" name="value[guest_comments]" class="form-control">
+                                <option value="0"<?=set_select('value[guest_comments]', '0',(my_config('guest_comments') == '0'))?>>Off
+                                </option>
+                                <option value="1"<?=set_select('value[guest_comments]', '1', (my_config('guest_comments') == '1'))?>>On
+                                </option>    
+                            </select>  
+                            <small class="text-muted">Whether to allow non logged user comments on <?=_lang('blog_and_events_posts')?> (Allow Comments must be turned on)</small>
+                            <?= $errors->showError('value.guest_comments', 'my_single_error'); ?>
+                        </div>
+                    </div>
+
                     <label class="font-weight-bold" for="system_block">System</label>
                     <hr class="my-0"> 
                              
-                    <div class="row p-3 mb-3"> 
+                    <div class="row p-3 mb-3" id="system_block"> 
                         <div class="form-group col-md-4">
                             <label class="text-info" for="timmezone">System Timezone</label>
                             <?=timezone_select('form-control custom-select', config('App')->appTimezone); ?>
@@ -774,7 +816,7 @@
                                 </div>
                             </div>
                             <div class="form-group col">
-                                <label class="text-info" for="sms_notify">SMS Notify</label>
+                                <label class="text-info" for="sms_notify">SMS Notify (Beta)</label>
                                 <div class="form-group">
                                     <input type="hidden" name="value[sms_notify]" value="0">
                                     <input type="checkbox" name="value[sms_notify]" value="1" id="sms_notify" data-bootstrap-switch data-off-color="danger" data-on-color="success"<?=set_checkbox('value[sms_notify]', '1',(my_config('sms_notify') == '1'))?>>

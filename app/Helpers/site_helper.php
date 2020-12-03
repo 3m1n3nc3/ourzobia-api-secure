@@ -450,6 +450,37 @@ if ( ! function_usable('my_config'))
     }
 }
 
+
+//--------------------------------------------------------------------
+
+
+if ( ! function_usable('logged_in'))
+{  
+    /**
+     * Checks if the user is currently logged in
+     * @return boolean
+     */
+    function logged_in($state = true)
+    {     
+        $session    = \Config\Services::session(); 
+        $usersModel = model('App\Models\usersModel', false);
+
+        $username   = $session->get('username') ?? get_cookie('username'); 
+ 
+        if ($username && $usersModel->user_by_username($username) && $state === true)
+        {
+            return true;
+        }
+        elseif ($state === false && (!$username || !$usersModel->user_by_username($username)))
+        {
+            return true;
+        }
+
+        return false;
+    }
+}
+
+
 //--------------------------------------------------------------------
 
 
@@ -464,11 +495,6 @@ if ( ! function_usable('user_id'))
         $session      = \Config\Services::session();   
         $account_data = new \App\Libraries\Account_Data;
         $usersModel   = model('App\Models\usersModel', false);
-
-        if (isset($default)) 
-        {
-            return $default;
-        }
         
         if ($account_data->logged_in()) 
         {
@@ -476,9 +502,13 @@ if ( ! function_usable('user_id'))
             $user  = $usersModel->user_by_username($_user); 
             return $user['uid'];
         }
-        return NULL;
+
+        return $default;
     }
 } 
+
+
+//--------------------------------------------------------------------
 
 
 if ( ! function_usable('logged_user'))
@@ -503,6 +533,10 @@ if ( ! function_usable('logged_user'))
         return ($row) ? false : [];
     }
 }
+
+
+//--------------------------------------------------------------------
+
 
 if ( ! function_usable('fetch_user'))
 {   
@@ -591,6 +625,9 @@ if ( ! function_usable('show_countdown'))
         return $time_pane;
     }
 }
+
+
+//--------------------------------------------------------------------
 
 
 if ( ! function_usable('time_differentiator') ) 

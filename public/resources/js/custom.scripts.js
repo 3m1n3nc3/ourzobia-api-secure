@@ -226,7 +226,47 @@ function cancel_(self, selector = '') {
     });
 } 
 
-function refreshDom() {   
+function refreshDom() {    
+
+    $('.comment-reply-link').each(function(e) {
+        var $this = $(this);
+        $(this).on('click', function() {
+            var target = $($this.data('target'));
+            $(".reply-form").not(target).hide(); 
+            target.slideToggle();
+            target.find('input[name="comment"]').focus();
+        });
+    });
+
+    $('form.comment-form').each(function(e) {
+        var comment_form = $(this);
+        comment_form.ajaxForm({
+            url: link('connect/write_comment'),
+            type: 'POST',
+            dataType: 'json',
+            beforeSend: function(arr,form) {
+                comment_form.find('input[name="comment"],textarea[name="comment"]').val(''); 
+                comment_form.find('button[type="submit"]').buttonLoader('start'); 
+            },
+            success: function(data, status, xhr, form) { 
+                let post_id = form.find('input[name="post_id"]').val(); 
+                show_toastr(data.message, data.status);
+                comment_form.find(".message").alert_notice(data.message, data.status, 'auto'); 
+                comment_form.find('button[type="submit"]').buttonLoader('stop'); 
+                if (data.success == true) {
+                    let cmnt_type = (typeof comment_form.find('input[name="reply_id"]').val() !== "undefined") ? 'reply' : 'comment';
+                    // $('#comments_section_'+post_id).find('.post-' + cmnt_type + ':last').after(data.html);
+                    if (cmnt_type === 'reply') {
+                        let reply_id = form.find('input[name="reply_id"]').val(); 
+                        $('#comments_section_'+post_id).find('#replies_section_'+reply_id).append(data.html);
+                        comment_form.fadeOut();
+                    } else {
+                        $('#comments_section_'+post_id).append(data.html);
+                    }
+                }
+            }
+        });  
+    });
 
     console.log('DOM Refreshed...');
 }
@@ -272,7 +312,14 @@ function confirmAction(data, inline, action, message, self) {
             '<button type="button" class="p-0 mx-1 text-white btn btn-md btn-block btn-info" data-dismiss="modal">No</button>'+
         '</div>';
     } else if (data === 'click') { 
-        var button_content = $("<span />", {html: $(self.outerHTML).addClass(action + " click_action p-0 mx-1 text-white btn-md btn-block").removeAttr("onclick")});
+        var ahtml = $(self.outerHTML);
+        if (typeof $(self).data("class") !== "undefined") {
+            ahtml.removeAttr("class").removeAttr("data-class").addClass($(self).data("class"));
+        }
+        if (typeof $(self).data("label") !== "undefined") {
+            ahtml.html($(self).data("label"));
+        }
+        var button_content = $("<span />", {html: ahtml.addClass(action + " click_action p-0 mx-1 text-white btn-md btn-block").removeAttr("onclick")});
         var button_list = 
         '<div class="font-weight-bold">' +
             button_content.html() +
@@ -290,7 +337,9 @@ function confirmAction(data, inline, action, message, self) {
     } 
 
     $('#actionModal .modal-body').html('<p>'+(message ? message : 'Are you sure you want to '+action+' this item?')+'</p>');
-    $('#actionModal .modal-body').append(button_list);
+    $('#actionModal .modal-body').append(button_list).attr('style', 'padding:1rem;');
+    $('#actionModal .modal-dialog').addClass('modal-sm').removeClass('modal-md').removeClass('modal-lg'); 
+    $('#actionModal .modal-footer').remove();
     $('#actionModal .modal-title').html('Confirmation');
     $("#actionModal").modal('show'); 
 
@@ -489,129 +538,177 @@ function uploadMedia(target) {
     } else {
         var content = modal.find('.modal-body').attr('style', 'padding:0rem;');
     }
-    const creator = $(target); 
-    var post_type = $(target).data('type'); 
-    var edit_id   = $(target).data('id'); 
-    var query     = ''; 
+    const creator  = $(target); 
+    var query      = '';
+    var post_type  = $(target).data('type');
+    var edit_id    = $(target).data('id');
+    var media_type = $(target).data('media') ? $(target).data('media') : null;
+    var modal_title = $(target).data('modal-title') ? $(target).data('modal-title') : 'Create Content';
 
     // ourModal('show'); 
     content.html(preloader);
     creator.toggleClass('active');
     creator.siblings().removeClass('active');   
 
-    modal.attr('style', 'z-index:999999;').modal('show'); 
-    modal.find('.modal-dialog').addClass('modal-lg').removeClass('modal-md'); 
+    modal.attr('style', 'z-index:1050;').modal('show'); 
+        modal.find('.modal-dialog').addClass('modal-lg').removeClass('modal-md'); 
+        modal.find('.modal-title').text(modal_title);
+
+    var footer = $("<div />", {class: "modal-footer"}); 
+    $("<button />", {class: "btn btn-danger", html: "Discard"}).attr("data-dismiss", "modal").appendTo(footer);
+    $("<button />", {class: "btn btn-success", html: "Save"}).attr("type", "submit").attr("id", "modal-submit").appendTo(footer);
+    modal.find('.modal-content').find(".modal-footer").remove();
  
     $.ajax({
         url: link('ajax/main/upload_media_modal/'+segment),
         type: 'GET',
         dataType: 'json',
         type: 'POST',
-        data : {type:post_type}
+        data : {type:post_type, media_type:media_type, id:(edit_id?edit_id:null)}
     })
     .done(function(data) {
         $('#preloader').remove(); 
-        content.html(data.html);
-        // scrollToSel('.popup-box-content');
-        // $('#poster_title_id').html(creator.clone().removeAttr('.create-post'));
-        if (typeof edit_id !== 'undefined') {
-            $('#poster_title_id').html('<div class="option-item active create-post"><p class="option-item-title">Edit Post</p></div>');
-            content.find('textarea[name=description]').val($('p#item-description-' + edit_id).text());
-        } else {
-            $('#poster_title_id').html(creator.clone().removeAttr('.create-post'));
-        }
 
-        content.find('textarea[name=description]').focus();  
+        modal.find('.modal-content').append(footer);
+
+        content.html(data.html);
+
+        // Trigger the submission
+        $("body").on("click", "#modal-submit", function(e) { 
+            modal.find("button.submit_btn").click();
+        }); 
+
+        content.find('textarea[name=description]').focus();
 
         if (post_type == 'video' || post_type == 'image' || post_type == 'gallery') {
+            
             Dropzone.autoDiscover = false;
-            var myDropzone = new Dropzone("div.dropzone", {
-                url: link('connect/upload_media'),
-                autoProcessQueue: false,
-                uploadMultiple: false,
-                parallelUploads: 1,
-                maxFiles: 1,
-                maxFilesize: 35,
-                acceptedFiles: "video/*,image/*",
-                init: function() {
-                    var myDropzone = this; 
-                    document.querySelector("button.submit_btn").addEventListener("click", function(e) { 
-                        e.preventDefault();
-                        e.stopPropagation();
-                        myDropzone.processQueue(); 
-                    });    
-                    this.on("success", function(files, response) { 
-                        content.find('button[type=submit]').buttonLoader('stop'); 
-                        show_toastr(response.message, response.status);
-                        modal.modal('hide'); 
-                        $(".uploaded_item:last").after(response.html);  
-                    });   
-                    this.on("error", function(files, error) { 
-                        show_toastr(error, 'error'); 
-                    }); 
 
-                    this.on("sending", function(data, xhr, form) {
-                        content.find('button[type=submit]').buttonLoader('start'); 
-                        var file_type = data.type;
-                        if (post_type == 'video' || file_type.indexOf('video') !=-1) {
-                            form.append('thumbnail', $(data.previewElement).find('div.dz-image img').attr('src'));
-                        }  
-                        if (typeof edit_id !== 'undefined') {
-                            form.append('item_id', edit_id);
-                        }
-                        form.append('title', content.find('input[name=title]').val());
-                        form.append('featured', content.find('select[name=featured]').val());
-                        form.append('category', content.find('input[name=category]').val());
-                        form.append('description', content.find('textarea[name=description]').val());
-                        form.append('type', file_type); 
-                    });    
+            $("body").on("click", "button.load-dropzone", function(e) {
+                
+                modal.find("div.dropzone-block").slideDown("slow");
+                $(e.target).slideUp("slow");
 
-                    this.on("addedfile", function(file) {
-                        var removeButton = Dropzone.createElement("<button class=\"btn mt-1 btn-danger\">Remove file</button>");
-                        var _this = this;
-                        removeButton.addEventListener("click", function(e) {
+                desroyDropzones ();
+
+                var myDropzone = new Dropzone("div.dropzone", {
+                    url: link('connect/upload_media'),
+                    autoProcessQueue: false,
+                    uploadMultiple: false,
+                    parallelUploads: 1,
+                    maxFiles: 1,
+                    maxFilesize: 35,
+                    acceptedFiles: "video/*,image/*",
+                    init: function() {
+                        var myDropzone = this; 
+                        document.querySelector("button.submit_btn").addEventListener("click", function(e) { 
                             e.preventDefault();
                             e.stopPropagation();
-                            _this.removeFile(file);
-                        });
-                        file.previewElement.appendChild(removeButton);
-                    });
-                } 
-            });
 
-            myDropzone.on("addedfile", function(file) {
-                loadMediaThumb(file);
-            });
-        } else {
-            var post_update_form = $('.create-post-update');
-            if (typeof edit_id !== 'undefined') {
-                var query = {post_id:edit_id};
-            }
-            post_update_form.ajaxForm({
-                url: link('connect/create_post'),
-                type: 'POST',
-                dataType: 'json',
-                data: query,
-                beforeSend: function(arr,form) {
-                    post_update_form.find('button[type=submit]').buttonLoader('start'); 
-                },
-                success: function(data, status, xhr, form) { 
-                    show_toastr(data.message, data.status);
-                    post_update_form.find('button[type=submit]').buttonLoader('stop'); 
-                    modal.modal('hide'); 
-                    if (typeof edit_id !== 'undefined') {
-                        $(".post-item-content#post-item-content-" + edit_id).before(data.html); 
-                        $(".post-item-content#post-item-content-" + edit_id).last().remove(); 
-                    } else {
-                        $(".post-item-content:first").before(data.html); 
-                    }
-                    programaticAppLoader();
-                }, 
-                error: handleError
-            });
+                            if (modal.find('input[name=title]').val().length > 0) {
+                                if ((media_type !== 'event' && media_type !== 'post' && media_type !== 'blog') || modal.find('textarea[name=description]').val().length > 0) {
+                                    if (media_type !== 'event' || modal.find('input[name=event_time]').val().length > 0) {
+                                        myDropzone.processQueue(); 
+                                    }
+                                }
+                            }
+                        });  
+
+                        this.on("success", function(files, response) { 
+                            modal.find('button[type=submit]').buttonLoader('stop'); 
+                            show_toastr(response.message, response.status);
+                            modal.modal('hide'); 
+                            $(".uploaded_item:last").after(response.html);  
+                        });   
+                        this.on("error", function(files, error) { 
+                            modal.find('button[type=submit]').buttonLoader('stop'); 
+                            show_toastr(error, 'error'); 
+                        }); 
+
+                        this.on("sending", function(data, xhr, form) {
+                            modal.find('button[type=submit]').buttonLoader('start'); 
+                            var file_type = data.type;
+                            if (post_type == 'video' || file_type.indexOf('video') !=-1) {
+                                form.append('thumbnail', $(data.previewElement).find('div.dz-image img').attr('src'));
+                            }
+                            if (typeof edit_id !== 'undefined') {
+                                form.append('item_id', edit_id);
+                            }
+                            if (media_type === 'event') {
+                                form.append('event_time', content.find('input[name=event_time]').val());
+                                form.append('event_venue', content.find('input[name=event_venue]').val());
+                            }
+                            form.append('title', content.find('input[name=title]').val());
+                            form.append('featured', content.find('select[name=featured]').val());
+                            form.append('category', content.find('input[name=category]').val());
+                            form.append('description', content.find('textarea[name=description]').val());
+                            form.append('media_type', media_type);
+                            form.append('type', file_type); 
+                        });    
+
+                        this.on("addedfile", function(file) {
+                            var removeButton = Dropzone.createElement("<button class=\"btn mt-1 btn-danger\">Remove file</button>");
+                            var _this = this;
+                            removeButton.addEventListener("click", function(e) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                _this.removeFile(file);
+                            });
+                            file.previewElement.appendChild(removeButton);
+                            document.getElementById("dz-checker").value = "1";
+                        });
+                    } 
+                });
+
+                myDropzone.on("addedfile", function(file) {
+                    loadMediaThumb(file);
+                });
+            });  
+        } //else {
+        //     post_update_processor(edit_id);
+        // }
+        // 
+
+        var post_update_form = $('.create-post-update');
+        var query = {media_type:media_type};
+
+        if (typeof edit_id !== 'undefined') {
+            query = {post_id:edit_id, media_type:media_type};
         }
+
+        post_update_form.ajaxForm({
+            url: link('connect/upload_media'),
+            type: 'POST',
+            dataType: 'json',
+            data: query,
+            beforeSend: function(arr,form) { 
+                modal.find('button[type=submit]').buttonLoader('start'); 
+            },
+            success: function(data, status, xhr, form) { 
+                show_toastr(data.message, data.status);
+                modal.find('button[type=submit]').buttonLoader('stop'); 
+                modal.modal('hide'); 
+                if (typeof edit_id !== 'undefined') {
+                    $(".post-item-content#post-item-content-" + edit_id).before(data.html); 
+                    $(".post-item-content#post-item-content-" + edit_id).last().remove(); 
+                } else {
+                    $(".post-item-content:first").before(data.html); 
+                } 
+            }, 
+            error: handleError
+        });
+
         refreshDom();
     });  
+}
+
+function desroyDropzones() {
+   $(".dropzone").each(function() {
+        let dzc = $(this)[0].dropzone;
+        if (dzc) {
+            dzc.destroy()
+        }
+   });
 }
 
 function loadMediaThumb(file) {

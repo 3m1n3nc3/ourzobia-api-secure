@@ -7,15 +7,15 @@ This is perfect for you if you have script **codes distributed via online market
 your scripts enter an **activation code**, before they are able to use the product and also if you own business hubs and office facilities that you put out for daily rent and would need to allow customers book online and remotely.
 
 #### Advantages of using HubBox
-  1. The core is written on the latest version of Codeigniter framework.
+  1. The core is written on the latest version of the Codeigniter framework.
   2. Activation code is only valid for a single domain.
-  3. Uses cookies to prevent frequent calls to validation server.
+  3. Uses cookies to prevent frequent calls to the validation server.
   4. Can be hosted on Github and served via CDN.
   5. Validation is done outside the validating script, making it rather difficult to break.
   6. Frontend can be re-implemented with calls only made to the validation API.
   7. Can be used for B2B - B2C Validation by installing the B2B Plugin.
   8. Payments can be collected via credit cards with Stripe and Paystack.
-  9. Reservations are automated and will activate or expire at booked time frame.
+  9. Reservations are automated and will activate or expire at the booked time frame.
   10. Booked Hubs can easily be verified with a simple qr-code scan.
 
 

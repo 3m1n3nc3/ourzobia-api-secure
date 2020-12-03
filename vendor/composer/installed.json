@@ -3184,6 +3184,60 @@
         ]
     },
     {
+        "name": "vstelmakh/url-highlight",
+        "version": "v2.1.0",
+        "version_normalized": "2.1.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/vstelmakh/url-highlight.git",
+            "reference": "cb2ee5d3e18f9a5e40599815beba8a303db10fdf"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/vstelmakh/url-highlight/zipball/cb2ee5d3e18f9a5e40599815beba8a303db10fdf",
+            "reference": "cb2ee5d3e18f9a5e40599815beba8a303db10fdf",
+            "shasum": ""
+        },
+        "require": {
+            "ext-json": "*",
+            "ext-mbstring": "*",
+            "php": "^7.1",
+            "symfony/polyfill-php72": "^1.10"
+        },
+        "require-dev": {
+            "phpstan/phpstan": "^0.12",
+            "phpunit/phpunit": "^8.5",
+            "squizlabs/php_codesniffer": "^3.5"
+        },
+        "time": "2020-07-28T15:06:27+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "VStelmakh\\UrlHighlight\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Volodymyr Stelmakh",
+                "homepage": "https://github.com/vstelmakh"
+            }
+        ],
+        "description": "Library to parse urls from string input",
+        "homepage": "https://github.com/vstelmakh/url-highlight",
+        "keywords": [
+            "clickable",
+            "extract",
+            "html",
+            "parser",
+            "url"
+        ]
+    },
+    {
         "name": "webmozart/assert",
         "version": "1.9.1",
         "version_normalized": "1.9.1.0",

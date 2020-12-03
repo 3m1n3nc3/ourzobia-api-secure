@@ -6,6 +6,6 @@ return array(
 	'status'      => 'Incomplete',
     'availability' => 'User, Admin and Frontend',
     'stable'      => ['frontend'],
-    'modules'     => [/*User Modules*/'error_page','frontend'], 
+    'modules'     => [/*User Modules*/'error_page','frontend','posts', 'events'],
 	'modes'		  => ['light']
 );

@@ -69,7 +69,10 @@ $routes->get('src/(:any)', 'Src::index/$1');
 
 $routes->get('dashboard', 'Admin::index');
 $routes->get('dashboard/(:any)', 'Admin::$1'); 
-$routes->get('admin/dashboard', 'Admin::index'); 
+$routes->get('admin/dashboard', 'Admin::index');
+
+$routes->get('events', 'Posts::index/null/events');
+$routes->get('post/(:any)', 'Posts::index/$1'); 
 
 $routes->get('logout', 'Home::logout');  
 $routes->get('logout/(:any)', 'Home::logout/$1');  

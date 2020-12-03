@@ -45,7 +45,7 @@
                                 <td class="td-actions text-right" style="min-width: 120px;">
                                     <a href="<?= site_url('admin/content/create/'.$content['id']);?>">
                                         <i class="text-info fa fa-edit fa-fw"></i>
-                                    </a> 
+                                    </a>
                                     <?php if(!in_array($content['safelink'], ['homepage', 'footer', 'welcome', 'about', 'contact'])): ?> 
                                     <a href="javascript:void(0)"
                                         class="deleter" 

@@ -9,15 +9,21 @@
                 </div>  
                 <div class="lockscreen-credentials my-5">
                     <div class="d-flex flex-column justify-content-center">
-                        <?=show_countdown($hub['checkin_date'], 'WAIT', $hub['duration'], "Hours", "h2 text-success font-weight-bold") ?>
-                        <img src="<?=qr_generator(site_url('user/hubs/booked/'.$hub['id']), 'Verify');?>" width="150px"/>
+                        <?=show_countdown($hub['checkin_date'], 'WAIT', round(diff2hours($hub['checkout_date'], $hub['checkin_date'])), "Hours", "h2 text-success font-weight-bold") ?>
+                        <img src="<?=qr_generator(site_url('user/hubs/booked/'.$hub['id']), 'Verified');?>" width="150px"/>
                     </div>
                 </div> 
             </div>  
             <div class="help-block text-center">
                 Booked by <?=fetch_user('fullname', $hub['uid'])?> for
                 <div class="d-flex justify-content-center">
-                    <?=date("jS M Y \n h:iA", $hub['checkin_date'])?> to <?=date("jS M Y \n h:iA", $hub['checkout_date'])?>
+                    <strong>
+                        <?=date("j M, Y \n h:i A", $hub['checkin_date'])?>
+                    </strong>
+                    &nbsp;to&nbsp;
+                    <strong>
+                        <?=date("j M, Y \n h:i A", $hub['checkout_date'])?>
+                    </strong>
                     <?=form_open('', 'class="mx-0 px-0 no-print" method="post"')?>
                         <?=form_hidden('print', 1)?> 
                         <button class="mx-0 px-1 btn" title="Print This Page" data-toggle="tooltip"><i class="fa fa-print"></i></button>

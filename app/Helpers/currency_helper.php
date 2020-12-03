@@ -15,7 +15,7 @@ if (! function_usable('money'))
 		if ($amount < 0) {
 			$amount = 0;
 		}
-		return $span_o.currency(3, $currency??my_config('site_currency')).$span_c . number_format((int)$amount, 2);
+		return $span_o.currency(3, $currency??my_config('site_currency')).$span_c . number_format((float)$amount, 2);
 	}
 } 
 

@@ -44,6 +44,13 @@
 				                	<?php if (fetch_user('cpanel')): ?>
 									<small><?=fetch_user('username') . '@' . my_config('cpanel_domain')?></small>
 									<?php endif;?>
+									<div class="card line-height-15 my-0 p-1"> 
+					                    <div class="line-height-15 my-0 py-0">
+					                    	<span class="text-info small ml-2">
+					                    		<?=_lang('wallet')?>: <span class="text-danger"><?=money($user['wallet'])?></span>
+					                    	</span>
+					                    </div>
+									</div>
 								</p>
 							</li>
 							<!-- Menu Footer-->

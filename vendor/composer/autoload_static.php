@@ -39,6 +39,10 @@ class ComposerStaticInit717d78415648d9c4b4cf70baa1217d24
         array (
             'Webmozart\\Assert\\' => 17,
         ),
+        'V' => 
+        array (
+            'VStelmakh\\UrlHighlight\\' => 23,
+        ),
         'S' => 
         array (
             'Symfony\\Polyfill\\Php80\\' => 23,
@@ -107,6 +111,10 @@ class ComposerStaticInit717d78415648d9c4b4cf70baa1217d24
         'Webmozart\\Assert\\' => 
         array (
             0 => __DIR__ . '/..' . '/webmozart/assert/src',
+        ),
+        'VStelmakh\\UrlHighlight\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/vstelmakh/url-highlight/src',
         ),
         'Symfony\\Polyfill\\Php80\\' => 
         array (

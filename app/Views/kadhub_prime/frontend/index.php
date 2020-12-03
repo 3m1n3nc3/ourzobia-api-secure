@@ -2,154 +2,15 @@
 <html lang="en"> 
 
 <?php
-$infochildren = $content_md->get_content(array('parent' => $content['safelink'])); 
+$infochildren = $contentModel->get_content(array('parent' => $content['safelink'])); 
 $push_bg = ''; ; 
 ?>
 <?=view('kadhub_prime/frontend/header'); ?>
 
 <body class="<?=my_config('front_skin') ? "custom-theme" . my_config('des_accent_color_variant') : ""?>">
 
-    <header id="slider-area">
-        <div class="navbar-area w-100 bg-white fixed-top">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <nav class="navbar navbar-expand-lg mainmenu-area<?=my_config('des_nav_variant')?>">
-                            <a class="navbar-brand" href="<?=site_url()?>"><img src="<?=$creative->fetch_image(my_config('site_logo'), 'logo')?>" alt="" style="max-height: 35px;"></a>
-                            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                            <span class="toggler-icon"></span>
-                            <span class="toggler-icon"></span>
-                            <span class="toggler-icon"></span>
-                            </button>
-                            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                                <ul class="navbar-nav ml-auto">
-                                <?php if (my_config('scrollspy_nav')): ?>
-                                    <li class="nav-item<?=active_page('homepage', $content['safelink'])?>">
-                                        <a class="nav-link page-scroll" href="<?=site_url('#slider-area')?>"><?=_lang('home')?></a>
-                                    </li> 
-                                    <?php if ($content['safelink'] === 'homepage' && $content['content']):?>
-                                    <li class="nav-item<?=active_page('about', $content['safelink'])?>">
-                                        <a class="nav-link page-scroll" href="#team"><?=_lang('about_us')?></a>
-                                    </li> 
-                                    <?php else:?>
-                                    <li class="nav-item<?=active_page('about', $content['safelink'])?>">
-                                        <a class="nav-link page-scroll" href="<?=site_url('page/about')?>"><?=_lang('about_us')?></a>
-                                    </li> 
-                                    <?php endif;?>
-
-                                    <?php if ($content['services']):?>
-                                    <li class="nav-item">
-                                        <a class="nav-link page-scroll" href="#services"><?=_lang('services')?></a>
-                                    </li>
-                                    <?php endif;?>
-
-                                    <?php if ($content['features']):?>
-                                    <li class="nav-item">
-                                        <a class="nav-link page-scroll" href="#features"><?=_lang('features')?></a>
-                                    </li>
-                                    <?php endif;?>
-
-                                    <?php if ($content['gallery']):?>
-                                    <li class="nav-item">
-                                        <a class="nav-link page-scroll" href="#portfolios"><?=_lang('gallery')?></a>
-                                    </li>
-                                    <?php endif;?>
-
-                                    <?php if ($content['pricing']):?>
-                                    <li class="nav-item">
-                                        <a class="nav-link page-scroll" href="#pricing"><?=_lang('pricing')?></a>
-                                    </li>
-                                    <?php endif;?>
-
-                                    <?php if ($content['contact']):?>
-                                    <li class="nav-item">
-                                        <a class="nav-link page-scroll" href="#contact"><?=_lang('contact')?></a>
-                                    </li>
-                                    <?php endif;?>
-
-                                    <?php if ($content['subscription']):?>
-                                    <li class="nav-item">
-                                        <a class="nav-link page-scroll" href="#subscribe"><?=_lang('subscribe')?></a>
-                                    </li> 
-                                    <?php endif;?> 
-                                <?php else:?>
-                                    <?php foreach ($content_md->get_content(
-                                        ['parent'=>'non','in'=>'header','order_field'=>['name'=>'safelink','id'=>'homepage']]) as $key => $nl): ?>
-                                    <li class="nav-item<?=active_page($nl['safelink'], $_page_name??$page_name)?>">
-                                        <a class="nav-link" href="<?=site_url('page/'.$nl['safelink'])?>"><?=($nl['safelink'] == 'homepage' ? 'Home' : $nl['title'])?></a>
-                                    </li>
-                                    <?php endforeach ?> 
-                                <?php endif ?>
-                                <?=(!empty($user['uid']) && $user['admin'] >= 3) ? '<li class="nav-item">'.anchor('admin/configuration', 'Configuration', ['class'=>'nav-link']).'</li>' : ''?> &nbsp;
-                                </ul>
-                            </div>
-                        </nav>
-                    </div>
-                </div>
-            </div>
-        </div> 
-
-        <?php if ($content['slider'] && !empty($sliders)): 
-            $i = 0?>
-        <div id="carousel-area">
-            <div id="carousel-slider" class="carousel slide" data-ride="carousel">
-                <ol class="carousel-indicators">
-                    <?php foreach ($sliders as $key => $slider): $i++?> 
-                    <li data-target="#carousel-slider" data-slide-to="<?=$i-1?>"<?=active_page(1, $i, true)?>></li>
-                    <?php endforeach ?>  
-                </ol>
-                <div class="carousel-inner" role="listbox">
-                    <?php
-                        $i = 0; foreach ($sliders as $key => $slider): $i++?>  
-                    <div class="carousel-item<?=active_page(1, $i)?>">
-                        <img src="<?=$creative->fetch_image($slider['image'], my_config('default_banner')); ?>" alt="">
-                        <div class="carousel-caption">
-                            <h1 class="text-center"><?=nl2br(word_wrap(strip_tags(decode_html($slider['title'])), 26));?></h1>
-                            <p><?=$slider['details']?></p>
-                            <?=$slider['button'] ? showBBcodes($slider['button'], 'btn btn-lg btn-border') : ''?>
-                        </div>
-                    </div>
-                    <?php endforeach ?>   
-                </div>
-                <a class="carousel-control-prev" href="#carousel-slider" role="button" data-slide="prev">
-                    <i class="lnr  lnr-arrow-left"></i>
-                </a>
-                <a class="carousel-control-next" href="#carousel-slider" role="button" data-slide="next">
-                    <i class="lnr  lnr-arrow-right"></i>
-                </a>
-            </div>
-        </div>
-        <?php elseif ($content['banner']): ?>
-        <div id="carousel-area">
-            <div id="carousel-slider" class="carousel slide" data-ride="carousel"> 
-                <div class="carousel-inner" role="listbox">
-                    <div class="carousel-item active">
-                        <img src="<?=$creative->fetch_image($content['banner'], my_config('default_banner')); ?>" alt="">
-                        <div class="carousel-caption">
-                            <h1><?=nl2br(word_wrap(strip_tags(decode_html($content['title'])), 26));?></h1> 
-                            <p><?=$content['intro']?></p>
-                            <?=$content['button'] ? showBBcodes($content['button'], 'btn btn-primary') : ''?>  
-                            <?=(!empty($user['uid']) && $user['admin'] >= 3) ? anchor('admin/content/create/'.$content['id'], 'Edit ' . $content['title'], ['class'=>'btn btn-danger']) : ''?>
-                        </div>
-                    </div>  
-                </div> 
-            </div>
-        </div>
-        <?php elseif ($content['breadcrumb']): ?> 
-        <div class="mt-5 pt-xs-5 pt-lg-5 pb-4">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-12 text-center"> 
-                        <h2><?=$content['title']?></h2> 
-                        <a href="<?=site_url()?>"><?=_lang('home')?></a>
-                        <i class="fa fa-chevron-right"></i>
-                        <span><?=$content['title']?></span> 
-                    </div>
-                </div>
-            </div>
-        </div> 
-        <?php endif ?>
-    </header>
+    <!-- Load Header -->
+    <?=load_widget('frontend_header_widget', [], 'front')?>
 
     <?php if ($content['safelink'] === 'homepage' || (empty($infochildren) && !empty($content['content']))): ?>
     <section id="team" class="section">
@@ -167,7 +28,9 @@ $push_bg = ''; ;
             </p>
         </div>
     </section>
-    <?php endif; ?>
+    <?php endif; ?>    
+
+    <?=load_widget('blog', [], 'front')?>
 
     <?php
         $i = 0;
@@ -178,23 +41,35 @@ $push_bg = ''; ;
     <section id="infochild<?=$i?>" class="section <?=($i % 2 !== 0)?'light_section':'white_section'?>">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title wow fadeIn" data-wow-duration="1000ms" data-wow-delay="0.3s">
-                    <!-- KAD<span>HUB</span> -->
+                <h2 class="section-title wow fadeIn" data-wow-duration="1000ms" data-wow-delay="0.3s"> 
                     <?=highlight_phrase($info['title'], substr($info['title'], round(strlen($info['title'])/2), round(strlen($info['title'])/2)), '<span>', '</span>');?>
                     <?=(!empty($user['uid']) && $user['admin'] >= 3) ? ' ' . anchor('admin/content/create/' . $info['id'], 'Edit', ['class'=>'btn btn-danger']) : ''?>
                 </h2>
                 <hr class="lines wow zoomIn" data-wow-delay="0.3s"> 
             </div>
+            <?php if (!empty($info['banner'])): ?>
+            <div class="row">
+                <div class="col-md-4 container wow fadeIn" data-wow-duration="1000ms" data-wow-delay="0.1s">
+                    <img class="w-100" src="<?=$creative->fetch_image($info['banner'], my_config('default_banner')); ?>" alt="">
+                </div>
+                <div class="col-md-8">
+                    <p class="text-center wow fadeIn" data-wow-duration="1000ms" data-wow-delay="0.2s">
+                        <?=decode_html($info['content'])?>
+                    </p>
+                </div>
+            </div>
+            <?php else: ?>
             <p class="text-center wow fadeIn" data-wow-duration="1000ms" data-wow-delay="0.2s">
                 <?=decode_html($info['content'])?>
             </p>
+            <?php endif; ?>
         </div>
     </section>
     <?php endforeach; 
     endif;
     $push_bg = ($push_bg==='light_section') ? 'light_section' : 'white_section';?>
 
-    <?php if ($content['services'] && !empty($services)): 
+    <?php if (!empty($content['services']) && !empty($services)): 
         $i = 0.0;
         ?> 
     <section id="services" class="section <?=$push_bg?>">
@@ -230,7 +105,7 @@ $push_bg = ''; ;
     <?php endif;
     $push_bg = ($push_bg==='white_section') ? 'light_section' : 'white_section'; ?>
 
-    <?php if ($content['features'] && !empty($features)):  
+    <?php if (!empty($content['features']) && !empty($features)):  
         $limit  = ceil(count($features) / 2);
         $page1   = min(1, ceil( count($features)/ $limit )); 
         $offset1 = ($page1 - 1) * $limit;
@@ -303,7 +178,7 @@ $push_bg = ''; ;
         $push_bg = ($push_bg==='white_section') ? 'light_section' : 'white_section';
          endif;?>
 
-    <?php if ($content['video']): ?>
+    <?php if (!empty($content['video'])): ?>
     <section class="video-promo section" data-stellar-background-ratio="0.5">
         <div class="overlay"></div>
         <div class="container">
@@ -326,7 +201,7 @@ $push_bg = ''; ;
         $push_bg = ($push_bg==='white_section') ? 'light_section' : 'white_section';
          endif;?>
 
-    <?php if ($content['gallery'] && !empty($galleries)):?>
+    <?php if (!empty($content['gallery']) && !empty($galleries)):?>
     <section id="portfolios" class="section <?=$push_bg?>">
 
         <div class="container">
@@ -390,7 +265,7 @@ $push_bg = ''; ;
         $push_bg = ($push_bg==='white_section') ? 'light_section' : 'white_section'; 
           endif;?>
 
-    <?php if ($content['pricing'] && !empty($hubs)):?>
+    <?php if (!empty($content['pricing']) && !empty($hubs)):?>
     <section id="pricing" class="section pricing-section <?=$push_bg?>">
         <div class="container">
             <div class="section-header">
@@ -409,8 +284,7 @@ $push_bg = ''; ;
         $push_bg = ($push_bg==='white_section') ? 'light_section' : 'white_section'; 
           endif;?>  
 
-
-    <?php if ($content['contact'] && (my_config('contact_address') || my_config('contact_email') || my_config('contact_phone'))): ?>
+    <?php if (!empty($content['contact']) && (my_config('contact_address') || my_config('contact_email') || my_config('contact_phone'))): ?>
     <!--The contact sesction-->
     <section class="section <?=$push_bg?>" id="contact"> 
         <div class="contact-block">
@@ -525,7 +399,12 @@ $push_bg = ''; ;
                 <img src="<?=base_url('resources/theme/kadhub_prime/img/map-marker.png')?>" width="40px">
             </a>
         </div>
-        <div id="google-map">
+        <div id="google-map"> 
+        <?php if (!my_config('google_api_key') && stripos(my_config('google_maps_latlang'),'http')!==false && stripos(my_config('google_maps_latlang'),'map')!==false): ?>
+            <iframe src="<?=my_config('google_maps_latlang')?>" width="1300" height="450" frameborder="0" style="border:0;" allowfullscreen="true" aria-hidden="false" tabindex="0"></iframe>
+        <?php elseif (!my_config('google_api_key') || count(explode(',', my_config('google_maps_latlang'))) !== 2): ?>
+            <?=alert_notice("Invalid Map Settings", "error", false, false)?> 
+        <?php endif; ?>
         </div>
     </section>
     <?php
@@ -533,7 +412,7 @@ $push_bg = ''; ;
           endif;?>  
 
 
-    <?php if ($content['subscription'] && my_config('mailjet_api_key') && my_config('mailjet_secret_key')): ?>
+    <?php if (!empty($content['subscription']) && my_config('mailjet_api_key') && my_config('mailjet_secret_key')): ?>
     <section id="subscribe" class="section <?=$push_bg?>">
         <div class="container">
             <div class="section-header">
@@ -545,7 +424,7 @@ $push_bg = ''; ;
                 <div class="col-md-8">
                     <?=form_open('#subscribe', ["class"=>"text-center form-inline position-relative marketing-form row", "id"=>"subscribe_form"])?>
                         <input type="hidden" name="type" value="subscribe">
-                        <input type="text" class="mb-20 form-control" name="email" placeholder="Your Email Address" value="<?=set_value('email')?>" required>
+                        <input type="text" class="mb-20 form-control" name="email" placeholder="<?=_lang('your_email')?>" value="<?=set_value('email')?>" required>
                         <button type="submit" class="sub_btn btn-common"><?=_lang('subscribe')?></button>
                         <div class="col-12 message"></div>
                     <?=form_close()?> 

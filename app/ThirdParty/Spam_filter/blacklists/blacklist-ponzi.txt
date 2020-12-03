@@ -1,0 +1,21 @@
+# Keywords blacklist for "php-spam-filter"
+# Any regular expression syntax can be used here
+# 	(without the delimiters)
+# All keywords are case insensitive.
+# Lines starting with '#' are ignored.
+
+(these people are|they are|this|is|is a|are|you|have|they|money|bring|back)\s*(scam)|(spam)|(thief)|(stole)|(steal)|(is gone)
+ponzi
+god will
+punish
+destroy
+thunder
+fire
+scatter you
+you are mad
+una dey mad
+una dey craze
+una go craze
+una go mad
+doing press up
+doing pressup

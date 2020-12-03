@@ -174,7 +174,7 @@ class Payments extends BaseController
 	                if (my_config('sms_notify')) 
 	                {
 						\Config\Services::mailjet_sms(my_config('mailjet_bearer_token'), [
-		                	"{$data['message']}\n$data['redirect']",
+		                	"{$data['message']}\n{$data['redirect']}",
 		                	phone_number(logged_user('phone_number'), logged_user('phone_code')),
 		                	my_config('site_name')
 		                ]);

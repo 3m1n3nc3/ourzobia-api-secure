@@ -60,6 +60,16 @@
 								</a>
 							</li>
 							<?php endif ?> 
+							<?php if (module_active('posts', my_config('frontend_theme', null, 'default')) && logged_user('admin')): ?>
+							<li class="nav-item">
+								<a href="<?=site_url('user/posts')?>" class="nav-link<?=active_page('posts', $page_name)?>">
+									<i class="nav-icon fas fa-podcast	"></i>
+									<p>
+                    					<?=_lang('blog_and_events')?> 
+									</p>
+								</a>
+							</li>
+							<?php endif ?> 
 							<?php if (module_active('hub_type') || module_active('hubs')):?>
 							<li class="nav-item has-treeview<?=active_page(['hubs','hub_info','hubs_booked'], $_page_name??$page_name, false, 'menu-open')?>">
 								<a href="#" class="nav-link<?=active_page(['hubs','hub_info','hubs_booked'], $_page_name??$page_name)?>">
