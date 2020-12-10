@@ -70,6 +70,16 @@
 								</a>
 							</li>
 							<?php endif ?> 
+							<?php if (module_active('mail') && logged_user('cpanel')): ?>
+							<li class="nav-item">
+								<a href="<?=site_url('mail')?>" class="nav-link<?=active_page('mail', $page_name)?>">
+									<i class="nav-icon fas fa-envelope"></i>
+									<p>
+                    					<?=_lang('mailbox')?> 
+									</p>
+								</a>
+							</li>
+							<?php endif ?> 
 							<?php if (module_active('hub_type') || module_active('hubs')):?>
 							<li class="nav-item has-treeview<?=active_page(['hubs','hub_info','hubs_booked'], $_page_name??$page_name, false, 'menu-open')?>">
 								<a href="#" class="nav-link<?=active_page(['hubs','hub_info','hubs_booked'], $_page_name??$page_name)?>">

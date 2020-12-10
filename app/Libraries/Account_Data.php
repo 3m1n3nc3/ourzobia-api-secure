@@ -231,8 +231,9 @@ class Account_Data {
                 $data['fullname']  = $data['username'];
                 $data['firstname'] = $data['username'];
             }
- 
-            $data['admin_avatar_link']  = $this->creative->fetch_image('','boy');
+            
+            $data['enterprise_mail']   = (!empty($data['cpanel'])) ? $data['username'] . '@' . my_config('cpanel_domain') : '';
+            $data['admin_avatar_link'] = $this->creative->fetch_image('','boy');
 
             $data['profile_link'] = site_url('user/account/profile/' . $data['uid']);
             $data['avatar_link']  = $this->creative->fetch_image($data['avatar'],'boy'); 
@@ -251,14 +252,11 @@ class Account_Data {
 
     public function user_logout($redirect = null)
     {    
-        $this->session->remove(['uid', 'username', 'fullname', 'access_folder']);
+        $this->session->remove(['uid', 'username']);
         $this->session->destroy();
-
-        $url_parts = parse_url(current_url());
-        $domain    = '.' . str_replace('www.', '', $url_parts['host']);
-
-        delete_cookie('username', $domain);
-        delete_cookie('uid', $domain);
+ 
+        delete_cookie('username');
+        delete_cookie('uid');
 
         if ($redirect) 
         {
@@ -266,17 +264,19 @@ class Account_Data {
         }
     } 
 
-    public function user_login($user, $remember = 0)
+    public function user_login($user, $remember = false, $extra_data = [])
     {   
         $request = \Config\Services::request();  
         $data = $this->usersModel->get_user($user);  
 
         $access_folder = ($data['admin'] > 0) ? 'admin' : 'user';
         $_data = array(
-            'uid'           => $data['uid'],
-            'username'      => $data['username'],
-            'fullname'      => $data['fullname'] 
-        ); 
+            'uid'      => $data['uid'],
+            'username' => $data['username'],
+            'fullname' => $data['fullname'] 
+        );
+
+        $_data = array_merge($_data, $extra_data);
 
         // Save the user's IP address every time they log in
         $this->usersModel->save_user(['uid'=>$data['uid'],'uip'=>$request->getIPAddress()]); 
@@ -285,9 +285,9 @@ class Account_Data {
 
         if ($remember) 
         {
-            $url_parts = parse_url(current_url());
-            $domain    = '.' . str_replace('www.', '', $url_parts['host']);
-            // set_cookie('username', $_data['username'], time() + (10 * 365 * 24 * 60 * 60), $domain);
+            $domain = parse_url(base_url());
+            $domain = str_replace('www.', '.', $domain['host']);
+            set_cookie('username', $_data['username'], time() + (10 * 365 * 24 * 60 * 60), '.'.$domain);
         }
     }     
 

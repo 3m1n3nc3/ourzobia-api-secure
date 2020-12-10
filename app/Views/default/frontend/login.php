@@ -34,7 +34,7 @@
 						
                     <?php if ($page_name == 'login'): ?>
 
-					<?=form_open('login', array('method' => 'post', 'class' => 'login_form'))?> 
+					<?=form_open('', array('method' => 'post', 'class' => 'login_form'))?> 
                         <?= csrf_field() ?>
 						<?=$errors->showError('username', 'my_single_error');?>
 						<div class="input-group mb-3">
@@ -81,7 +81,7 @@
                             </p>
                             <p class="mb-0 text-muted">
                             	<?=_lang('dont_have_an_account')?>
-                            	<a href="<?=site_url('signup')?>">
+                            	<a href="<?=site_url('signup' . ($_request->getGet('redirect') ? '?redirect=' . urlencode($_request->getGet('redirect')) : ''))?>">
                             		<?=_lang('register')?> 	
                         		</a>
                         	</p> 

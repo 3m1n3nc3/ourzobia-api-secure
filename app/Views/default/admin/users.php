@@ -33,24 +33,28 @@
 							</tbody> 
 						</table> 
 						<div class="my-1 row">
-						<?php if (!my_config('cpanel_url') && my_config('cpanel_username') && my_config('cpanel_password')): ?>
-							<button class="btn btn-warning shadow generate_email disabled" disabled data-action="generate">
-								Generate Cpanel Webmail Accounts
-							</button>
-							<button class="btn btn-danger shadow generate_email disabled" disabled data-action="delete">
-								Delete Cpanel Webmail Accounts
-							</button>
+						<?php if (my_config('cpanel_url') && my_config('cpanel_username') && my_config('cpanel_password')): ?>
+							<div class="col-md-8">
+								<button class="btn btn-warning shadow generate_email disabled m-1" disabled data-action="generate">
+									Generate Cpanel Webmail Accounts
+								</button>
+								<button class="btn btn-danger shadow generate_email disabled m-1" disabled data-action="delete">
+									Delete Cpanel Webmail Accounts
+								</button>
+							</div>
 						<?php else: ?>
-							<div class="col-md-6">
+							<div class="col-md-4">
 								<?=alert_notice("Invalid Cpanel Config, Can't generate Webmail Accounts!", "error", false, "FLAT")?>
 							</div>
 						<?php endif ?>
-						<?php if (!my_config('afterlogic_domain') && my_config('afterlogic_username') && my_config('afterlogic_password')): ?>
-							<button class="btn btn-success shadow generate_email disabled" disabled data-action="alwm">
-								Augment AfterLogic Accounts
-							</button>
+						<?php if (my_config('afterlogic_domain') && my_config('afterlogic_username') && my_config('afterlogic_password')): ?>
+							<div class="col-md-4">
+								<button class="btn btn-success shadow generate_email disabled" disabled data-action="alwm">
+									Augment AfterLogic Accounts
+								</button>
+							</div>
 						<?php else: ?>
-							<div class="col-md-6">
+							<div class="col-md-4">
 								<?=alert_notice("Invalid AfterLogic Config, Can't Augment AfterLogic Accounts!", "error", false, "FLAT")?>
 							</div>
 						<?php endif ?>

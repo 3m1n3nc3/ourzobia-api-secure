@@ -17,17 +17,19 @@ class AdminFilter implements FilterInterface
         if ($account_data->logged_in()) 
         {
             if (!error_redirect(logged_user('admin'), '401', true)) return error_redirect(logged_user('admin'), '401');   
-        }
+        } 
 
-        if (in_array($request->uri->getSegment(1), ['admin', 'dashboard']))
+        // Remove access login token
+        if ($session->has('password_token') && $request->uri->getSegment(1) !== 'mail') 
         {
-            $session->set('access_folder', 'admin'); 
+            $session->remove('password_token'); 
         }
 
         if (! $session->has('access_folder') ) 
         { 
             $session->set('access_folder', 'admin');
         }
+        
         return $account_data->is_logged_in();
     }
 

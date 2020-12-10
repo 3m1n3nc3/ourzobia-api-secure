@@ -8,17 +8,38 @@ use \App\Libraries\Account_Data;
  */
 class Util
 {    
-    public function email_config() 
+
+    /**
+     * SendMail.
+     *
+     * This method will provide default configuration for SMTP mailing 
+     *
+     * @param$login     A numeric array of login username and password
+     * $login param list array{
+     *      username?:string,
+     *      password?:string
+     *      hostname?:string
+     *      hostport?:string
+     * }
+     */
+    public function email_config($login = []) 
     {  
+        $smtp_user   = $login['username'] ?? my_config('smtp_user');
+        $smtp_pass   = $login['password'] ?? my_config('smtp_pass');
+        $smtp_host   = $login['hostname'] ?? my_config('smtp_host');
+        $smtp_port   = $login['hostport'] ?? my_config('smtp_port'); 
+        $smtp_crypto = empty($login['username']) ? my_config('smtp_crypto') : ($login['crypto'] ?? 'tls');
+        $protocol    = empty($login['username']) ? my_config('email_protocol') : (localhosted() ? 'smtp' : 'SMTP');
+
         $config = array(
-            'protocol'   => my_config('email_protocol'),
-            'mailPath'   => my_config('mailpath'),
-            'SMTPCrypto' => my_config('smtp_crypto'),
-            'SMTPHost'   => my_config('smtp_host'),
-            'SMTPPort'   => my_config('smtp_port'),
-            'SMTPUser'   => my_config('smtp_user'),
-            'SMTPPass'   => my_config('smtp_pass'),
             'userAgent'  => my_config('site_name') . ' Mail Daemon',
+            'mailPath'   => my_config('mailpath'),
+            'protocol'   => $protocol,
+            'SMTPCrypto' => $smtp_crypto,
+            'SMTPHost'   => $smtp_host,
+            'SMTPPort'   => $smtp_port,
+            'SMTPUser'   => $smtp_user,
+            'SMTPPass'   => $smtp_pass,
             'charset'    => 'utf-8',
             'newline'    => "\r\n",
             'crlf'       => "\r\n",
@@ -30,10 +51,10 @@ class Util
     }
 
     
-    public static function email_config_static() 
+    public static function email_config_static($login = []) 
     {  
         $util = new \App\Libraries\Util;
-        return $util->email_config();
+        return $util->email_config($login);
     }
 
     
@@ -74,16 +95,26 @@ class Util
      * This method will parse the provided content and attempt to send an email
      * message to the provided recipient.
      *
-     * The $content array has to hold the following data:
-     *     subject  = A string representing the subject of the email message
-     *     message  = A string representing the message body of the email message
-     *     link     = A string representing a link to send along with the email message
-     *     link_t   = A string representing the title of the link to send along with the email message
-     *     receiver = An associative array containing the data of the the recipient of the email message
+     *@param $content   Array   has to hold the following data:
+     *     subject    = A string representing the subject of the email message
+     *     message    = A string representing the message body of the email message
+     *     link       = A string representing a link to send along with the email message
+     *     link_t     = A string representing the title of the link to send along with the email message
+     *     attachment = [optional] Can be local path, URL or buffered content
+     *     receiver   = An associative array containing the data of the the recipient of the email message
      *         receiver array must contain [email, fullname]
-     *     success  = A string to return as the status notification to user after sending message
+     *     sender     = [optional] An associative array containing the data of the the sender of the email message
+     *         sender array must contain [email, fullname]
+     *     success    = A string to return as the status notification to user after sending message
+     *@param $mailer_login  Array   
+     * $mailer_login param list array{
+     *      username?:string,
+     *      password?:string
+     *      hostname?:string
+     *      port?:string
+     * }
      */
-    public static function sendMail(array $content = []): array
+    public static function sendMail(array $content = [], $mailer_login = []): array
     {
         // Set default responses
         $data['success'] = false;
@@ -96,6 +127,7 @@ class Util
         $link     = $content['link'] ?? null;
         $link_t   = $content['link_t'] ?? null;
         $receiver = $content['receiver'] ?? logged_user();
+        $sender   = $content['sender'] ?? [];
 
         // Parse the message content
         $anchor_link  = $link ? anchor($link) : $link;
@@ -115,7 +147,9 @@ class Util
         ]);
 
         // Attempt to send the mail with Mailjet
-        if (my_config('mailjet_api_key') && my_config('mailjet_secret_key') && my_config('email_protocol') == 'mailjet')
+        $use_mailjet = (my_config('mailjet_api_key') && my_config('mailjet_secret_key') && my_config('email_protocol') == 'mailjet' && empty($sender['email']));
+
+        if ($use_mailjet)
         {
             try 
             {
@@ -150,23 +184,35 @@ class Util
         else
         {
             $email = \Config\Services::email(); 
-            $email->initialize(self::email_config_static());
-            $email->setFrom(my_config('contact_email'), my_config('site_name'));
+            $email->initialize(self::email_config_static($mailer_login));
+            $email->setFrom($sender['email'] ?? my_config('contact_email'), $sender['fullname'] ?? my_config('site_name'));
             $email->setTo($receiver['email']);
+
+            if (!empty($content['attachment'])) 
+            {
+                $email->attach($content['attachment']);
+            }
+
+            if (!empty($sender['email'])) 
+            {
+                $message_html = $content['message'];
+            } 
 
             $email->setSubject($subject);
             $email->setMessage($message_html);
 
-            try {
-                $email->send(my_config('mail_debug') ? false : true);
-                if (my_config('mail_debug')) 
+            try { 
+                if ($email->send(my_config('mail_debug') ? false : true)) 
                 {
-                    $data['message'] = $email->printDebugger(['headers', 'subject']);
-                }
-                else
-                {
-                    $data['success'] = true;
-                    $data['status']  = 'success';    
+                    if (my_config('mail_debug')) 
+                    {
+                        $data['message'] = $email->printDebugger(['headers', 'subject']);
+                    }
+                    else
+                    {
+                        $data['success'] = true;
+                        $data['status']  = 'success';    
+                    }
                 }
             } 
             catch (ErrorException $e) {

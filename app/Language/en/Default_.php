@@ -62,6 +62,7 @@ return [
    'incomplete'                     => 'Incomplete', 
    'invalid_token'                  => 'This link may have expired or has been used!',
    'login'                          => 'Login',  
+   'mailbox'                        => 'Mailbox',
    'manage_hubs'                    => 'Manage Hubs',
    'manager'                        => 'Manager',
    'management'                     => 'Management',

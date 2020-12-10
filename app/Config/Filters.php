@@ -43,7 +43,7 @@ class Filters extends BaseConfig
 			]],
 			'accesscontrol' => ['before' =>  [
 				'user', 'user/account', 'user/account/*', 'user/products', 'user/hubs', 'user/hubs/*', 'user/payments', 
-				'user/payments/*', 'user/posts', 'user/posts/*', 'user/dashboard'
+				'user/payments/*', 'user/posts', 'user/posts/*', 'user/dashboard', 'mail', 'mail/*'
 			]],
 		// 'admincontrosl' => ['before' => ['admin', 'admin/*']],
 	];

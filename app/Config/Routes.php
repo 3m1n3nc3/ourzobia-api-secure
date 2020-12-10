@@ -77,6 +77,7 @@ $routes->get('post/(:any)', 'Posts::index/$1');
 $routes->get('logout', 'Home::logout');  
 $routes->get('logout/(:any)', 'Home::logout/$1');  
 $routes->match(['get', 'post'], 'login', 'Home::login');
+$routes->match(['get', 'post'], 'relogin', 'Home::relogin');
 $routes->match(['get', 'post'], 'signup', 'Home::login/signup');  
 $routes->match(['get', 'post'], 'user/dashboard', 'User::index');  
 

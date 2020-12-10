@@ -19,6 +19,12 @@ class AccessFilter implements FilterInterface
             $session->set('access_folder', 'user'); 
         }
 
+        // Remove access login token
+        if ($session->has('password_token') && $request->uri->getSegment(1) !== 'mail') 
+        {
+            $session->remove('password_token'); 
+        }
+
         if ($session->has('username') && ! $session->has('access_folder') ) 
         {
             $userdata      = $usersModel->user_by_username($session->get('username'));  

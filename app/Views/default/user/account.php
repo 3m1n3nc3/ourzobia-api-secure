@@ -8,7 +8,7 @@
                 </div>
                 <h3 class="profile-username text-center"><?=fetch_user('fullname', $uid)?></h3>
                 <?php if (fetch_user('cpanel', $uid)): ?>
-                <h7 class="text-muted text-center"><?=fetch_user('username', $uid) . '@' . my_config('cpanel_domain')?></h7> 
+                <h7 class="text-muted text-center"><?=fetch_user('enterprise_mail', $uid)?></h7> 
                 <?php endif?>
                 <!-- <p class="text-muted text-center"></p> -->
                 <ul class="list-group list-group-unbordered mb-3">
@@ -19,8 +19,8 @@
                         <b>Active Products</b> <a class="float-right"><?=$statistics['active_products']??0?></a>
                     </li> 
                 </ul> 
-                <?php if (user_id() === user_id($uid) && fetch_user('cpanel')): ?>
-                <button class="btn btn-sm btn-success btn-block" id="webmail-login-btn">
+                <?php if (user_id() === user_id($uid) && fetch_user('cpanel', $uid)): ?>
+                <button class="btn btn-sm font-weight-bold btn-success btn-block" id="webmail-login-btn">
                     <span class='fa-stack'>
                         <i class='fas fa-circle fa-stack-2x'></i>
                         <i class='fab fa-cpanel fa-stack-1x fa-inverse text-danger'></i>
@@ -28,7 +28,11 @@
                     Webmail Login
                 </button> 
                     <?php if (my_config('afterlogic_domain')): ?>
-                <button class="btn btn-info btn-block text-sm" id="al-login-btn" onclick="window.location.href = '<?=my_config('afterlogic_protocol') . '://' . my_config('afterlogic_domain')?>'"> 
+                <button class="btn btn-info btn-block text-sm font-weight-bold" id="al-login-btn" onclick="window.location.href = '<?=my_config('afterlogic_protocol') . '://' . my_config('afterlogic_domain')?>'">
+                    <span class='fa-stack'>
+                        <i class='fas fa-circle fa-stack-2x'></i> 
+                        <img class='fa-stack-1x fa-inverse text-danger' src="<?=base_url('resources/img/alogic.svg')?>" style="height: 20px;">
+                    </span>
                     AfterLogic Webmail
                 </button> 
                     <?php endif; ?>
@@ -199,13 +203,14 @@
         <?php if (!fetch_user('password', $uid)): ?>
             document.getElementById('password').value = document.querySelector('.dps').innerHTML;
         <?php endif; ?>
-
+              
         if (is_logged()) {
             $('#webmail-login-btn').click(function() {
                 
                 var $this = $(this);
                 
                 $this.buttonLoader('start');
+                $("form#webmail-login").remove();
 
                 $.post(link('connect/access_webmail/'+<?=logged_user('uid')?>), function(data) {
                     
@@ -213,14 +218,12 @@
                     show_toastr(data.message, data.status);  
                     
                     if (data.success === true) {
-                        $form = $("<form></form>");
-                        $form.attr({action: data.host, target: '_blank', id: 'webmail-login', method: 'post'})
-                            .append('<input type="hidden" name="session" value="'+data.session+'">');
-                        $('body').append($form);
-                        $('form#webmail-login').submit();
+                        $form = $("<form>", {action: data.host, target: '_blank', id: 'webmail-login', method: 'post'})
+                            .append('<input type="hidden" name="session" value="'+data.session+'">'); 
+                        $form.appendTo('body').submit();
                     }
                 });
             });
-        }
+        } 
     }
 </script>

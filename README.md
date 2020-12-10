@@ -42,15 +42,20 @@ your scripts enter an **activation code**, before they are able to use the produ
  4. Login to Webmail/AfterLogic Webmail.
  5. Delete Webmail Account.
 
-4. **Hubs and office management.**
+4. **Mailbox.**
+ 1. List and Manage Mail.
+ 2. Read Mail.
+ 3. Compose Message.
+
+5. **Hubs and office management.**
  1. Manage Hub Categories.
  2. Manage Hubs.
  3. Book Hubs.
  4. View Booked Hubs.
 
-5. **System Management**
+6. **System Management**
  1. Configuration.
  2. Cron Jobs. 
  3. Installing Updates.
 
-6. **Features.**
+7. **Features.**

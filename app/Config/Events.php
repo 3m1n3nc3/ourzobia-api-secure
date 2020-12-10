@@ -64,10 +64,10 @@ Events::on('redirect', function($to)
  	return _redirect(base_url($to)); 
 });
 
-Events::on('login_redirect', function($uid, $to = null, $rverify = false)
+Events::on('login_redirect', function($uid, $to = null, $rverify = false, $remember = false, $extra_data = [])
 {
 	$ad = new Account_Data; 
-	$ad->user_login($uid);
+	$ad->user_login($uid, $remember, $extra_data);
 	if ($ad->logged_in())
 	{ 
         $request  = \Config\Services::request();  
@@ -92,16 +92,26 @@ Events::on('login_redirect', function($uid, $to = null, $rverify = false)
 			        } 
             	}
             	
-                if (!empty($to)) 
+            	if ($request->getGet('redirect')) 
+            	{
+            		return _redirect(base_url(urldecode($request->getGet('redirect')))); 
+            	}
+				elseif (!empty($to)) 
                 {
                     return _redirect(base_url($to)); 
                 }
-                return _redirect(base_url('dashboard'));   
-            } 
-        }  
 
-        return _redirect(base_url('login'));  
+                if ($user['admin']) 
+                {
+                	return _redirect(base_url('dashboard'));  
+                }
+                else
+                {
+                	return _redirect(base_url('user/dashboard'));   
+                }
+            } 
+        }   
 	}
 
-	return _redirect(base_url('home'));
+    return _redirect(base_url('login')); 
 });

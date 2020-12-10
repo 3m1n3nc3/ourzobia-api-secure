@@ -87,9 +87,11 @@ class Home extends BaseController
 			'errors'     => $this->form_validation
 		); 
 
+	    $get_token = [];
 	    $post_data = $this->request->getPost();
+	    
 		if ($page === 'login') 
-		{  
+		{
 		    if ($post_data) 
 		    {
 		        if ($this->validate([
@@ -98,11 +100,22 @@ class Home extends BaseController
 				]))
 		        {
 		        	$fetch_user = $this->usersModel->user_by_username($post_data['username']); 
-	        		$this->account_data->user_login($fetch_user['uid'], ($this->request->getPost('remember') == 'on'));
-					if ($this->account_data->logged_in())
+					if (!empty($fetch_user['uid']))
 					{
+						$remeber_me = ($this->request->getPost('remember') == 'on'); 
+						if ($this->request->getPost('set_token')) 
+						{
+							$get_token = [$this->request->getPost('set_token') => $this->request->getPost('password')];
+						}
 						$previous_url = stripos(previous_url(), 'user/m') ? previous_url() : null; 
-						return $this->account_data->user_redirect($previous_url);
+		        		\CodeIgniter\Events\Events::trigger(
+		        			'login_redirect', 
+		        			$fetch_user['uid'], 
+		        			$previous_url, 
+		        			false, 
+		        			$remeber_me,
+		        			$get_token
+		        		); 
 					} 
 		        }  
 		    }
@@ -149,6 +162,69 @@ class Home extends BaseController
 		} 
 		return theme_loader($view_data, 'frontend/login', null, 'front');
 	}
+
+
+    /**
+     * This is the default login page
+     * @param  string 	$page 	 	Set page to determine login or signup
+     * @return string           	Uses the themeloader() to call and return codeigniter's view() method to render the page
+     */
+	public function relogin($page = 'login')
+	{  
+		if (!$this->account_data->logged_in())
+		{
+			return $this->account_data->user_redirect();
+		}
+		$view_data = array(
+			'session' 	 => $this->session,
+			'page_title' => 'Login',
+			'screen'     => 'login',
+			'page_name'  => $page,
+			'redirect'   => $this->request->getGet('redirect'),
+			'help_action'=> $this->request->getPost('help_action'),
+			'set_token'  => $this->request->getPost('set_token'),
+			'util'       => $this->util,
+			'creative'   => $this->creative, 
+			'errors'     => $this->form_validation
+		);
+
+	    $post_data = $this->request->getPost();
+	    $get_token = [];
+
+		if ($page === 'login') 
+		{
+		    if ($post_data) 
+		    {
+		        if ($this->validate([
+				    'username' => ['rules' => 'required|validate_login[username.Username or Email Address]'],
+				    'password' => ['rules' => 'required|validate_login[password.Password]'] 
+				]))
+		        {
+		        	$fetch_user = $this->usersModel->user_by_username($post_data['username']); 
+					if (!empty($fetch_user['uid']))
+					{
+						$remeber_me = ($this->request->getPost('remember') == 'on'); 
+						if ($this->request->getPost('set_token')) 
+						{
+							$get_token = [$this->request->getPost('set_token') => $this->request->getPost('password')];
+						}
+						$previous_url = stripos(previous_url(), 'user/m') ? previous_url() : null; 
+		        		\CodeIgniter\Events\Events::trigger(
+		        			'login_redirect', 
+		        			$fetch_user['uid'], 
+		        			$previous_url, 
+		        			false, 
+		        			$remeber_me,
+		        			$get_token
+		        		); 
+					} 
+		        }  
+		    }
+		}
+ 
+		return theme_loader($view_data, 'frontend/basic', null, 'front');
+	}
+
 
     /**
      * Triggers the logout event and redirects to the homepage

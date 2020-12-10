@@ -174,6 +174,15 @@ jQuery(document).ready(function($) {
     });
 }); 
 
+function updateChangeUrl(title, url) {
+    if (typeof (history.pushState) != "undefined") {
+        var obj = { Title: title, Url: url };
+        history.pushState(obj, obj.Title, obj.Url);
+    } else {
+        console.log("Browser does not support HTML5, failed to update url!");
+    }
+}
+
 function modalImageViewer(identifier) {  
 
     var varid = Math.floor(Math.random() * 5);

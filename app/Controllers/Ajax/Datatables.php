@@ -109,7 +109,7 @@ class Datatables extends BaseController
                     <input type="checkbox" id="check'.$key.'" class="checkboxes" data-uid="'.$rows->uid.'">
                     <label for="check'.$key.'"></label>
                 </div>',
-                $user['uid'] . anchor('admin/users/create/'.$user['uid'], '<i class="fa fa-edit msession_listvar(name)                      -1"></i>'),
+                $user['uid'] . anchor('admin/users/create/'.$user['uid'], '<i class="fa fa-edit ml-1"></i>'),
                 anchor($user['profile_link'], $user['fullname'],
                     ['id' => 'name'.$user['uid'], 'data-img' => $user['avatar_link'], 'data-uid' => $user['uid']]), 
                 $user['username'],  

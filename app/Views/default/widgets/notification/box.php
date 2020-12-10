@@ -23,13 +23,13 @@
                                             <?php if ($notification->text): ?>
                                             <?=nl2br(word_wrap($notification->text, 55));?> 
                                             <?php else: ?>
-                                            <?=nl2br(word_wrap(_lang(''.$notification->type, [ucwords($notifier_name)]), 55));?> 
+                                            <?=nl2br(word_wrap(_lang('_'.$notification->type, [ucwords($notifier_name)]), 55));?> 
                                             <?php endif ?> 
                                         </p>
                                     </a>
                                 </td>
                                 <td>
-                                    <h6 class="text-muted"><i class="fas fa-circle <?=$notification->seen?'text-c-red':'text-c-green'?> f-10 m-r-15"></i><?=ucwords(date('d M H:i',$notification->time))?></h6>
+                                    <h6 class="text-muted"><i class="fas fa-circle <?=$notification->seen?'text-c-red':'text-c-green'?> f-10 m-r-15"></i> <?=ucwords(date('d M H:i',$notification->time))?></h6>
                                 </td>
                                 <td> 
                                     <button class="btn px-0 deleter" 

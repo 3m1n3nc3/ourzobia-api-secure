@@ -190,7 +190,7 @@
                         <div class="form-group col-md-6">
                             <label class="text-info" for="google_api_key">Google Api Key</label>
                             <input type="text" name="value[google_api_key]" value="<?= set_value('value[google_api_key]', my_config('google_api_key')) ?>" class="form-control" >
-                            <small class="text-muted">Enables the Google maps API, leave blank for Iframe fallback when necessary or set to "demo" to test the feature, get your keys from <a href="https://console.developers.google.com">https://console.developers.google.com</a></small> (To test this feature set to "demo")
+                            <small class="text-muted">Enables the Google maps API, leave blank for Iframe fallback when necessary or set to "demo" to test the feature, get your keys from <a href="https://console.developers.google.com">https://console.developers.google.com</a> (To test this feature set to "demo")</small>
                             <?= $errors->showError('value.google_api_key', 'my_single_error'); ?>
                         </div>
 
@@ -305,7 +305,12 @@
 
                         <div class="form-group col-md-4">
                             <label class="text-info" for="cpanel_password">Cpanel Password</label>
-                            <input type="password" name="value[cpanel_password]" value="<?= set_value('value[cpanel_password]') ?>" class="form-control" >
+                            <input type="password" name="value[cpanel_password]" value="<?= set_value('value[cpanel_password]') ?>" class="form-control<?=my_config('cpanel_password')?' is-valid':' is-invalid'?>" id="cpanel_password" aria-describedby="cpanel_passwordFb">
+                            <?php if (my_config('cpanel_password')): ?>
+                            <div id="cpanel_passwordFb" class="valid-feedback">Cpanel Password is set.</div>
+                            <?php else: ?>
+                            <div id="cpanel_passwordFb" class="invalid-feedback">Cpanel Password is not set.</div>
+                            <?php endif ?>
                             <small class="text-muted">Password for all Cpanel requests</small>
                             <?= $errors->showError('value.cpanel_password', 'my_single_error'); ?>
                         </div>
@@ -346,14 +351,19 @@
 
                         <div class="form-group col-md-6">
                             <label class="text-info" for="afterlogic_username">Admin Username</label>
-                            <input type="text" name="value[afterlogic_username]" value="<?= set_value('value[afterlogic_username]', my_config('afterlogic_username')) ?>" class="form-control" >
+                            <input type="text" name="value[afterlogic_username]" value="<?= set_value('value[afterlogic_username]', my_config('afterlogic_username')) ?>" class="form-control">
                             <small class="text-muted">Username for all AfterLogic Api requests</small>
                             <?= $errors->showError('value.afterlogic_username', 'my_single_error'); ?>
                         </div>
 
                         <div class="form-group col-md-6">
                             <label class="text-info" for="afterlogic_password">Admin Password</label>
-                            <input type="password" name="value[afterlogic_password]" value="<?= set_value('value[afterlogic_password]') ?>" class="form-control" >
+                            <input type="password" name="value[afterlogic_password]" value="<?= set_value('value[afterlogic_password]') ?>" class="form-control<?=my_config('afterlogic_password')?' is-valid':' is-invalid'?>" id="afterlogic_password">
+                            <?php if (my_config('afterlogic_password')): ?>
+                            <div id="afterlogic_passwordFb" class="valid-feedback">AfterLogic Admin Password is set.</div>
+                            <?php else: ?>
+                            <div id="afterlogic_passwordFb" class="invalid-feedback">AfterLogic Admin Password is not set.</div>
+                            <?php endif ?>
                             <small class="text-muted">Password for all AfterLogic Api requests</small>
                             <?= $errors->showError('value.afterlogic_password', 'my_single_error'); ?>
                         </div> 

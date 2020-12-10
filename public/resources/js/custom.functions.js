@@ -210,6 +210,11 @@ jQuery.fn.jsCssLoader = function (filename, type = 'js', callback, test = true) 
     }
 }
 
+function urlParam(name) {
+    var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+    return results ? results[1] : '';
+}
+
 // Get file extension
 function checkFileExt(filename){
     filename = filename.toLowerCase();

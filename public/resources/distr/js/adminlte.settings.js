@@ -244,9 +244,26 @@
       site_settings('des_small_brand', '')
     }
   })
-  var $text_sm_brand_container = $('<div />', {'class': 'mb-4'}).append($text_sm_brand_checkbox).append('<span>Brand small text</span>')
+  var $text_sm_brand_container = $('<div />', {'class': 'mb-1'}).append($text_sm_brand_checkbox).append('<span>Brand small text</span>')
   $container.append($text_sm_brand_container)
 
+  var $dark_mode_checkbox = $('<input />', {
+    type: 'checkbox',
+    value: 1,
+    checked: $('body').hasClass('dark-mode'),
+    class: 'mr-1'
+  }).on('click', function () {
+    if ($(this).is(':checked')) {
+      $('body').addClass('dark-mode')
+      site_settings('des_dark_mode', ' dark-mode')
+    } else {
+      $('body').removeClass('dark-mode')
+      site_settings('des_dark_mode', '')
+    }
+  })
+  var $dark_mode_container = $('<div />', { class: 'mb-4' }).append($dark_mode_checkbox).append('<span>Dark Mode</span>')
+  $container.append($dark_mode_container)
+  
   $container.append('<h6>Navbar Variants</h6>')
 
   var $navbar_variants        = $('<div />', {
@@ -464,10 +481,10 @@
     return $block
   }
 
-  $('.product-image-thumb').on('click', function() {
-    const image_element = $(this).find('img');
+  $('.product-image-thumb').on('click', function () {
+    var image_element = $(this).find('img')
     $('.product-image').prop('src', $(image_element).attr('src'))
-    $('.product-image-thumb.active').removeClass('active');
-    $(this).addClass('active');
-  });
+    $('.product-image-thumb.active').removeClass('active')
+    $(this).addClass('active')
+  })
 })(jQuery)

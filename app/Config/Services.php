@@ -1,6 +1,9 @@
 <?php namespace Config;
 
 use CodeIgniter\Config\Services as CoreServices;
+use \PhpImap\Exceptions\ConnectionException;
+use \PhpImap\Exceptions\InvalidParameterException;
+use \App\Libraries\Creative_lib; 
 
 /**
  * Services Configuration file.
@@ -152,4 +155,96 @@ class Services extends CoreServices
             return "Error: " . $e->getHandlerContext()['error'];
         }
 	}
-}
+
+	//--------------------------------------------------------------------
+
+	/**
+	 * The LoadMail method allows you to load email messages via IMAP.
+	 *
+	 * @param string    $key 
+	 * @param string    $secret 
+	 * @param string    $data 
+	 * @param string    $debug 
+	 * @param boolean   $getShared 
+	 *
+	 * @return string|boolean
+	 */
+	public static function loadMail(string $urlopen, string $username, string $password, string $path = null, $save_att = false, $getShared = true)
+	{
+		if ($getShared === true)
+		{
+			return static::getSharedInstance('loadMail', $urlopen, $username, $password, $path, $save_att);
+		} 
+
+    	helper(['site', 'url']);
+        $creative = new Creative_lib; 
+        $request  = \Config\Services::request(); 
+
+       	$folder = (logged_user('username')) ? url_title(logged_user('username')) . user_id() . '/global/attachments/' : null;
+        $upload_path = PUBLICPATH . 'uploads/'.$folder; 
+        $uploads_url  = 'uploads/'.$folder; 
+
+	    $att_dir   = null;
+	    $mails_ids = [];
+
+        if ($folder && $creative->create_dir($upload_path))
+        { 
+	        if ($save_att === true) 
+	        {
+	    		$att_dir = $upload_path;
+	        }
+        } 
+        else
+        {
+        	$upload_path = $uploads_url = null;
+        }
+
+        try 
+        {
+	        $imap_path = '{' . $urlopen . '/imap/ssl/novalidate-cert}INBOX';
+	        $mailbox   = new \PhpImap\Mailbox($imap_path, $username, $password, $att_dir);
+
+	        $mailbox->setConnectionArgs(
+	            CL_EXPUNGE  
+	            // | OP_SECURE  
+	        );
+			$mailbox->sortMails(SORTARRIVAL);
+
+	        $c = [];
+	        $error     = '';
+
+			if ($path) 
+			{
+				$mailbox->switchMailbox($path); 
+			}
+
+			if ($request->getGet('q')) 
+			{
+        		$mail_ids = $mailbox->searchMailboxMergeResultsDisableServerEncoding( 
+        			(String)'SUBJECT "' . $request->getGet('q') . '"',
+        			(String)'BODY "' . $request->getGet('q') . '"',
+        			(String)'FROM "' . $request->getGet('q') . '"',
+        			(String)'KEYWORD "' . $request->getGet('q') . '"',
+        			(String)'TEXT "' . $request->getGet('q') . '"'
+        		);
+			}
+			else
+			{
+	        	$mails_ids = $mailbox->searchMailbox('ALL');
+			}
+			$mailbox->setPathDelimiter('/');
+        } 
+        catch(ConnectionException | InvalidParameterException | \ErrorException $ex) 
+        {
+            $error = "IMAP Error: " . $ex->getMessage(); 
+        }
+
+        return [
+            'mailbox'     => $mailbox,
+            'mails_ids'   => $mails_ids,
+            'upload_path' => $upload_path,
+            'uploads_url' => $uploads_url,
+            'error'       => $error
+        ];
+    }
+} 

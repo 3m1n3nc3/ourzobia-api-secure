@@ -15,7 +15,8 @@
         "vstelmakh/url-highlight": "^2.0", 
         "endroid/qr-code": "^3.9",
         "nelexa/zip": "^3.3",
-		"mailjet/mailjet-apiv3-php": "^1.5"
+		"mailjet/mailjet-apiv3-php": "^1.5",
+		"php-imap/php-imap": "^4.1"
 	},
 	"require-dev": {
 		"codeigniter4/codeigniter4-standard": "^1.0",  

