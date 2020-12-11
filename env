@@ -4,7 +4,7 @@
 
  
 CI_ENVIRONMENT = development 
-installation.version = 1.0.0
+installation.version = 1.0.1
 
 #--------------------------------------------------------------------
 # APP

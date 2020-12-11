@@ -222,7 +222,7 @@ class Start extends Controller {
 
 CI_ENVIRONMENT = development
 installation.status = false
-installation.version = 1.0.0
+installation.version = 1.0.1
 
 #--------------------------------------------------------------------
 # APP
