@@ -70,7 +70,11 @@
 								</a>
 							</li>
 							<?php endif ?> 
-							<?php if (module_active('mail') && logged_user('cpanel')): ?>
+							<?php if (module_active('mail') && 
+								logged_user('cpanel') && 
+								my_config('cpanel_url') && 
+								my_config('cpanel_username') && 
+								my_config('cpanel_password')): ?>
 							<li class="nav-item">
 								<a href="<?=site_url('mail')?>" class="nav-link<?=active_page('mail', $page_name)?>">
 									<i class="nav-icon fas fa-envelope"></i>

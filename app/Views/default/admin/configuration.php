@@ -425,7 +425,7 @@
                         </div> 
 
                         <div class="form-group col-md-6">
-                            <label class="text-info" for="password">Stripe Currency</label>
+                            <label class="text-info" for="stripe_currency">Stripe Currency</label>
                             <input type="text" name="value[stripe_currency]" value="<?= set_value('value[stripe_currency]', my_config('stripe_currency', NULL, "USD")) ?>" class="form-control" >
                             <small class="text-muted">
                             The currency for all Stripe Transaction (E.g USD)
@@ -434,7 +434,7 @@
                         </div>
 
                         <div class="form-group col-md-6">
-                            <label class="text-info" for="password">Stripe Currency Conversion Rate</label>
+                            <label class="text-info" for="stripe_currency_rate">Stripe Currency Conversion Rate</label>
                             <input type="text" name="value[stripe_currency_rate]" value="<?= set_value('value[stripe_currency_rate]', my_config('stripe_currency_rate', NULL, "5.00")) ?>" class="form-control" >
                             <small class="text-muted">
                             If the Base currency is different from the stripe currency please enter the conversion rate.  
@@ -803,7 +803,12 @@
                         </div>
                         <div class="form-group col-md-6">
                             <label class="text-info" for="smtp_pass">SMTP Password</label>
-                            <input type="text" name="value[smtp_pass]" value="<?= set_value('value[smtp_pass]', my_config('smtp_pass')) ?>" class="form-control" >
+                            <input type="password" name="value[smtp_pass]" value="<?= set_value('value[smtp_pass]') ?>" class="form-control<?=my_config('smtp_pass')?' is-valid':' is-invalid'?>" id="smtp_pass" aria-describedby="smtp_passFb">
+                            <?php if (my_config('smtp_pass')): ?>
+                            <div id="smtp_passFb" class="valid-feedback">SMTP Password is set.</div>
+                            <?php else: ?>
+                            <div id="smtp_passFb" class="invalid-feedback">SMTP Password is not set.</div>
+                            <?php endif ?>
                             <small class="text-muted">The SMTP Password for sending emails</small>
                             <?= $errors->showError('value.smtp_pass', 'my_single_error'); ?>
                         </div>

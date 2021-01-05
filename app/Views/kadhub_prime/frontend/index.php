@@ -73,7 +73,7 @@ $push_bg = ''; ;
 
     <?php if (!empty($content['services']) && !empty($services)): 
         $i = 0.0;
-        ?> 
+        ?>
     <section id="services" class="section <?=$push_bg?>">
         <div class="container">
             <div class="section-header">

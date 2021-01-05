@@ -5,7 +5,7 @@ use CodeIgniter\Controller;
 
 class Cli extends Controller 
 {   
-	protected $helpers = ['site','tp_plugins', 'locale'];
+	protected $helpers = ['site','tp_plugins', 'locale', 'theme', 'filesystem', 'cookie'];
  
 	public function initController(\CodeIgniter\HTTP\RequestInterface $request, \CodeIgniter\HTTP\ResponseInterface $response, \Psr\Log\LoggerInterface $logger)
 	{
@@ -41,7 +41,7 @@ class Cli extends Controller
 					$user_id = (!empty($ip_user['uid'])) ? $ip_user['uid'] : null;
 		        	$this->analytics_m->add(['id'=>$analytics['id'], 'uip'=>$analytics['uip'], 'uid'=>$user_id]); 
 				}
-			}); 
+			});  
 		}
 		else
 		{
