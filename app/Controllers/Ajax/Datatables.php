@@ -271,7 +271,7 @@ class Datatables extends BaseController
             if (!$uid && logged_user("admin")) 
             { 
                 $data[$keys][] = '
-                    <a href="'.site_url('admin/products/create/'.$rows->id).'" class="btn btn-success btn-sm btn-spinner font-weight-bold px-1 m-1" title="Edit Product">
+                    <a href="'.site_url('admin/active_products/create/'.$rows->id).'" class="btn btn-success btn-sm btn-spinner font-weight-bold px-1 m-1" title="Edit Product">
                         Edit
                     </a>
                     <button 

@@ -43,13 +43,31 @@
 							</li>
 							<?php endif ?>  
 							<?php if (module_active('_products')): ?>
-							<li class="nav-item">
-								<a href="<?=site_url('admin/products')?>" class="nav-link<?=active_page('products', $_page_name??$page_name)?>">
+							<li class="nav-item has-treeview<?=active_page(['active_products', 'products'], $_page_name??$page_name, false, 'menu-open')?>">
+								<a href="#" class="nav-link<?=active_page(['active_products', 'products'], $_page_name??$page_name)?>">
 									<i class="nav-icon fas fa-box"></i>
 									<p>
-										<?=_lang('products')?> 
+										<?=_lang('products')?>
 									</p>
 								</a>
+            					<ul class="nav nav-treeview"> 
+									<li class="nav-item">
+										<a href="<?=site_url('admin/active_products')?>" class="nav-link<?=active_page('active_products', $_page_name??$page_name)?>">
+											<i class="nav-icon fas fa-box"></i>
+											<p>
+												<?=_lang('active_products')?> 
+											</p>
+										</a>
+									</li>
+									<li class="nav-item">
+										<a href="<?=site_url('admin/products')?>" class="nav-link<?=active_page('products', $_page_name??$page_name)?>">
+											<i class="nav-icon fas fa-box"></i>
+											<p>
+												<?=_lang('products')?> 
+											</p>
+										</a>
+									</li>
+								</ul>
 							</li>
 							<?php endif ?>   
 							<?php if (module_active('_payments')): ?>

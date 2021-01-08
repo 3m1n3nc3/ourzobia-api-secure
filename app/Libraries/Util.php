@@ -415,7 +415,7 @@ class Util
         return $form;
     }
 
-    public function save_analysis($metric = 'views', $pid = null, $ref = NULL)
+    public function save_analysis($metric = 'views', $pid = null, $ref = null, $response = 1)
     {  
 
         $analyticsModel = model('App\Models\AnalyticsModel', false);
@@ -444,6 +444,8 @@ class Util
         $data['uid']  = user_id(); 
         $data['date'] = time();
         $data['uip']  = $request->getIPAddress();
+        $data['response'] = $response; 
+        
         if (!user_id()) 
         {
             $data['uid'] = 0;
@@ -553,6 +555,123 @@ class Util
             </script>\n" : "\n";
 
             return $vars;
+        }
+    }
+
+    /**
+     * Prepare meta data
+     *
+     * @param  RequestInterface  $request
+     * @param  ResponseInterface $response
+     * @global type $app
+     * @return type
+     */
+    public static function prepare_meta(RequestInterface $request = null, ResponseInterface $response = null)
+    {  
+        global $app;
+
+        $license  = 'lite';
+
+        $request  = $request ?? \Config\Services::request();
+        $response = $response ?? \Config\Services::response();
+
+        // Disable the toolbar for downloads
+        if ($response instanceof DownloadResponse)
+        {
+            return;
+        }  
+        
+        if (in_array('socially', fetch_themes()) && in_array('deeper', fetch_themes()) && in_array('lite', fetch_themes())) 
+        {
+            $license = 'extended';
+        }
+        elseif (in_array('socially', fetch_themes())) 
+        {
+            $license = 'full';
+        }
+
+        return $meta_data = 
+            PHP_EOL
+            . '<meta name="tc:license" content="' . $license . '" />' .
+            PHP_EOL 
+            . '<meta name="tc:product" content="ourzobia_php" />' .
+            PHP_EOL; 
+    }
+    
+    public function updateChecker($update_file)
+    {
+        $request     = \Config\Services::request();
+        $zipFile     = new \App\ThirdParty\nelexa\ZipFile();
+        $creative    = new \App\Libraries\Creative_lib;
+        $updates_dir = WRITEPATH . 'uploads/updates/';
+        $available_updates = [];
+
+        if (file_exists($updates_dir) && is_really_writable($updates_dir))
+        { 
+            // Check Existing Updates
+            $load_updates = directory_map($updates_dir, 1);
+
+            foreach ($load_updates as $key => $update_item) 
+            { 
+                $update_info = (object)[];
+                try
+                { 
+                    $info_file = $zipFile->openFile($updates_dir . $update_item)->getEntryContents('installer.php');
+                    if ($info_file) 
+                    {
+                        $update_info = json_decode($info_file); 
+                        $update_info->file = $updates_dir . $update_item;
+                        $update_info->file_name = $update_item;
+                        $update_info->info_file_name = pathinfo($update_item, PATHINFO_BASENAME); 
+                        $update_info->requirements = check_requirements($update_info->requirements);  
+                        // print_r($zipFile->getEntryInfo('installer.php'));
+                        $available_updates[] = $update_info; 
+                        $zipFile->close();
+                    }
+                }
+                catch(\Exception $e) {}  
+            }
+
+            // Get the names, versions and types of all available updates
+            $available_updates_vars = ['realname'=>[], 'version'=>[], 'type'=>[], 'requirements' => []];
+            if ($available_updates) 
+            {
+                foreach (toArray($available_updates) as $k => $au) 
+                {
+                    $a_item[] = $au['realname'];
+                    $b_item[] = $au['version'];
+                    $c_item[] = $au['type'];
+                    $errors   = $au['requirements']['error'];
+                }
+
+                $available_updates_vars = ['realname'=>$a_item, 'version'=>$b_item, 'type'=>$c_item, 'errors'=>$errors];
+            }
+
+            // Open the package
+            if (file_exists($update_file))
+            { 
+                $check_installer = $zipFile->openFile($update_file); 
+                if ($check_installer->hasEntry('installer.php')) 
+                { 
+                    $u_vars    = $available_updates_vars;
+                    $installer = json_decode($check_installer->getEntryContents('installer.php'));
+                    if (!empty($installer->name) &&  
+                        empty($u_vars['errors']) &&  
+                        !in_array($installer->type, $u_vars['type']) && 
+                        !in_array($installer->realname, $u_vars['realname']) && 
+                        !in_array($installer->version, $u_vars['version']) &&
+                        (strtolower($installer->type) !== 'update' ? $installer->version !== env('installation.version') : true) &&
+                        (strtolower($installer->type) === 'theme' ? !in_array($installer->realname, fetch_themes()) && !in_array($installer->version, fetch_themes(null, 'version')) : true)
+                    )
+                    {
+                        $file_instance = new \CodeIgniter\Files\File($update_file);
+                        if (!$request->isAJAX()) 
+                        { 
+                            $file_instance->move($updates_dir, $file_instance->getBasename()); 
+                        }
+                    }
+                }
+            }
         }
     }
 }

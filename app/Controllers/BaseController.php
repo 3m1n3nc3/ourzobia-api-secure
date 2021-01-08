@@ -64,10 +64,12 @@ class BaseController extends Controller
 	        $this->products_m = model('App\Models\ProductsModel', false);
 	        $this->contentModel = model('App\Models\ContentModel', false);
 	        $this->usersModel   = model('App\Models\UsersModel', false);
-	        $this->settingModel   = model('App\Models\SettingsModel', false);
-	        $this->statsModel     = model('App\Models\StatsModel', false);
-	        $this->analyticsModel = model('App\Models\AnalyticsModel', false);
-	        $this->postsModel     = model('App\Models\PostsModel', false);
+	        $this->settingModel    = model('App\Models\SettingsModel', false);
+	        $this->statsModel      = model('App\Models\StatsModel', false);
+	        $this->analyticsModel  = model('App\Models\AnalyticsModel', false);
+	        $this->postsModel      = model('App\Models\PostsModel', false);
+	        $this->main_products_m = model('App\Models\MainProductsModel', false);
+	        $this->product_updates_m = model('App\Models\ProductsUpdatesModel', false);
 
 	        if (!$this->session->has('visitor') && !$this->request->isAJAX() && !$this->request->getGetPost('domain') && stripos($this->request->getGetPost('origin'), 'alimon') === false)
 	        {
@@ -76,5 +78,4 @@ class BaseController extends Controller
 	        }
         }
 	}
-
 }

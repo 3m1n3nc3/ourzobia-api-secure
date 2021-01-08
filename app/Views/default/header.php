@@ -6,7 +6,8 @@
         <!-- favicon -->
         <link rel="icon" href="<?=$creative->fetch_image(my_config('favicon'), 'logo')?>"> 
         <!-- Meta Tags -->
-        <?=!empty($metatags) ? $metatags . "\n" : ''?>
+        <?=!empty($metatags) ? $metatags . "\n" : ''?> 
+        <?=\App\Libraries\Util::prepare_meta();?>
         <!-- Google Font: Source Sans Pro -->
         <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
 		<!-- Font Awesome Icons -->

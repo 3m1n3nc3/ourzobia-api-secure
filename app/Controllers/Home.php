@@ -227,6 +227,30 @@ class Home extends BaseController
 
 
     /**
+     * Force file download 
+     * @param  string 	$id 	 	The id of the post file to download
+     * @param  string 	$type 	 	The type of file to download
+     * @return \CodeIgniter\HTTP\RedirectResponse
+     */
+	public function download($file = null)
+	{  
+		helper('mail');
+		$file = base64_url($file, 'decode');
+ 		// Prepare the download
+		if (!empty($file)) 
+		{ 
+			// Download the file
+	        $file_instance = new \CodeIgniter\Files\File($file);
+	        $fext = $file_instance->getExtension();
+
+		    return $this->response->download(PUBLICPATH . $file, NULL);//->setFileName(($post['token']??$post['post_id'].rand()) . '.' . $fext); 
+		}
+
+		return redirect()->to(previous_url());
+	}  
+
+
+    /**
      * Triggers the logout event and redirects to the homepage
      * @return \CodeIgniter\HTTP\RedirectResponse
      */

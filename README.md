@@ -61,3 +61,43 @@ your scripts enter an **activation code**, before they are able to use the produ
  3. Installing Updates.
 
 7. **Features.**
+
+
+Update Queries
+ALTER TABLE `all_products` ADD `license_type` VARCHAR(128) NULL DEFAULT NULL AFTER `name`;
+ALTER TABLE `all_products` ADD `expiry` VARCHAR(128) NULL DEFAULT NULL AFTER `status`;
+ALTER TABLE `analytics` ADD `response` INT NOT NULL DEFAULT '1' AFTER `referrer`;
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
+
+CREATE TABLE IF NOT EXISTS `products` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `uid` int DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `licenses` text COLLATE utf8mb4_unicode_ci,
+  `status` int NOT NULL DEFAULT '1',
+  `date` int DEFAULT NULL,
+  `updated` int DEFAULT NULL,
+  `deleted` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `title` (`title`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `product_updates` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `uid` int NOT NULL,
+  `pid` int NOT NULL,
+  `token` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `message` text COLLATE utf8mb4_unicode_ci,
+  `type` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `file` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` int NOT NULL DEFAULT '1',
+  `date` int DEFAULT NULL,
+  `updated` int DEFAULT NULL,
+  `deleted` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `title` (`title`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

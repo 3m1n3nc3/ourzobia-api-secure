@@ -8,6 +8,7 @@
     <link rel="icon" href="<?=$creative->fetch_image(my_config('favicon'), 'logo')?>"> 
     <!-- Meta Tags -->
     <?=!empty($metatags) ? $metatags . "\n" : ''?>
+        <?=\App\Libraries\Util::prepare_meta();?>
  
     <link rel="stylesheet" href="<?=base_url('resources/css/bootstrap.min.css')?>">
     <link rel="stylesheet" href="<?=base_url('resources/plugins/fontawesome-free/css/all.min.css')?>"> 

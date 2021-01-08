@@ -50,6 +50,10 @@ if (! function_usable('theme_loader'))
                 $_data['hubs_m']       = model('App\Models\HubsModel', false);
             if (empty($products_m)) 
                 $_data['products_m']   = model('App\Models\ProductsModel', false);
+            if (empty($main_products_m)) 
+                $_data['main_products_m']   = model('App\Models\MainProductsModel', false);
+            if (empty($product_updates_m)) 
+                $_data['product_updates_m'] = model('App\Models\ProductsUpdatesModel', false);
             if (empty($bookings_m)) 
                 $_data['bookings_m']   = model('App\Models\BookingsModel', false); 
             if (empty($data['profile'])) 
@@ -257,7 +261,14 @@ if (! function_usable('_lang'))
     {
         $lang_file = my_config('lang_pack', null, 'Default_');
 
-        return lang("$lang_file.$line", $args, service('request')->getLocale());
+        $translation = lang("$lang_file.$line", $args, service('request')->getLocale());
+
+        if (stripos($translation, $lang_file) !== false) 
+        {
+            $line        = ucwords(str_ireplace('_', ' ', $line));
+            $translation = highlight_phrase($line, $line, '<i>','</i>');
+        }
+        return $translation;
     }
 }
 

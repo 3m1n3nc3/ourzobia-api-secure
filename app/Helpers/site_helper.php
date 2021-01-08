@@ -704,7 +704,9 @@ if ( ! function_usable('toArray'))
      * @return array
      */
     function toArray($obj)
-    {
+    {   
+        $new = [];
+        
         if (is_object($obj))
             $obj = (array) $obj;
         if (is_array($obj)) {
@@ -1299,11 +1301,19 @@ if ( ! function_usable('array_string_blast') )
     function array_string_blast(array $array = [], string $index, $prepare = false) 
     {
         $init = $data = [];
+
         foreach ($array as $key => $value) 
-        {
-            $init[] = str_ireplace(', ', ',', $value[$index]);
+        { 
+            if (json_decode($value[$index]))
+            {
+                $init[] = implode(',', array_values(toArray(json_decode($value[$index]))));
+            }
+            else
+            {
+                $init[] = str_ireplace(', ', ',', $value[$index]);
+            }
         }
-            
+
         foreach (explode(',',implode(',', $init)) as $key => $value) 
         {
             $string = $value;

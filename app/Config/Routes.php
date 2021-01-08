@@ -66,6 +66,7 @@ $routes->get('page/(:any)', 'Home::index/$1');
 $routes->match(['get', 'post'], 'requests/(:any)', 'Api::$1'); 
  
 $routes->get('src/(:any)', 'Src::index/$1');
+$routes->get('download/(:any)', 'Home::download/$1');
 
 $routes->get('dashboard', 'Admin::index');
 $routes->get('dashboard/(:any)', 'Admin::$1'); 

@@ -11,7 +11,7 @@ class ActivesModel extends Model
     protected $returnType = 'array';
     protected $useSoftDeletes = true;
 
-    protected $allowedFields  = ['product_id', 'domain', 'status'];
+    protected $allowedFields  = ['product_id', 'domain', 'license_type', 'status', 'expiry'];
 
 	protected $useTimestamps = true;
 	protected $dateFormat    = 'int'; 
@@ -44,11 +44,23 @@ class ActivesModel extends Model
         return $this->orderBy('id', 'ASC')->findAll();
     } 
 
-    public function check($domain)
+    public function check($domain = '', $product = '', $license_type = '')
     {  
-        $this->select('active_products.*, all_products.id AS pid');
+        $this->select('active_products.*, all_products.domain, all_products.license_type, all_products.name, all_products.id AS pid');
         $this->where('active_products.status', 1); 
-        $this->where('active_products.domain', $domain);  
+        $this->where('all_products.domain', $domain);
+        $this->where('DATE(FROM_UNIXTIME(all_products.expiry)) >= CURDATE()');
+
+        if ($product) 
+        {
+            $this->where('all_products.name', $product);  
+        }
+
+        if ($license_type) 
+        {
+            $this->where('all_products.license_type', $license_type); 
+        }
+ 
         $this->join('all_products', 'active_products.product_id=all_products.id', 'LEFT');  
 
         return $this->get()->getRowArray();

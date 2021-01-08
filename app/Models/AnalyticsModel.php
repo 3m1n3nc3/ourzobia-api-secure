@@ -12,7 +12,7 @@ class AnalyticsModel extends Model
     protected $useSoftDeletes = false;
 
     protected $allowedFields = [
-    	'item_id', 'uid', 'uip', 'ip_info', 'type', 'metric', 'referrer', 'date'];
+    	'item_id', 'uid', 'uip', 'ip_info', 'type', 'metric', 'referrer', 'response', 'date'];
 
 	protected $useTimestamps = false;  
 

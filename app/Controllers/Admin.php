@@ -128,7 +128,7 @@ class Admin extends BaseController
      * @param  string 	$uid 	 	The id of the a product to manage or view
      * @return string           	Uses the themeloader() to call and return codeigniter's view() method to render the page
      */
-	public function products($action = '', $id = null)
+	public function active_products($action = '', $id = null)
 	{
 		// Check and redirect if this module is unavailable for the current  theme
 		if (!module_active('_products')) return redirect()->to(base_url('admin/dashboard'));
@@ -137,25 +137,26 @@ class Admin extends BaseController
 		$view_data = array(
 			'session' 	 => $this->session,
 			'user' 	     => $userdata,
-			'page_title' => 'Products',
-			'page_name'  => 'products', 
+			'page_title' => 'Active Products',
+			'page_name'  => 'active_products', 
 			'has_table'  => true,
 			'set_folder' => 'admin/',
 			'table_method' => 'products',
 			'acc_data'   => $this->account_data,
 			'creative'   => $this->creative,
-			'products'  => $this->products_m->get(),
+			'products'  => $this->products_m->get_all(),
 			'validate'   => $this->form_validation
 		);
 
 		if ($action == 'create') 
 		{
-			$view_data['page_name']  = 'create_product';
-			$view_data['_page_name'] = 'products';
+			$view_data['product']    = $this->products_m->where('id', $id)->get()->getRowArray();
+			$view_data['page_title'] = "Active Products - " . (!empty($view_data['product']['name']) ? $view_data['product']['name'] : ' Create');
+			$view_data['page_name']  = 'create_active_product';
+			$view_data['_page_name'] = 'active_products';
 			$view_data['action']    = $action;
 			$view_data['id']        = $id;
-			$view_data['product']   = $this->products_m->where('id', $id)->get()->getRowArray();
-			$view_data['has_table'] = false;
+			$view_data['has_table'] = false; 
 
 	        if ($this->request->getPost()) 
 	        {
@@ -194,13 +195,172 @@ class Admin extends BaseController
 			        	$save['uid']           = $this->usersModel->save_user($save_user);
 		        	}
 
-		        	$save['name'] = url_title($save['name'], '_', true);
+		        	if ($save['expiry'] === '1') 
+		        	{
+		        		$save['expiry'] = strtotime("+100 years");
+		        	}
+		        	elseif ($save['expiry'] != 0) 
+		        	{
+		        		$save['expiry'] = strtotime("+{$save['expiry']}");
+		        	}
+		        	else
+		        	{
+		        		unset($save['expiry']);
+		        	}
+
+		        	$save['name']   = url_title($save['name'], '_', true);
+
 	                // Save the product
 	                if ($id = $this->products_m->create($save))
 	                	$this->session->setFlashdata('notice', alert_notice("Product Saved", 'success')); 
+	                	return redirect()->to(base_url('admin/active_products/create/'.$id));
+	            }
+	        }
+		}
+
+		// Delete product
+		elseif ($action == 'delete') 
+		{ 
+			if ($this->products_m->cancel(['id' => $id])) 
+	            $this->session->setFlashdata('notice', alert_notice("Product Deleted", 'success')); 
+				return redirect()->to(base_url('admin/active_products/'));
+		}
+ 
+		return theme_loader($view_data, null, 'admin'); 
+	} 
+
+
+    /**
+     * This methods handles all products management functions 
+     * @param  string 	$action 	Determines the action to take on the product
+     * @param  string 	$uid 	 	The id of the a product to manage or view
+     * @return string           	Uses the themeloader() to call and return codeigniter's view() method to render the page
+     */
+	public function products($action = '', $id = null, $puid = null)
+	{
+		// Check and redirect if this module is unavailable for the current  theme
+		if (!module_active('_products')) return redirect()->to(base_url('admin/dashboard'));
+
+		$userdata  = $this->account_data->fetch(user_id());
+		$view_data = array(
+			'session' 	 => $this->session,
+			'user' 	     => $userdata,
+			'page_title' => 'Products',
+			'page_name'  => 'products',  
+			'set_folder' => 'admin/',
+			'action'     => $action,
+			'acc_data'   => $this->account_data,
+			'creative'   => $this->creative,
+			'products'   => $this->main_products_m->get_products(),
+			'validate'   => $this->form_validation
+		);
+
+		if (in_array($action, ['create_update', 'create'])) 
+		{
+			$view_data['product']    = $this->main_products_m->where('id', $id)->get()->getRowArray(); 
+			$view_data['page_title'] = "Active Products - " . (!empty($view_data['product']['name']) ? $view_data['product']['name'] : ' Create');
+			$view_data['action']     = $action;
+			$view_data['id']         = $id;
+			$view_data['puid']       = $puid;
+
+			if ($puid) 
+			{
+				$view_data['update']  = $this->product_updates_m->get_updates(['id' => $puid]);
+			}
+			else
+			{
+				$view_data['updates'] = $this->product_updates_m->get_updates(['pid' => $id]);
+			}
+		}
+
+		if ($action == 'create_update') 
+		{ 
+	        if ($this->request->getPost()) 
+	        {
+	        	// Upload package
+	        	$package = ($puid) ? $view_data['update']['file'] : '';
+	        	$token   = MD5(time()); 
+	            $this->creative->upload('package', $package, 'update_' . $token, 'updates', null, 'file');
+
+	            // Check for upload errors
+	            if ($this->creative->upload_errors() === FALSE)
+	            { 
+	            	// Merge upload and post data
+                	$save = $this->request->getPost();
+	                if (isset($_POST['creative_lib'])) {
+	                	$save  = $_POST['creative_lib']; 
+	                }  
+
+		        	if (!$puid) 
+		        	{
+		        		$save['uid'] = user_id();
+		        	}
+		        	else
+		        	{
+		        		$save['id'] = $puid;
+		        	}
+
+		        	$save['pid']     = $id;
+		        	$save['token']   = $token;
+	                // Save the product
+	                if ($puid = $this->product_updates_m->create($save))
+	                	$this->session->setFlashdata('notice', alert_notice($puid ? "Product Update Saved" : "Product Update Created", 'success')); 
+	                	return redirect()->to(base_url("admin/products/create_update/$id/$puid"));
+	            }
+	        }
+		}
+
+		if ($action == 'create') 
+		{ 
+	        if ($this->request->getPost()) 
+	        {
+                $save = $this->request->getPost(); 
+                
+            	($id) ? $save['id'] = $id : null;
+
+            	$unique_name = ($view_data['product']['name']??'') !== $save['name'] ? "|is_unique[products.name,id,{$id}]" : '';
+
+	            // Validate post data
+		        $this->validate([
+				    'name'   => ['label' => 'Product Name', 'rules' => 'trim|required' . $unique_name] 
+				]);
+
+		        // Check for validation errors
+		        if ($this->form_validation->run($this->request->getPost()) === FALSE) 
+		        { 
+		            $this->session->setFlashdata('notice', $this->form_validation->listErrors('my_error_list')); 
+		        } 
+		        else 
+		        {  
+		        	if (!$id) 
+		        	{
+		        		$save['uid'] = user_id();
+		        	} 
+
+		        	$save['title']    = url_title($save['name'], '_', true);
+		        	$save['licenses'] = json_encode(explode(',', $save['licenses']), JSON_FORCE_OBJECT);
+	                // Save the product
+	                if ($id = $this->main_products_m->create($save))
+	                	$this->session->setFlashdata('notice', alert_notice($id ? "Product Saved" : "Product Created", 'success')); 
 	                	return redirect()->to(base_url('admin/products/create/'.$id));
 	            }
 	        }
+		}
+
+		// Delete product
+		elseif ($action == 'delete') 
+		{ 
+			if ($this->main_products_m->cancel(['id' => $id])) 
+	            $this->session->setFlashdata('notice', alert_notice("Product Deleted", 'success')); 
+				return redirect()->to(base_url('admin/products/'));
+		}
+
+		// Delete product update
+		elseif ($action == 'delete_update') 
+		{ 
+			if ($this->product_updates_m->cancel(['id' => $id])) 
+	            $this->session->setFlashdata('notice', alert_notice("Product Update Deleted", 'success')); 
+				return redirect()->to(base_url('admin/products/'));
 		}
  
 		return theme_loader($view_data, null, 'admin'); 
@@ -1059,6 +1219,7 @@ class Admin extends BaseController
      */
 	public function updates($action = 'view', $id = '')
 	{	 
+
 		$zipFile = new \App\ThirdParty\nelexa\ZipFile();
 
 		// Check and redirect if this module is unavailable for the current  theme

@@ -8,6 +8,7 @@ return [
    'activate'                       => 'Activate',
    'activation'                     => 'Activation', 
    'activation_required'            => 'Activation Required',
+   'active_products'                => 'Active Products',
    'admin'                          => 'Admin', 
    'admin_dashboard'                => 'Dashboard',
    'admin_level'                    => 'Admin Level', 

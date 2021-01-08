@@ -11,7 +11,7 @@ class ProductsModel extends Model
     protected $returnType = 'array';
     protected $useSoftDeletes = true;
 
-    protected $allowedFields = ['uid', 'name', 'domain', 'email', 'code', 'status'];
+    protected $allowedFields = ['uid', 'name', 'domain', 'email', 'code', 'status', 'license_type', 'expiry'];
 
 	protected $useTimestamps = true;
 	protected $dateFormat    = 'int'; 
@@ -49,6 +49,26 @@ class ProductsModel extends Model
         return $this->getWhere(['code'=>$code])->getRowArray();
     } 
 
+    public function get_product($data = [])
+    {   
+        if (!empty($data['id']))
+        {
+            return $this->find($data['id']); 
+        }
+
+        if (!empty($data['name']))
+        {
+            $this->where('all_products.name', $data['name']); 
+        }
+
+        return $this->get()->getRowArray();
+    } 
+
+    public function getDomain($domain = null)
+    {   
+        return $this->getWhere(['domain'=>$domain])->getRowArray();
+    } 
+
     public function check(array $data = [])
     {
         $pmdl = model('App\Models\ProductsModel', false);
@@ -60,7 +80,13 @@ class ProductsModel extends Model
             $this->where('all_products.domain', $data['domain']??''); 
         }
         $this->where('all_products.email', $data['email']??''); 
-        $this->where('all_products.code', $data['code']??'');  
+        $this->where('all_products.code', $data['code']??''); 
+
+        if (!empty($data['product']))
+        {
+            $this->where('all_products.name', $data['product']);  
+        }
+        
         $this->join('users', 'all_products.uid=users.uid', 'LEFT');  
 
         return $this->get()->getRowArray();

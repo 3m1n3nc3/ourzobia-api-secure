@@ -152,6 +152,28 @@ class Creative_lib {
         }
     }
 
+    
+    /**
+     * This method will fetch and save an image or media file
+     * from a remote location, most probably a url
+     * @param  string  $file_path the absolute url to the file to save
+     * @param  boolean $save      true or false whether to save the file or just return it's base name
+     * @return string 
+     */
+    public function fetchFile(string $url)
+    {          
+        // Create a CURL Request for the file
+        $client   = \Config\Services::curlrequest(); 
+        $options  = [
+            'headers' => [
+                'User-Agent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36',
+                'referrer' => site_url()
+        ]];
+        $response = $client->request('GET', $url, $options); 
+
+        return $response->getBody();
+    }
+
 
     /**
      * Uploads a media file and thumbnail if supplied by request
