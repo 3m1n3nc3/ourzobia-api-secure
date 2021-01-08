@@ -5,14 +5,14 @@
 				</div>
 				<div class="card card-primary">
 					<div class="card-header">
-						<h3 class="card-title"><?=$id ? 'Edit Product' : 'Add Product';?></h3>
+						<h3 class="card-title"><?=$id ? 'Edit Product Setup' : 'Add Product Setup';?></h3>
 					</div> 
                 	
 					<?=form_open_multipart('admin/active_products/'.$action.($id?'/'.$id:''))?>
 						<?=csrf_field()?>
 						<div class="card-body">
 							<div class="form-row">
-								<div class="form-group col-md-6">
+								<div class="form-group <?=!empty($product) ? 'col-md-6' : 'col-md-12'?>">
 									<label for="name">Product Name</label>
 									<select name="name" class="form-control" id="name" required>
 										<?php if ($sel_products = $main_products_m->get_products()): ?>
@@ -23,14 +23,20 @@
 									</select> 
 								</div> 
 
+								<?php if (!empty($product)): ?>
 								<div class="form-group col-md-6">
 									<label for="name">Product License</label>
 									<select name="license_type" class="form-control" id="license_type" required>
-										<?php foreach (toArray(json_decode($main_products_m->get_products(['title' => $product['name']])['licenses']??'')??'') as $key => $licenses):?>
+									<?php if ($sel_licenses = toArray(json_decode($main_products_m->get_products(['title' => $product['name']??''])['licenses']??'')??'')): ?>
+										<?php foreach ($sel_licenses as $key => $licenses):?>
 											<option value="<?=$licenses?>"<?=set_select('title', ($licenses??''), ($licenses??'')==($product['license_type']??''))?>><?=ucwords($licenses)?></option>
 										<?php endforeach ?> 
+									<?php endif ?>
 									</select> 
 								</div>  
+								<?php else: ?>
+									<input type="hidden" name="license_type" value="lite">
+								<?php endif ?>
 
 								<div class="form-group col-md-6">
 									<label for="email">Email</label>

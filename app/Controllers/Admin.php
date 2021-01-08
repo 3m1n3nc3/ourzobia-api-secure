@@ -1351,7 +1351,8 @@ class Admin extends BaseController
 							{
 								$data['message'] = 'This package has already been uploaded!'; 
 							}
-							elseif (strtolower($installer->type) === 'update' && $installer->version === env('installation.version')) 
+							elseif (update_log([$installer->realname,$installer->type,$installer->version, $installer->release_date], 'verify') || 
+								(strtolower($installer->type) === 'update' && $installer->version === env('installation.version')))
 							{
 								$data['message'] = 'This update has already been installed!'; 
 							}
@@ -1455,6 +1456,9 @@ class Admin extends BaseController
 		           		
 		           		// Update the .env file
 		           		update_env($update_env);
+
+		           		// Update the Installation log
+		           		update_log([$installer->realname,$installer->type,$installer->version, $installer->release_date], true);
 
 		           		// Delete the installer
 						if (file_exists($output_root_dir . 'installer.php')) deleteAll($output_root_dir . 'installer.php', TRUE);

@@ -1330,6 +1330,59 @@ if ( ! function_usable('array_string_blast') )
     } 
 }
 
+
+if ( ! function_usable('update_log') ) 
+{
+    /**
+     * A convenience method to update the the list of installed updates
+     *
+     * @param string|array        $content
+     * @param string|boolen       $write 
+     *
+     * @return bool
+     */
+    function update_log($content = [], $write = false)
+    {
+        $update_path = WRITEPATH . 'uploads/updates/.log';
+        $file = new \CodeIgniter\Files\File($update_path);
+ 
+        if (file_exists($update_path)) 
+        { 
+            $log         = $file->openFile('r');
+            $update_file = trim($log->fread($log->getSize() > 0 ? $log->getSize() : 1));
+            $update_log  = preg_split("/\r\n|\n|\r/", $update_file);
+
+            if (!empty($content)) 
+            {
+                if (is_array($content)) 
+                {
+                    $content = implode("", $content);
+                }
+
+                if ($write === true) 
+                {
+                    $log = $file->openFile('w');
+                    return $log->fwrite($update_file . (strlen(trim($update_file))>0 ? PHP_EOL : null) . MD5($content)); 
+                }
+                elseif ($write === "verify") 
+                {
+                    return in_array(MD5($content), $update_log);
+                }
+
+                return $update_log;
+            }
+        }
+        else
+        {
+            $file->openFile('w')->fwrite(""); 
+            update_log($content, $write);
+        }
+
+        return false; 
+    }
+}
+
+
 if ( ! function_usable('welcomeEmail') ) 
 {
     /**

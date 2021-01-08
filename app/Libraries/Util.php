@@ -656,7 +656,8 @@ class Util
                     $u_vars    = $available_updates_vars;
                     $installer = json_decode($check_installer->getEntryContents('installer.php'));
                     if (!empty($installer->name) &&  
-                        empty($u_vars['errors']) &&  
+                        empty($u_vars['errors']) && 
+                        !update_log([$installer->realname,$installer->type,$installer->version, $installer->release_date], 'verify') && 
                         !in_array($installer->type, $u_vars['type']) && 
                         !in_array($installer->realname, $u_vars['realname']) && 
                         !in_array($installer->version, $u_vars['version']) &&
