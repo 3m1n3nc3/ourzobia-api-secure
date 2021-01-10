@@ -46,10 +46,10 @@ class ActivesModel extends Model
 
     public function check($domain = '', $product = '', $license_type = '')
     {  
-        $this->select('active_products.*, all_products.domain, all_products.license_type, all_products.name, all_products.id AS pid');
+        $this->select('active_products.*, all_products.domain, all_products.license_type, all_products.name, all_products.expiry, all_products.id AS pid');
         $this->where('active_products.status', 1); 
         $this->where('all_products.domain', $domain);
-        $this->where('DATE(FROM_UNIXTIME(all_products.expiry)) >= CURDATE()');
+        $this->where('all_products.expiry >= UNIX_TIMESTAMP()');
 
         if ($product) 
         {

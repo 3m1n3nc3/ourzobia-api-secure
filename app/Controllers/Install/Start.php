@@ -221,6 +221,7 @@ class Start extends Controller {
 #--------------------------------------------------------------------
 
 CI_ENVIRONMENT = development
+installation.product = hubboxx
 installation.status = false
 installation.version = 1.0.1
 

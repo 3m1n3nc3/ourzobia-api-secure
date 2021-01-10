@@ -594,7 +594,7 @@ class Util
             PHP_EOL
             . '<meta name="tc:license" content="' . $license . '" />' .
             PHP_EOL 
-            . '<meta name="tc:product" content="ourzobia_php" />' .
+            . '<meta name="tc:product" content="hubboxx" />' .
             PHP_EOL; 
     }
     
@@ -663,12 +663,12 @@ class Util
                         !in_array($installer->version, $u_vars['version']) &&
                         (strtolower($installer->type) !== 'update' ? $installer->version !== env('installation.version') : true) &&
                         (strtolower($installer->type) === 'theme' ? !in_array($installer->realname, fetch_themes()) && !in_array($installer->version, fetch_themes(null, 'version')) : true)
-                    )
-                    {
+                    ){
                         $file_instance = new \CodeIgniter\Files\File($update_file);
                         if (!$request->isAJAX()) 
                         { 
-                            $file_instance->move($updates_dir, $file_instance->getBasename()); 
+                            $file_instance->move($updates_dir, $file_instance->getBasename());
+                            return "Update Ready for installation ({$installer->realname} v{$installer->version})";
                         }
                     }
                 }

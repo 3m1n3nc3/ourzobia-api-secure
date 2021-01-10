@@ -55,7 +55,8 @@ class Cli extends Controller
 
 	public function updater()
 	{  
-        $creative    = new \App\Libraries\Creative_lib;
+        $creative = new \App\Libraries\Creative_lib;
+	    $util     = new \App\Libraries\Util;
 
         $upload_path = PUBLICPATH . 'uploads/temp'; 
 
@@ -85,7 +86,7 @@ class Cli extends Controller
 				{
 					$update_file = $creative->fetchFile(my_config('updates_url', null, 'https://api.ourzobia.te') . "/uploads/updates/{$update['filename']}");
 	                file_put_contents("$upload_path/{$update['filename']}", $update_file);
-	                $this->util->updateChecker("$upload_path/{$update['filename']}");
+	                $util->updateChecker("$upload_path/{$update['filename']}");
 				}
 				delete_dir($upload_path);
 			}

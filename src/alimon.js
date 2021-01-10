@@ -1,5 +1,5 @@
 /**
- * HubBoxx PHP Api Plugin v1.2.0
+ * HubBoxx PHP Api Plugin v1.2.1
  * dependency loader
  * var src_url is the url to include all required resources 
  * from either public/src or src directories
